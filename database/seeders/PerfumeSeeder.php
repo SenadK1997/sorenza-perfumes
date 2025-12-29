@@ -17,11 +17,11 @@ class PerfumeSeeder extends Seeder
                 'base_price' => 30,
                 'main_image' => 'perfume01.jpg',
                 'tag' => 'fresh',
-                'accords' => json_encode([
+                'accords' => [
                     ['name' => 'Woody', 'percentage' => 50],
                     ['name' => 'Amber', 'percentage' => 30],
                     ['name' => 'Citrus', 'percentage' => 20],
-                ]),
+                ],
             ],
             [
                 'name' => '02',
@@ -30,10 +30,10 @@ class PerfumeSeeder extends Seeder
                 'base_price' => 30,
                 'main_image' => 'perfume02.jpg',
                 'tag' => 'floral',
-                'accords' => json_encode([
+                'accords' => [
                     ['name' => 'Rose', 'percentage' => 60],
                     ['name' => 'Jasmine', 'percentage' => 40],
-                ]),
+                ],
             ],
             [
                 'name' => '03',
@@ -42,10 +42,10 @@ class PerfumeSeeder extends Seeder
                 'base_price' => 30,
                 'main_image' => 'perfume03.jpg',
                 'tag' => 'spicy',
-                'accords' => json_encode([
+                'accords' => [
                     ['name' => 'Cinnamon', 'percentage' => 70],
                     ['name' => 'Clove', 'percentage' => 30],
-                ]),
+                ],
             ],
             [
                 'name' => '04',
@@ -54,10 +54,10 @@ class PerfumeSeeder extends Seeder
                 'base_price' => 30,
                 'main_image' => 'perfume04.jpg',
                 'tag' => 'woody',
-                'accords' => json_encode([
+                'accords' => [
                     ['name' => 'Sandalwood', 'percentage' => 80],
                     ['name' => 'Vanilla', 'percentage' => 20],
-                ]),
+                ],
             ],
         ];
 

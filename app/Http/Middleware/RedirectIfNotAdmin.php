@@ -12,7 +12,7 @@ class RedirectIfNotAdmin
     {
         if (Auth::check()) {
             $user = Auth::user();
-
+            // dd($user->roles);
             // If user is seller and tries to access any admin route
             if ($user->hasRole('seller') && $request->is('admin*')) {
                 return redirect('/seller');
