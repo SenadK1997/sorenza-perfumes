@@ -247,6 +247,7 @@
     @yield('structured_data')
 
     @vite('resources/css/app.css')
+    @livewireStyles
 </head>
 <body class="min-h-screen text-gray-800 font-sans" style="background: linear-gradient(to bottom, #ffffff 0%, #f3f4f6 15%, #d1d5db 35%, #6b7280 55%, #374151 75%, #111827 100%);">
 
@@ -368,5 +369,6 @@
         </div>
     </footer>
 <script type="module" src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1/dist/index.min.js"></script>
+@livewireScripts
 </body>
 </html>

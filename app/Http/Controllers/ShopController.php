@@ -7,12 +7,10 @@ use App\Models\Perfume;
 
 class ShopController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Fetch all perfumes, you can add pagination later
         $perfumes = Perfume::all();
 
-        // Pass perfumes to the view
         return view('shop.index', compact('perfumes'));
     }
 }

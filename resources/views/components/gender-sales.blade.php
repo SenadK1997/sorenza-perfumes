@@ -15,9 +15,10 @@
                 <div aria-hidden="true" class="absolute inset-0 overflow-hidden rounded-2xl">
                     <div class="absolute inset-0 overflow-hidden transition-transform duration-700 ease-out group-hover:scale-110">
                         <img
-                            src="{{ asset('storage/images/womanperfume.jpg') }}"
-                            alt="Ženski parfem"
-                            class="size-full object-cover" />
+                          src="{{ asset('storage/images/womanperfume.jpg') }}"
+                          alt="Ženski parfem"
+                          class="size-full object-cover" 
+                        />
                     </div>
                     <!-- Gradient overlay -->
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-70 transition-opacity duration-500"></div>
@@ -32,7 +33,7 @@
                     <div class="transform transition-all duration-500 group-hover:translate-y-0 translate-y-2">
                         <p aria-hidden="true" class="text-sm text-white/80 font-light tracking-wider uppercase mb-2 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100">Pogledaj kolekciju</p>
                         <h3 class="text-2xl font-bold text-white mb-3">
-                            <a href="#" class="hover:text-pink-200 transition-colors duration-300">
+                            <a href="{{ route('shop', ['gender' => 'female']) }}" class="hover:text-pink-200 transition-colors duration-300">
                                 <span class="absolute inset-0"></span>
                                 Ženski parfemi
                             </a>

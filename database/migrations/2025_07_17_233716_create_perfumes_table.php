@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('perfumes', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('gender', 10);
+            $table->string('inspired_by')->nullable();
             $table->decimal('base_price', 8, 2);
             $table->decimal('price', 8, 2);
             $table->unsignedTinyInteger('discount_percentage')->nullable();

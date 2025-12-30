@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\PerfumeGender;
 
 class Perfume extends Model
 {
@@ -20,6 +21,7 @@ class Perfume extends Model
     // Cast 'accords' JSON column to array automatically
     protected $casts = [
         'accords' => 'array',
+        'gender' => PerfumeGender::class,
     ];
 
     public function __toString()
