@@ -18,4 +18,13 @@ enum OrderStatus: string
             self::CANCELLED => 'Cancelled',
         };
     }
+    public function translatedLabel(): string
+    {
+        return match ($this) {
+            self::PENDING => 'Na čekanju',
+            self::TAKEN => 'Preuzeto',
+            self::COMPLETED => 'Završeno',
+            self::CANCELLED => 'Otkazano',
+        };
+    }
 }

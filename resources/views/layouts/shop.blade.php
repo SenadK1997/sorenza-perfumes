@@ -10,9 +10,7 @@
     @vite('resources/css/app.css')
     @stack('scripts')
 </head>
-<body 
-    {{-- class="!bg-gradient-to-b !from-white !to-black text-gray-800 font-sans" --}}
-    >
+<body>
 
     <!-- Header -->
     <header class="bg-white shadow">
@@ -37,12 +35,12 @@
     </header>
 
     <!-- Main content -->
-    <main class="py-12">
+    <main class="pt-12">
         {{ $slot }}
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-300 py-6 mt-12">
+    <footer class="bg-gray-900 text-gray-300 py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             &copy; {{ date('Y') }} Sorenza. All rights reserved.
         </div>

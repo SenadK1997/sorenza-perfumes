@@ -7,7 +7,7 @@
     <form wire:submit="login" class="flex flex-col gap-6">
         <!-- Email Address -->
         <flux:input
-            wire:model="email"
+            wire:model.live="email"
             :label="__('Email address')"
             type="email"
             required
@@ -19,7 +19,7 @@
         <!-- Password -->
         <div class="relative">
             <flux:input
-                wire:model="password"
+                wire:model.live="password"
                 :label="__('Password')"
                 type="password"
                 required
@@ -36,7 +36,7 @@
         </div>
 
         <!-- Remember Me -->
-        <flux:checkbox wire:model="remember" :label="__('Remember me')" />
+        <flux:checkbox wire:model.live="remember" :label="__('Remember me')" />
 
         <div class="flex items-center justify-end">
             <flux:button variant="primary" type="submit" class="w-full">{{ __('Log in') }}</flux:button>

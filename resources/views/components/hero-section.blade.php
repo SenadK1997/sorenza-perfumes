@@ -25,7 +25,7 @@
             <!-- Main title with elegant animation -->
             <h1 class="text-balance text-6xl font-light tracking-[0.15em] text-gray-900 sm:text-8xl opacity-0 animate-[fadeInUp_1.2s_ease-out_0.3s_forwards]">
                 <span class="bg-gradient-to-r from-gray-900 via-amber-800 to-gray-900 bg-clip-text text-transparent">
-                    Sorenza
+                    Sorénza
                 </span>
             </h1>
 
@@ -48,12 +48,12 @@
             <!-- CTA Button with luxury styling -->
             <div class="mt-12 flex items-center justify-center gap-x-6 opacity-0 animate-[fadeInUp_1s_ease-out_1.2s_forwards]">
                 <a href="/shop"
-                   class="group relative inline-flex items-center gap-2 rounded-none border border-amber-800 bg-amber-900 px-8 py-4 text-sm font-medium uppercase tracking-[0.2em] text-white shadow-lg transition-all duration-500 hover:bg-transparent hover:text-amber-900 hover:shadow-2xl hover:shadow-amber-200/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 overflow-hidden">
+                   class="group relative inline-flex items-center gap-2 rounded-none border border-amber-800 bg-[#9E7D65] px-8 py-4 text-sm font-medium uppercase tracking-[0.2em] text-white shadow-lg transition-all duration-500 hover:bg-[#DED2C8] hover:text-amber-900 hover:shadow-2xl hover:shadow-amber-200/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 overflow-hidden">
                     <span class="relative z-10">Istraži Kolekciju</span>
                     <svg class="relative z-10 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
-                    <div class="absolute inset-0 -z-0 bg-gradient-to-r from-amber-100 to-amber-50 opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+                    {{-- <div class="absolute inset-0 -z-0 !hover:bg-[#DED2C8] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div> --}}
                 </a>
             </div>
 

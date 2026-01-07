@@ -15,7 +15,7 @@
                     <img
                         :src="mainImage"
                         alt="{{ $perfume->name }}"
-                        class="h-full w-full object-contain transition-all duration-300"
+                        class="h-full w-full object-cover transition-all duration-300"
                     >
                 </div>
 
@@ -28,7 +28,7 @@
                     >
                         <img
                             src="{{ asset('storage/' . $perfume->main_image) }}"
-                            class="h-full w-full object-contain"
+                            class="h-full w-full object-cover"
                         >
                     </button>
 
@@ -39,7 +39,7 @@
                         >
                             <img
                                 src="{{ asset('storage/' . $perfume->secondary_image) }}"
-                                class="h-full w-full object-contain"
+                                class="h-full w-full object-cover"
                             >
                         </button>
                     @endif
@@ -74,16 +74,27 @@
                                 $name = $accordKeys[$index] ?? 'Unknown';
                                 $percentage = $accord['percentage'] ?? 0;
                                 $color = $accordConfig[$name] ?? '#6366F1';
+
+                                // LUMINANCE CALCULATION
+                                $hex = str_replace('#', '', $color);
+                                $r = hexdec(substr($hex, 0, 2));
+                                $g = hexdec(substr($hex, 2, 2));
+                                $b = hexdec(substr($hex, 4, 2));
+                                
+                                // This formula calculates how 'bright' a color is to the human eye
+                                $brightness = ($r * 299 + $g * 587 + $b * 114) / 1000;
+                                
+                                // If brightness is high (>180), use black text; otherwise use white.
+                                $textColor = ($brightness > 180) ? 'text-gray-900' : 'text-white';
                             @endphp
 
                             <div class="flex items-center gap-2">
-                                {{-- <span class="text-sm font-medium text-gray-700 w-20">{{ $name }}</span> --}}
                                 <div 
-                                    class="h-6 rounded-md text-white text-xs flex items-center justify-center transition-all duration-500"
+                                    class="h-6 rounded-md {{ $textColor }} text-xs font-bold flex items-center justify-center transition-all duration-500 shadow-sm"
                                     style="width: {{ $percentage }}%; background-color: {{ $color }};"
                                     title="{{ $name }}"
                                 >
-                                {{ $name }}
+                                    <span class="px-2 truncate">{{ $name }}</span>
                                 </div>
                             </div>
                         @endforeach
@@ -99,10 +110,24 @@
 
                 <!-- CTA -->
                 <button
-                    type="button"
-                    class="ml-2 px-5 py-2.5 bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 text-white font-medium rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 text-sm"
+                    wire:click="addToCart({{ $perfume->id }})"
+                    class="
+                        cursor-pointer px-5 py-2.5
+                        bg-gradient-to-r from-[#BBA14F] to-[#DBC584]
+                        text-white font-medium rounded-full shadow-md
+                        transition-all duration-300 text-sm
+
+                        hover:bg-none
+                        hover:border-1
+                        hover:border-black
+                        hover:bg-white
+                        hover:text-[#BBA14F]
+                        {{-- hover:shadow-lg --}}
+                        {{-- hover:scale-105 --}}
+                    "
                 >
                     Dodaj u korpu
+                    <span class="sr-only">, {{ $perfume->name }}</span>
                 </button>
 
                 <p class="mt-4 text-sm text-gray-500 text-left">

@@ -8,6 +8,10 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ShopController;
 use App\Livewire\ShopLivewire;
 use App\Livewire\ProductShow;
+use App\Livewire\CheckoutLivewire;
+use App\Livewire\OrderSuccess;
+use App\Livewire\OrderDetailLivewire;
+use App\Livewire\TrackOrder;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -19,6 +23,14 @@ Route::get('/shop', ShopLivewire::class)->name('shop');
 Route::get('/product/{perfume}', ProductShow::class)
     ->name('products.show');
 
+Route::get('/cart', \App\Livewire\CartPage::class);
+Route::get('/checkout', CheckoutLivewire::class)->name('checkout');
+
+Route::get('/order-success/{id}', OrderSuccess::class)->name('order.success');
+
+Route::get('/track/{pretty_id}', OrderDetailLivewire::class)->name('order.track');
+
+Route::get('/track-order', TrackOrder::class)->name('track.orders');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');

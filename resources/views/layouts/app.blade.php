@@ -64,6 +64,8 @@
     <link rel="alternate" hreflang="hr" href="{{ url()->current() }}">
     <link rel="alternate" hreflang="sr" href="{{ url()->current() }}">
     <link rel="alternate" hreflang="x-default" href="{{ url()->current() }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}">
 
     {{-- Structured Data / Schema.org for Local Business --}}
     <script type="application/ld+json">
@@ -255,57 +257,57 @@
     <header class="bg-gradient-to-r from-white/95 via-white/90 to-white/95 backdrop-blur-xl shadow-lg sticky top-0 z-50 border-b border-gray-200/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-4">
-                <!-- Logo -->
-                <a href="/" class="group flex items-center space-x-2" title="Sorenza - Luksuzni Parfemi">
-                    <div class="relative">
-                        <div class="absolute inset-0 bg-gradient-to-r from-amber-400 to-rose-500 rounded-full blur-md opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
-                        <div class="relative w-10 h-10 bg-gradient-to-br from-amber-500 via-rose-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
-                            <span class="text-white font-serif text-lg font-bold">S</span>
-                        </div>
-                    </div>
-                    <span class="text-2xl font-serif font-bold bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent tracking-wide">Sorenza</span>
+                <a href="/" class="text-2xl font-bold text-[#DAAA57] flex justify-center items-center gap-x-2">
+                    <img 
+                        src="{{ asset('storage/images/logosorenza.png') }}" 
+                        alt="logo"
+                        class="h-[45px] w-[35px] p-0"
+                    >
+                    <p class="text-xl mt-2 font-serif">Sorénza</p>
                 </a>
-
-                <!-- Desktop Navigation -->
-                <nav class="hidden md:flex items-center space-x-1" role="navigation" aria-label="Glavna navigacija">
-                    <a href="/" class="relative px-4 py-2 text-gray-700 font-medium group" title="Početna stranica">
-                        <span class="relative z-10 group-hover:text-gray-900 transition-colors duration-300">Početna</span>
-                        <span class="absolute inset-x-2 bottom-1 h-0.5 bg-gradient-to-r from-amber-400 to-rose-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-full"></span>
-                    </a>
-                    <a href="/shop" class="relative px-4 py-2 text-gray-700 font-medium group" title="Kupite parfeme online">
-                        <span class="relative z-10 group-hover:text-gray-900 transition-colors duration-300">Parfemi</span>
-                        <span class="absolute inset-x-2 bottom-1 h-0.5 bg-gradient-to-r from-amber-400 to-rose-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-full"></span>
-                    </a>
-                    {{-- <a href="/about" class="relative px-4 py-2 text-gray-700 font-medium group" title="O nama">
-                        <span class="relative z-10 group-hover:text-gray-900 transition-colors duration-300">O Nama</span>
-                        <span class="absolute inset-x-2 bottom-1 h-0.5 bg-gradient-to-r from-amber-400 to-rose-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-full"></span>
-                    </a>
-                    <a href="/contact" class="relative px-4 py-2 text-gray-700 font-medium group" title="Kontaktirajte nas">
-                        <span class="relative z-10 group-hover:text-gray-900 transition-colors duration-300">Kontakt</span>
-                        <span class="absolute inset-x-2 bottom-1 h-0.5 bg-gradient-to-r from-amber-400 to-rose-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-full"></span>
-                    </a> --}}
-                    <div class="w-px h-6 bg-gray-300 mx-2"></div>
-                    <a href="/shop" class="ml-2 px-5 py-2.5 bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 text-white font-medium rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 text-sm" title="Pogledajte našu kolekciju parfema">
-                        Pogledaj Kolekciju
-                    </a>
-                </nav>
-
-                <!-- Mobile Menu Button -->
-                <button type="button" class="md:hidden relative p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" aria-label="Otvori meni" aria-expanded="false">
-                    <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
+    
+                <div class="flex items-center gap-x-2 sm:gap-x-4">
+                    
+                    <livewire:cart-counter />
+    
+                    <nav class="hidden md:flex items-center space-x-1" role="navigation" aria-label="Glavna navigacija">
+                        <a href="{{ route('track.orders') }}" class="text-sm font-medium text-gray-600 hover:text-[#9D683D] px-4 transition-colors">
+                            Prati narudžbu
+                        </a>
+                        <div class="w-px h-6 bg-gray-300 mx-2"></div>
+                        <a href="/shop" class="ml-2 px-5 py-2.5 bg-gradient-to-r from-[#3D2206] to-[#9D683D] text-white font-medium rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 text-sm" title="Pogledajte našu kolekciju parfema">
+                            Pogledaj Kolekciju
+                        </a>
+                    </nav>
+    
+                    <button type="button" class="md:hidden relative p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" aria-label="Otvori meni" aria-expanded="false">
+                        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
-
-            <!-- Mobile Menu -->
+    
             <div id="mobile-menu" class="hidden md:hidden pb-4">
                 <nav class="flex flex-col space-y-1 pt-2 border-t border-gray-200" role="navigation" aria-label="Mobilna navigacija">
-                    <a href="/" class="px-4 py-3 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200 font-medium">Početna</a>
-                    <a href="/shop" class="px-4 py-3 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200 font-medium">Parfemi</a>
-                    {{-- <a href="/about" class="px-4 py-3 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200 font-medium">O Nama</a> --}}
-                    {{-- <a href="/contact" class="px-4 py-3 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200 font-medium">Kontakt</a> --}}
-                    <a href="/shop" class="mx-4 mt-2 px-5 py-3 bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 text-white font-medium rounded-full shadow-md text-center text-sm">
+                    <a href="/cart" class="mx-4 flex justify-between items-center px-5 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg transition-colors">
+                        <span class="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.112 11.213a.45.45 0 0 1-.447.494H4.232a.45.45 0 0 1-.447-.494l1.112-11.213a4.5 4.5 0 0 1 4.474-3.998h4.402a4.5 4.5 0 0 1 4.474 3.998Z" />
+                            </svg>
+                            Korpa
+                        </span>
+                        <span class="bg-[#DAAA57] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">
+                            {{ count(session()->get('cart', [])) }}
+                        </span>
+                    </a>
+                    <a href="{{ route('track.orders') }}" class="mx-4 flex items-center px-5 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg transition-colors">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path></svg>
+                            Prati narudžbu
+                        </span>
+                    </a>
+                    <a href="/shop" class="mx-4 mt-2 px-5 py-3 bg-gradient-to-r from-[#3D2206] to-[#9D683D] text-white font-medium rounded-full shadow-md text-center text-sm">
                         Pogledaj Kolekciju
                     </a>
                 </nav>
@@ -316,6 +318,10 @@
     <!-- Main content -->
     <main role="main">
         @yield('content')
+
+        @isset($slot)
+        {{ $slot }}
+        @endisset
     </main>
 
     <!-- Footer -->
@@ -326,7 +332,7 @@
                 <div>
                     <h3 class="text-white font-semibold text-lg mb-4">Sorenza Parfemi</h3>
                     <p class="text-gray-400 text-sm leading-relaxed">
-                        Vaša premium online parfumerija za luksuzne parfeme i mirise. Nudimo širok izbor originalnih muških i ženskih parfema, toaletnih voda i eau de parfum sa brzom dostavom u BiH, Hrvatskoj i Srbiji. Kupite parfem online po povoljnim cijenama.
+                        Vaša premium online parfumerija za luksuzne parfeme i mirise. Nudimo širok izbor muških, ženskih i unisex parfema sa brzom dostavom u BiH. Kupite parfem online po povoljnim cijenama.
                     </p>
                 </div>
 
@@ -335,11 +341,9 @@
                     <h3 class="text-white font-semibold text-lg mb-4">Kategorije Parfema</h3>
                     <ul class="space-y-2 text-sm">
                         <li><a href="/shop" class="text-gray-400 hover:text-white transition-colors" title="Svi parfemi - Online parfumerija">Svi Parfemi</a></li>
-                        <li><a href="/shop?category=muski" class="text-gray-400 hover:text-white transition-colors" title="Muški parfemi - Luksuzni mirisi za njega">Muški Parfemi</a></li>
-                        <li><a href="/shop?category=zenski" class="text-gray-400 hover:text-white transition-colors" title="Ženski parfemi - Elegantni mirisi za nju">Ženski Parfemi</a></li>
-                        <li><a href="/shop?category=unisex" class="text-gray-400 hover:text-white transition-colors" title="Unisex parfemi - Univerzalni mirisi">Unisex Parfemi</a></li>
-                        <li><a href="/shop?type=edp" class="text-gray-400 hover:text-white transition-colors" title="Eau de Parfum - Intenzivni mirisi">Eau de Parfum</a></li>
-                        <li><a href="/shop?type=edt" class="text-gray-400 hover:text-white transition-colors" title="Eau de Toilette - Svježi mirisi">Eau de Toilette</a></li>
+                        <li><a href="{{ route('shop', ['gender' => 'male']) }}" class="text-gray-400 hover:text-white transition-colors" title="Muški parfemi - Luksuzni mirisi za njega">Muški Parfemi</a></li>
+                        <li><a href="{{ route('shop', ['gender' => 'female']) }}" class="text-gray-400 hover:text-white transition-colors" title="Ženski parfemi - Elegantni mirisi za nju">Ženski Parfemi</a></li>
+                        <li><a href="{{ route('shop', ['gender' => 'unisex']) }}" class="text-gray-400 hover:text-white transition-colors" title="Unisex parfemi - Univerzalni mirisi">Unisex Parfemi</a></li>
                     </ul>
                 </div>
 
@@ -347,10 +351,10 @@
                 <div>
                     <h3 class="text-white font-semibold text-lg mb-4">Dostava i Kontakt</h3>
                     <ul class="space-y-2 text-sm text-gray-400">
-                        <li>🚚 Dostava: BiH, Hrvatska, Srbija</li>
+                        <li>🚚 Dostava: BiH</li>
                         <li>📦 Brza i sigurna dostava parfema</li>
-                        <li>💳 Sigurno online plaćanje</li>
-                        <li>📞 Podrška: Pon-Pet 9-17h</li>
+                        {{-- <li>💳 Sigurno online plaćanje</li> --}}
+                        {{-- <li>📞 Podrška: Pon-Pet 9-17h</li> --}}
                         <li>✉️ Kontaktirajte nas za pomoć</li>
                     </ul>
                 </div>
@@ -359,12 +363,12 @@
             {{-- SEO Footer Text --}}
             <div class="border-t border-gray-800 pt-6 mb-6">
                 <p class="text-xs text-gray-600 leading-relaxed text-center">
-                    Sorenza parfumerija - Online prodavnica originalnih parfema | Muški parfemi | Ženski parfemi | Unisex mirisi | Eau de Parfum | Eau de Toilette | Toaletna voda | Parfemi Sarajevo | Parfemi Zagreb | Parfemi Beograd | Luksuzni parfemi online | Kupovina parfema | Dostava parfema BiH, Hrvatska, Srbija
+                    Sorenza parfumerija - Online prodavnica parfema | Muški parfemi | Ženski parfemi | Unisex parfami | Parfemi Sarajevo | Luksuzni parfemi online | Kupovina parfema | Dostava parfema BiH
                 </p>
             </div>
 
             <div class="border-t border-gray-800 pt-8 text-center">
-                <p class="text-sm text-gray-500">&copy; {{ date('Y') }} Sorenza Parfemi. Sva prava zadržana. | Online parfumerija - Luksuzni parfemi BiH, Hrvatska, Srbija</p>
+                <p class="text-sm text-gray-500">&copy; {{ date('Y') }} Sorenza Parfemi. Sva prava zadržana. | Online parfumerija - Luksuzni parfemi BiH</p>
             </div>
         </div>
     </footer>

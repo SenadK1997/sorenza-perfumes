@@ -65,7 +65,7 @@
                     <div class="transform transition-all duration-500 group-hover:translate-y-0 translate-y-2">
                         <p aria-hidden="true" class="text-sm text-white/80 font-light tracking-wider uppercase mb-2 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100">Pogledaj kolekciju</p>
                         <h3 class="text-2xl font-bold text-white mb-3">
-                            <a href="#" class="hover:text-blue-200 transition-colors duration-300">
+                            <a href="{{ route('shop', ['gender' => 'male']) }}" class="hover:text-blue-200 transition-colors duration-300">
                                 <span class="absolute inset-0"></span>
                                 Muški parfemi
                             </a>
@@ -97,7 +97,7 @@
                     <div class="transform transition-all duration-500 group-hover:translate-y-0 translate-y-2">
                         <p aria-hidden="true" class="text-sm text-white/80 font-light tracking-wider uppercase mb-2 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100">Pogledaj kolekciju</p>
                         <h3 class="text-2xl font-bold text-white mb-3">
-                            <a href="#" class="hover:text-amber-200 transition-colors duration-300">
+                            <a href="{{ route('shop', ['gender' => 'unisex']) }}" class="hover:text-amber-200 transition-colors duration-300">
                                 <span class="absolute inset-0"></span>
                                 Unisex parfemi
                             </a>

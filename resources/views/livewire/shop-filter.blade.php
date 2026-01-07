@@ -23,15 +23,15 @@
                             <legend class="text-sm font-medium text-gray-900">Spol</legend>
                             <div class="mt-2 space-y-2">
                                 <div class="flex items-center gap-2">
-                                    <input type="checkbox" value="male" wire:model="gender" id="gender-male-mobile" class="h-5 w-5 rounded border-gray-300 checked:border-indigo-600 checked:bg-indigo-600">
+                                    <input type="checkbox" value="male" wire:model.live="gender" id="gender-male-mobile" class="h-5 w-5 rounded border-gray-300 checked:border-indigo-600 checked:bg-indigo-600">
                                     <label for="gender-male-mobile" class="text-sm text-gray-500">Muški</label>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <input type="checkbox" value="female" wire:model="gender" id="gender-female-mobile" class="h-5 w-5 rounded border-gray-300 checked:border-indigo-600 checked:bg-indigo-600">
+                                    <input type="checkbox" value="female" wire:model.live="gender" id="gender-female-mobile" class="h-5 w-5 rounded border-gray-300 checked:border-indigo-600 checked:bg-indigo-600">
                                     <label for="gender-female-mobile" class="text-sm text-gray-500">Ženski</label>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <input type="checkbox" value="unisex" wire:model="gender" id="gender-unisex-mobile" class="h-5 w-5 rounded border-gray-300 checked:border-indigo-600 checked:bg-indigo-600">
+                                    <input type="checkbox" value="unisex" wire:model.live="gender" id="gender-unisex-mobile" class="h-5 w-5 rounded border-gray-300 checked:border-indigo-600 checked:bg-indigo-600">
                                     <label for="gender-unisex-mobile" class="text-sm text-gray-500">Unisex</label>
                                 </div>
                             </div>
@@ -43,7 +43,7 @@
                             <div class="mt-2 space-y-2">
                                 @foreach([60, 80, 100, 120, 150] as $p)
                                     <div class="flex items-center gap-2">
-                                        <input type="checkbox" value="{{ $p }}" wire:model="price" id="price-{{ $p }}-mobile" class="h-5 w-5 rounded border-gray-300 checked:border-indigo-600 checked:bg-indigo-600">
+                                        <input type="checkbox" value="{{ $p }}" wire:model.live="price" id="price-{{ $p }}-mobile" class="h-5 w-5 rounded border-gray-300 checked:border-indigo-600 checked:bg-indigo-600">
                                         <label for="price-{{ $p }}-mobile" class="text-sm text-gray-500">{{ $p }}</label>
                                     </div>
                                 @endforeach
@@ -65,7 +65,7 @@
                     <div class="mt-4 space-y-3">
                         @foreach(['male' => 'Muški', 'female' => 'Ženski', 'unisex' => 'Unisex'] as $key => $label)
                             <div class="flex items-center gap-2">
-                                <input type="checkbox" value="{{ $key }}" wire:model="gender" id="gender-{{ $key }}" class="h-5 w-5 rounded border-gray-300 checked:border-indigo-600 checked:bg-indigo-600">
+                                <input type="checkbox" value="{{ $key }}" wire:model.live="gender" id="gender-{{ $key }}" class="h-5 w-5 rounded border-gray-300 checked:border-indigo-600 checked:bg-indigo-600">
                                 <label for="gender-{{ $key }}" class="text-sm text-gray-500">{{ $label }}</label>
                             </div>
                         @endforeach
@@ -78,7 +78,7 @@
                     <div class="mt-4 space-y-3">
                         @foreach([60, 80, 100, 120, 150] as $p)
                             <div class="flex items-center gap-2">
-                                <input type="checkbox" value="{{ $p }}" wire:model="price" id="price-{{ $p }}" class="h-5 w-5 rounded border-gray-300 checked:border-indigo-600 checked:bg-indigo-600">
+                                <input type="checkbox" value="{{ $p }}" wire:model.live="price" id="price-{{ $p }}" class="h-5 w-5 rounded border-gray-300 checked:border-indigo-600 checked:bg-indigo-600">
                                 <label for="price-{{ $p }}" class="text-sm text-gray-500">{{ $p }}</label>
                             </div>
                         @endforeach
