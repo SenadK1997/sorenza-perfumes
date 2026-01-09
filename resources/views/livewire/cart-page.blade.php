@@ -70,7 +70,6 @@
 
             <section aria-labelledby="summary-heading" class="mt-16 rounded-lg bg-gray-50 px-4 py-6 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8">
                 <h2 id="summary-heading" class="text-lg font-medium text-gray-900">Sažetak narudžbe</h2>
-
                 @if($subtotal > 0 && $subtotal < 120)
                     <div class="mt-4 p-4 bg-indigo-50 rounded-xl border border-indigo-100 mb-6">
                         <p class="text-sm text-indigo-700">
@@ -88,12 +87,39 @@
                         </p>
                     </div>
                 @endif
-
+                <div class="mt-6 mb-6">
+                    <label for="coupon" class="text-sm font-medium text-gray-700">Imate kupon?</label>
+                    
+                    @if(session()->has('coupon'))
+                        <div class="mt-2 flex items-center justify-between bg-green-50 border border-green-200 px-4 py-2 rounded-lg">
+                            <span class="text-sm text-green-700 font-medium italic">Kupon: {{ session('coupon')['code'] }}</span>
+                            <button wire:click="removeCoupon" class="text-xs text-red-500 hover:underline">Ukloni</button>
+                        </div>
+                    @else
+                        <div class="mt-2 flex gap-2">
+                            <input type="text" wire:model="couponCode" placeholder="Unesite kod" 
+                                class="block w-full px-2 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            <button wire:click="applyCoupon" 
+                                class="cursor-pointer rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 transition">
+                                Primijeni
+                            </button>
+                        </div>
+                        @error('couponCode') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    @endif
+                </div>
                 <dl class="space-y-4">
                     <div class="flex items-center justify-between">
                         <dt class="text-sm text-gray-600">Cijena artikala</dt>
                         <dd class="text-sm font-medium text-gray-900">{{ number_format($subtotal, 2) }} KM</dd>
                     </div>
+
+                    @if($discount > 0)
+                        <div class="flex items-center justify-between text-green-600">
+                            <dt class="text-sm">Popust</dt>
+                            <dd class="text-sm font-medium">- {{ number_format($discount, 2) }} KM</dd>
+                        </div>
+                    @endif
+
                     <div class="flex items-center justify-between border-t border-gray-200 pt-4">
                         <dt class="flex items-center text-sm text-gray-600">
                             <span>Dostava</span>

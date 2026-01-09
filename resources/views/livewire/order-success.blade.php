@@ -36,21 +36,27 @@
                         </address>
                     </div>
 
-                    <div>
-                        <h3 class="text-sm font-bold text-gray-900 uppercase">Sažetak plaćanja</h3>
-                        <div class="mt-3 space-y-2">
-                            <div class="flex justify-between text-sm text-gray-600">
-                                <span>Iznos narudžbe:</span>
-                                <span>{{ number_format($order->amount - ($order->amount >= 120 ? 0 : 10), 2) }} KM</span>
+                    <div class="mt-3 space-y-2">
+                        <div class="flex justify-between text-sm text-gray-600">
+                            <span>Iznos artikala:</span>
+                            <span>{{ number_format($order->subtotal, 2) }} KM</span>
+                        </div>
+                    
+                        @if($order->discount_amount > 0)
+                            <div class="flex justify-between text-sm text-green-600">
+                                <span>Popust ({{ $order->coupon_code }}):</span>
+                                <span>- {{ number_format($order->discount_amount, 2) }} KM</span>
                             </div>
-                            <div class="flex justify-between text-sm text-gray-600">
-                                <span>Dostava:</span>
-                                <span>{{ $order->amount >= 120 ? 'Besplatna' : '10.00 KM' }}</span>
-                            </div>
-                            <div class="flex justify-between text-base font-bold text-gray-900 border-t border-gray-200 pt-2 mt-2">
-                                <span>Ukupno za platiti:</span>
-                                <span>{{ number_format($order->amount, 2) }} KM</span>
-                            </div>
+                        @endif
+                    
+                        <div class="flex justify-between text-sm text-gray-600">
+                            <span>Dostava:</span>
+                            <span>{{ $order->shipping_fee == 0 ? 'Besplatna' : '10.00 KM' }}</span>
+                        </div>
+                    
+                        <div class="flex justify-between text-base font-bold text-gray-900 border-t pt-2 mt-2">
+                            <span>Ukupno za platiti:</span>
+                            <span class="text-indigo-600">{{ number_format($order->amount, 2) }} KM</span>
                         </div>
                     </div>
                 </div>

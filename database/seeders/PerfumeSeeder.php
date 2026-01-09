@@ -307,7 +307,7 @@ class PerfumeSeeder extends Seeder
                     ['name' => '13', 'percentage' => 55],
                     ['name' => '27', 'percentage' => 45],
                     ['name' => '10', 'percentage' => 38],
-                    ['name' => '3', 'percentage' => 47],
+                    ['name' => '3', 'percentage' => 38],
                     ['name' => '0', 'percentage' => 38],
                     ['name' => '12', 'percentage' => 37],
                     ['name' => '5', 'percentage' => 36],

@@ -14,7 +14,14 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('pretty_id')->unique()->index();
-            $table->decimal('amount', 10, 2);
+            
+            // THE MONEY COLUMNS (Broken down for accuracy)
+            $table->decimal('subtotal', 10, 2); // Price of perfumes BEFORE discount and shipping
+            $table->decimal('discount_amount', 10, 2)->default(0); // Money saved by coupon
+            $table->decimal('shipping_fee', 10, 2)->default(0); // Exactly 0.00 or 10.00
+            $table->decimal('amount', 10, 2); // Final amount paid (Subtotal - Discount + Shipping)
+            
+            $table->string('coupon_code')->nullable();
             $table->string('full_name');
             $table->string('phone');
             $table->string('address_line_1');
@@ -23,7 +30,6 @@ return new class extends Migration
             $table->string('zipcode');
             $table->string('email')->nullable();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('coupon')->nullable();
             $table->string('status')->default('pending');
             $table->text('cancellation_reason')->nullable();
             $table->string('canton');

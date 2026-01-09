@@ -10,21 +10,27 @@ class TrackOrder extends Component
 {
     #[Layout('layouts.app')]
 
-    public $step = 1;
-    public $email;
-    public $orders = [];
+    public $pretty_id;
 
-    public function findOrders()
+    public function findOrder()
     {
+        // 1. Basic validation
         $this->validate([
-            'email' => 'required|email'
+            'pretty_id' => 'required|string|min:4'
         ]);
 
-        $this->orders = Order::where('email', $this->email)
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // 2. Format the ID (e.g., in case they typed lowercase or omitted 'SOR-')
+        $searchId = strtoupper(trim($this->pretty_id));
 
-        $this->step = 2;
+        // 3. Check if it exists
+        $order = Order::where('pretty_id', $searchId)->first();
+
+        if ($order) {
+            return redirect()->route('order.track', $order->pretty_id);
+        }
+
+        // 4. If not found, add an error manually
+        $this->addError('pretty_id', 'Narudžba sa ovim brojem nije pronađena.');
     }
 
     public function render()

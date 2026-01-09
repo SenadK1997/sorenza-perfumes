@@ -92,16 +92,38 @@
                     </ul>
 
                     <div class="mt-6 border-t pt-4 space-y-2">
+                        {{-- Product Subtotal --}}
                         <div class="flex justify-between text-sm">
-                            <span>Cijena proizvoda</span>
-                            <span>{{ number_format($subtotal, 2) }} KM</span>
+                            <span class="text-gray-600">Cijena proizvoda</span>
+                            <span class="font-medium text-gray-900">{{ number_format($subtotal, 2) }} KM</span>
                         </div>
+                    
+                        {{-- Discount Row (Only shows if discount > 0) --}}
+                        @if($discount > 0)
+                            <div class="flex justify-between text-sm text-green-600 font-medium">
+                                <span class="flex items-center gap-2">
+                                    Popust 
+                                    @if($coupon_code) 
+                                        <span class="text-[10px] bg-green-100 px-2 py-0.5 rounded-full uppercase tracking-wider border border-green-200">
+                                            {{ $coupon_code }}
+                                        </span> 
+                                    @endif
+                                </span>
+                                <span>- {{ number_format($discount, 2) }} KM</span>
+                            </div>
+                        @endif
+                    
+                        {{-- Shipping Row --}}
                         <div class="flex justify-between text-sm">
-                            <span>Dostava</span>
-                            <span>{{ $shipping == 0 ? 'Besplatno' : number_format($shipping, 2) . ' KM' }}</span>
+                            <span class="text-gray-600">Dostava</span>
+                            <span class="font-medium {{ $shipping == 0 ? 'text-green-600' : 'text-gray-900' }}">
+                                {{ $shipping == 0 ? 'Besplatno' : number_format($shipping, 2) . ' KM' }}
+                            </span>
                         </div>
-                        <div class="flex justify-between text-xl font-bold border-t pt-4 mt-4">
-                            <span>Ukupno</span>
+                    
+                        {{-- Final Total --}}
+                        <div class="flex justify-between text-xl font-bold border-t border-gray-100 pt-4 mt-4">
+                            <span class="text-gray-900">Ukupno</span>
                             <span class="text-indigo-600">{{ number_format($total, 2) }} KM</span>
                         </div>
                     </div>

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use App\Enums\Canton;
 use App\Models\Perfume;
+use App\Models\Coupon;
 
 class CheckoutLivewire extends Component
 {
@@ -18,21 +19,18 @@ class CheckoutLivewire extends Component
     public $step = 1;
     public $email, $full_name, $phone, $address_line_1, $address_line_2, $city, $zipcode, $canton;
     public $items = [];
-    public $subtotal = 0, $shipping = 10, $total = 0;
+    public $subtotal = 0, $shipping = 10, $total = 0, $discount = 0, $coupon_code = null;
 
     public function mount()
     {
-        // 1. Get the raw cart from session (e.g., [id => quantity])
         $cart = session()->get('cart', []);
 
         if (empty($cart)) {
             return redirect()->to('/shop');
         }
 
-        // 2. Fetch the Perfume models from the database
         $perfumes = Perfume::whereIn('id', array_keys($cart))->get();
 
-        // 3. Map them into the $items array with the quantities
         $this->items = $perfumes->map(function ($perfume) use ($cart) {
             return [
                 'id' => $perfume->id,
@@ -43,27 +41,37 @@ class CheckoutLivewire extends Component
             ];
         })->toArray();
 
-        // 4. Calculate totals
+        // 1. Calculate Subtotal
         $this->subtotal = collect($this->items)->sum(fn($item) => $item['price'] * $item['quantity']);
+
+        // 2. Load Coupon from Session (Applied in CartPage)
+        if (session()->has('coupon')) {
+            $this->discount = session('coupon')['discount'];
+            $this->coupon_code = session('coupon')['code'];
+        }
+
+        // 3. Calculate Shipping and Total
         $this->shipping = ($this->subtotal >= 120) ? 0 : 10;
-        $this->total = $this->subtotal + $this->shipping;
+        
+        // Final total calculation
+        $this->total = ($this->subtotal - $this->discount) + $this->shipping;
     }
 
     public function checkEmail()
     {
         $this->validate(['email' => 'required|email']);
 
-        $customer = Customer::where('email', $this->email)->first();
+        // $customer = Customer::where('email', $this->email)->first();
 
-        if ($customer) {
-            $this->full_name = $customer->full_name;
-            $this->phone = $customer->phone;
-            $this->address_line_1 = $customer->address_line_1;
-            $this->address_line_2 = $customer->address_line_2;
-            $this->city = $customer->city;
-            $this->zipcode = $customer->zipcode;
-            $this->canton = $customer->canton;
-        }
+        // if ($customer) {
+        //     $this->full_name = $customer->full_name;
+        //     $this->phone = $customer->phone;
+        //     $this->address_line_1 = $customer->address_line_1;
+        //     $this->address_line_2 = $customer->address_line_2;
+        //     $this->city = $customer->city;
+        //     $this->zipcode = $customer->zipcode;
+        //     $this->canton = $customer->canton;
+        // }
         $this->step = 2;
     }
 
@@ -78,9 +86,8 @@ class CheckoutLivewire extends Component
             'canton' => 'required',
         ]);
         
-        // Capture the returned order from the transaction
         $order = DB::transaction(function () {
-            // 1. Create/Update Customer
+            // Update Customer
             Customer::updateOrCreate(
                 ['email' => $this->email],
                 [
@@ -92,22 +99,24 @@ class CheckoutLivewire extends Component
                     'canton' => $this->canton,
                 ]
             );
-
-            // 2. Create Order
+            // dd($this->total);
+            // Create Order with Coupon Data
             $newOrder = Order::create([
-                'pretty_id' => 'SOR-' . strtoupper(Str::random(8)), // Don't forget this!
-                'amount' => $this->total,
+                'subtotal' => $this->subtotal, // Price of perfumes
+                'discount_amount' => $this->discount, // KM value of discount
+                'shipping_fee' => $this->shipping, // 0 or 10
+                'amount' => ($this->subtotal - $this->discount) + $this->shipping, // Final Total
+                'coupon_code' => $this->coupon_code,
                 'full_name' => $this->full_name,
                 'phone' => $this->phone,
                 'address_line_1' => $this->address_line_1,
                 'city' => $this->city,
                 'zipcode' => $this->zipcode,
-                'email' => $this->email,
                 'canton' => $this->canton,
-                'status' => 'pending',
+                'email' => $this->email,
             ]);
 
-            // 3. Attach Perfumes
+            // Attach Items
             $pivotData = [];
             foreach ($this->items as $item) {
                 $pivotData[$item['id']] = [
@@ -117,13 +126,20 @@ class CheckoutLivewire extends Component
             }
             $newOrder->perfumes()->attach($pivotData);
 
-            // Return the order object so it can be used outside the closure
+            // Handle Coupon Usage Count
+            if ($this->coupon_code) {
+                $coupon = Coupon::where('code', $this->coupon_code)->first();
+                if ($coupon) {
+                    $coupon->increment('used_count');
+                }
+            }
+
             return $newOrder;
         });
 
-        session()->forget('cart');
+        // Clear everything
+        session()->forget(['cart', 'coupon']);
         
-        // Now $order is defined here!
         return redirect()->route('order.success', ['id' => $order->pretty_id]);
     }
 

@@ -68,10 +68,36 @@
                     </li>
                 @endforeach
             </ul>
-            <div class="bg-gray-50 px-6 py-6 border-t border-gray-200">
-                <div class="flex justify-between text-base font-bold text-gray-900">
+        
+            {{-- Summary Section --}}
+            <div class="bg-gray-50 px-6 py-6 border-t border-gray-200 space-y-3">
+                
+                {{-- Iznos Artikala (Subtotal) --}}
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>Iznos artikala:</span>
+                    <span>{{ number_format($order->subtotal, 2) }} KM</span>
+                </div>
+        
+                {{-- Popust (Shows only if there is a discount) --}}
+                @if($order->discount_amount > 0)
+                    <div class="flex justify-between text-sm text-green-600 font-medium">
+                        <span>Popust @if($order->coupon_code) ({{ $order->coupon_code }}) @endif:</span>
+                        <span>- {{ number_format($order->discount_amount, 2) }} KM</span>
+                    </div>
+                @endif
+        
+                {{-- Dostava --}}
+                <div class="flex justify-between text-sm text-gray-600 pb-2">
+                    <span>Dostava:</span>
+                    <span class="{{ $order->shipping_fee == 0 ? 'text-green-600 font-medium' : '' }}">
+                        {{ $order->shipping_fee == 0 ? 'Besplatna' : number_format($order->shipping_fee, 2) . ' KM' }}
+                    </span>
+                </div>
+        
+                {{-- Ukupno --}}
+                <div class="flex justify-between text-lg font-bold text-gray-900 border-t border-gray-200 pt-4">
                     <span>Ukupno za platiti</span>
-                    <span>{{ number_format($order->amount, 2) }} KM</span>
+                    <span class="text-indigo-600">{{ number_format($order->amount, 2) }} KM</span>
                 </div>
             </div>
         </div>
