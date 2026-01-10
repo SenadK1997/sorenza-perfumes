@@ -24,10 +24,10 @@
 
     {{-- Open Graph / Facebook --}}
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:url" content="https://sorénza.com/"> <meta property="og:title" content="Sorénza">
     <meta property="og:title" content="@yield('og_title', 'Sorenza Parfemi - Kupite Luksuzne Parfeme Online | BiH, HR, SRB')">
     <meta property="og:description" content="@yield('og_description', 'Otkrijte kolekciju luksuznih parfema u Sorenza online parfumeriji. Originalni brendovi, jedinstveni mirisi, povoljne cijene i brza dostava širom BiH, Hrvatske i Srbije.')">
-    <meta property="og:image" content="@yield('og_image', asset('images/sorenza-og.jpg'))">
+    <meta property="og:image" content="@yield('og_image', asset('favicon.png'))">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/jpeg">
@@ -39,9 +39,10 @@
 
     {{-- Twitter --}}
     <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://sorénza.com/">
     <meta name="twitter:title" content="@yield('twitter_title', 'Sorenza - Luksuzni Parfemi')">
     <meta name="twitter:description" content="@yield('twitter_description', 'Premium parfemi i mirisi. Kupujte online - brza dostava u BiH, Hrvatskoj i Srbiji.')">
-    <meta name="twitter:image" content="@yield('twitter_image', asset('images/sorenza-og.jpg'))">
+    <meta name="twitter:image" content="@yield('twitter_image', asset('favicon.png'))">
 
     {{-- Additional SEO Meta Tags --}}
     <meta name="rating" content="general">
@@ -64,8 +65,11 @@
     <link rel="alternate" hreflang="hr" href="{{ url()->current() }}">
     <link rel="alternate" hreflang="sr" href="{{ url()->current() }}">
     <link rel="alternate" hreflang="x-default" href="{{ url()->current() }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+    <link rel="canonical" href="https://sorénza.com/" />
 
     {{-- Structured Data / Schema.org for Local Business --}}
     <script type="application/ld+json">

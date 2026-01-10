@@ -65,7 +65,7 @@
     </div>
     
     <!-- Toggle button -->
-    <button class="lg:hidden inline-flex items-center p-2 mt-8 border rounded" onclick="toggleMobileFilters(true)">
+    <button class="lg:hidden inline-flex items-center px-4 py-2 mt-8 ml-4 border rounded" onclick="toggleMobileFilters(true)">
         Filteri
     </button>
   
