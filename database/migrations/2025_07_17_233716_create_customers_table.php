@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('email')->nullable()->unique();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('canton');
+            $table->json('interests')->nullable(); // Will store perfume IDs or names
+            $table->text('suggestions')->nullable();
         
             $table->timestamps();
         });

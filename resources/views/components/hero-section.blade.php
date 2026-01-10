@@ -13,7 +13,7 @@
         <div class="absolute top-1/2 right-1/3 w-2.5 h-2.5 bg-amber-100/20 rounded-full animate-[float_9s_ease-in-out_infinite_0.5s]"></div>
     </div>
 
-    <div class="mx-auto max-w-3xl py-28 sm:py-36 lg:py-44">
+    <div class="mx-auto max-w-3xl py-28 sm:py-18 lg:py-12">
         <div class="text-center">
             <!-- Decorative line above title -->
             <div class="flex items-center justify-center mb-8 opacity-0 animate-[fadeInDown_1s_ease-out_forwards]">

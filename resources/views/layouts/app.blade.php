@@ -323,6 +323,24 @@
         {{ $slot }}
         @endisset
     </main>
+        <div
+                x-data="{ show: false, message: '' }"
+                x-on:notify.window="show = true; message = $event.detail; setTimeout(() => show = false, 3000)"
+                x-show="show"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 transform translate-y-2"
+                x-transition:enter-end="opacity-100 transform translate-y-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fixed bottom-5 right-5 z-[100] bg-gray-900 text-white px-6 py-3 rounded-xl shadow-2xl border border-white/10 flex items-center gap-3"
+                style="display: none;"
+            >
+                <div class="bg-green-500 rounded-full p-1">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <span x-text="message" class="text-sm font-medium"></span>
+        </div>
 
     <!-- Footer -->
     <footer class="bg-gray-900 text-gray-300 py-12 mt-auto">

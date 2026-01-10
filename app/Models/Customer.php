@@ -24,6 +24,12 @@ class Customer extends Model
         'email',
         'user_id',
         'canton',
+        'interests',
+        'suggestions',
+    ];
+
+    protected $casts = [
+    'interests' => 'array', // Crucial for storing multiple items
     ];
 
     /**

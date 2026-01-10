@@ -24,32 +24,39 @@
             Prijavi se i otkrij mogućnosti saradnje s našim timom. Zajedno možemo stvoriti nešto izvanredno.
           </p>
 
-          <form class="mx-auto mt-12 flex max-w-lg flex-col sm:flex-row gap-4">
-            <label for="email-address" class="sr-only">Email address</label>
-            <div class="relative flex-auto group">
-              <input
-                id="email-address"
-                type="email"
-                name="email"
-                required
-                placeholder="Unesite vaš email"
-                autocomplete="email"
-                class="w-full rounded-xl bg-white/10 backdrop-blur-sm px-5 py-4 text-base text-white border border-white/20 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:bg-white/15 hover:border-white/30"
-              />
-              <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 opacity-0 group-focus-within:opacity-20 transition-opacity duration-300 -z-10 blur-xl"></div>
-            </div>
-            <button
-              type="submit"
-              class="group relative overflow-hidden rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-purple-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/40 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
-            >
-              <span class="relative z-10">Pošalji</span>
-              <div class="absolute inset-0 bg-gradient-to-r from-pink-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </button>
-          </form>
+          <div x-data="{ submitted: false }">
+            <template x-if="submitted">
+                <div class="mt-12 text-center p-6 bg-green-500/10 border border-green-500/20 rounded-xl backdrop-blur-sm animate-fade-in">
+                    <h3 class="text-xl font-bold text-white mb-2">Hvala na prijavi!</h3>
+                </div>
+            </template>
 
-          <p class="mt-6 text-center text-sm text-gray-400">
-            Pridružite se <span class="text-purple-300 font-medium">100+</span> partnera širom regije
-          </p>
+            <form 
+                x-show="!submitted" 
+                @submit.prevent="submitted = true"
+                class="mx-auto mt-12 flex max-w-lg flex-col sm:flex-row gap-4"
+            >
+                <label for="email-address" class="sr-only">Email address</label>
+                <div class="relative flex-auto group">
+                    <input
+                        id="email-address"
+                        type="email"
+                        required
+                        placeholder="Unesite vaš email"
+                        class="w-full rounded-xl bg-white/10 backdrop-blur-sm px-5 py-4 text-base text-white border border-white/20 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:bg-white/15 hover:border-white/30"
+                    />
+                    <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 opacity-0 group-focus-within:opacity-20 transition-opacity duration-300 -z-10 blur-xl"></div>
+                </div>
+                
+                <button
+                    type="submit"
+                    class="group relative overflow-hidden rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-purple-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/40 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+                >
+                    <span class="relative z-10">Pošalji</span>
+                    <div class="absolute inset-0 bg-gradient-to-r from-pink-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </button>
+            </form>
+        </div>
         </div>
 
         <!-- Floating particles effect -->
