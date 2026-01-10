@@ -35,7 +35,8 @@
     <meta property="og:locale" content="bs_BA">
     <meta property="og:locale:alternate" content="hr_HR">
     <meta property="og:locale:alternate" content="sr_RS">
-    <meta property="og:site_name" content="Sorenza Parfemi">
+    {{-- <meta property="og:site_name" content="Sorenza Parfemi"> --}}
+    <meta property="og:site_name" content="sorénza.com">
 
     {{-- Twitter --}}
     <meta name="twitter:card" content="summary_large_image">
@@ -65,6 +66,7 @@
     <link rel="alternate" hreflang="hr" href="{{ url()->current() }}">
     <link rel="alternate" hreflang="sr" href="{{ url()->current() }}">
     <link rel="alternate" hreflang="x-default" href="{{ url()->current() }}">
+    <link rel="icon" href="{{ asset('favicon-32x32.png') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
