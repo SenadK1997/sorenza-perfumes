@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Sorenza - Luksuzni Parfemi | Online Parfumerija BiH, Hrvatska, Srbija')</title>
+    <title>@yield('title', 'Sorenza - Luksuzni Parfemi | Online Parfumerija BiH')</title>
 
     {{-- Primary SEO Meta Tags --}}
-    <meta name="description" content="@yield('meta_description', 'Sorenza parfumerija - Kupite originalne luksuzne parfeme online. Širok izbor muških i ženskih parfema, toaletnih voda i mirisa poznatih svjetskih brendova. Brza dostava u Bosni i Hercegovini, Hrvatskoj i Srbiji. Povoljne cijene i akcije.')">
+    <meta name="description" content="@yield('meta_description', 'Sorenza parfumerija - Kupite originalne luksuzne parfeme online. Širok izbor muških i ženskih parfema, toaletnih voda i mirisa poznatih svjetskih brendova. Brza dostava u Bosni i Hercegovini. Povoljne cijene i akcije.')">
     <meta name="keywords" content="@yield('meta_keywords', 'parfemi, parfem, luksuzni parfemi, originalni parfemi, online parfumerija, kupovina parfema, parfemi online, mirisne note, toaletna voda, eau de parfum, eau de toilette, parfemi BiH, parfemi Sarajevo, parfemi Mostar, parfemi Banja Luka, parfemi Tuzla, parfemi Hrvatska, parfemi Zagreb, parfemi Split, parfemi Srbija, parfemi Beograd, parfemi Novi Sad, muški parfemi, ženski parfemi, unisex parfemi, brendirani parfemi, parfemi na akciji, povoljni parfemi, jeftini parfemi, ekskluzivni mirisi, arome, parfemska kolekcija, designer parfemi, niche parfemi, parfemi shop, prodaja parfema, naruči parfem, kupiti parfem online, best parfemi, popularni parfemi, novi parfemi 2024, parfemi cijena, parfem poklon, poklon set parfem, parfemi za nju, parfemi za njega, miris, mirisi, parfimeriјa, парфеми, парфем, мушки парфеми, женски парфеми')">
     <meta name="author" content="Sorenza">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
@@ -26,7 +26,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://sorénza.com/"> <meta property="og:title" content="Sorénza">
     <meta property="og:title" content="@yield('og_title', 'Sorenza Parfemi - Kupite Luksuzne Parfeme Online | BiH, HR, SRB')">
-    <meta property="og:description" content="@yield('og_description', 'Otkrijte kolekciju luksuznih parfema u Sorenza online parfumeriji. Originalni brendovi, jedinstveni mirisi, povoljne cijene i brza dostava širom BiH, Hrvatske i Srbije.')">
+    <meta property="og:description" content="@yield('og_description', 'Otkrijte kolekciju luksuznih parfema u Sorenza online parfumeriji. Originalni brendovi, jedinstveni mirisi, povoljne cijene i brza dostava širom BiH.')">
     <meta property="og:image" content="@yield('og_image', asset('favicon.png'))">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -41,7 +41,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://sorénza.com/">
     <meta name="twitter:title" content="@yield('twitter_title', 'Sorenza - Luksuzni Parfemi')">
-    <meta name="twitter:description" content="@yield('twitter_description', 'Premium parfemi i mirisi. Kupujte online - brza dostava u BiH, Hrvatskoj i Srbiji.')">
+    <meta name="twitter:description" content="@yield('twitter_description', 'Premium parfemi i mirisi. Kupujte online - brza dostava u BiH')">
     <meta name="twitter:image" content="@yield('twitter_image', asset('favicon.png'))">
 
     {{-- Additional SEO Meta Tags --}}
@@ -78,7 +78,7 @@
         "@@type": "Store",
         "name": "Sorenza Parfemi",
         "alternateName": ["Sorenza", "Sorenza Parfumerija", "Sorenza Online Shop"],
-        "description": "Online prodavnica luksuznih i originalnih parfema. Širok izbor muških, ženskih i unisex mirisa. Dostava u BiH, Hrvatskoj i Srbiji.",
+        "description": "Online prodavnica luksuznih i originalnih parfema. Širok izbor muških, ženskih i unisex mirisa. Dostava u BiH.",
         "url": "{{ url('/') }}",
         "logo": "{{ asset('images/logo.png') }}",
         "image": "{{ asset('images/sorenza-og.jpg') }}",
@@ -96,16 +96,6 @@
                 "name": "Bosnia and Herzegovina",
                 "alternateName": "Bosna i Hercegovina"
             },
-            {
-                "@@type": "Country",
-                "name": "Croatia",
-                "alternateName": "Hrvatska"
-            },
-            {
-                "@@type": "Country",
-                "name": "Serbia",
-                "alternateName": "Srbija"
-            }
         ],
         "hasOfferCatalog": {
             "@@type": "OfferCatalog",
@@ -232,10 +222,10 @@
             },
             {
                 "@@type": "Question",
-                "name": "Da li Sorenza dostavlja u Hrvatsku i Srbiju?",
+                "name": "Koje brendove parfema nudite?",
                 "acceptedAnswer": {
                     "@@type": "Answer",
-                    "text": "Da, Sorenza parfumerija dostavlja parfeme u Bosnu i Hercegovinu, Hrvatsku i Srbiju. Brza i sigurna dostava na vašu adresu."
+                    "text": "U Sorenza parfumeriji nudimo parfeme renomiranih svjetskih brendova kao što su Chanel, Dior, Versace, Armani i mnogi drugi."
                 }
             },
             {
