@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('coupons', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('code')->unique();
             
             // Type of discount: 'fixed' (e.g. 10 KM) or 'percent' (e.g. 10%)

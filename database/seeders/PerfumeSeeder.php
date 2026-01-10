@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Perfume;
 use Illuminate\Database\Seeder;
 use App\Enums\PerfumeGender;
+use Carbon\Carbon;
 
 class PerfumeSeeder extends Seeder
 {
@@ -54,6 +55,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '16', 'percentage' => 34],
                     ['name' => '17', 'percentage' => 33],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '03',
@@ -76,6 +79,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '5', 'percentage' => 34],
                     ['name' => '21', 'percentage' => 33],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '04',
@@ -98,6 +103,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '2', 'percentage' => 34],
                     ['name' => '21', 'percentage' => 33],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '05',
@@ -119,6 +126,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '24', 'percentage' => 35],
                     ['name' => '17', 'percentage' => 34],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '06',
@@ -141,6 +150,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '14', 'percentage' => 34],
                     ['name' => '11', 'percentage' => 33],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '07',
@@ -163,6 +174,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '26', 'percentage' => 34],
                     ['name' => '17', 'percentage' => 34],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '08',
@@ -185,6 +198,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '17', 'percentage' => 36],
                     ['name' => '28', 'percentage' => 36],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '09',
@@ -205,6 +220,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '3', 'percentage' => 36],
                     ['name' => '16', 'percentage' => 36],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '10',
@@ -227,6 +244,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '21', 'percentage' => 36],
                     ['name' => '10', 'percentage' => 36],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '11',
@@ -249,6 +268,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '1', 'percentage' => 35],
                     ['name' => '0', 'percentage' => 35],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '12',
@@ -271,6 +292,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '32', 'percentage' => 36],
                     ['name' => '14', 'percentage' => 35],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '13',
@@ -293,6 +316,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '24', 'percentage' => 35],
                     ['name' => '11', 'percentage' => 35],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '14',
@@ -314,6 +339,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '9', 'percentage' => 36],
                     ['name' => '21', 'percentage' => 36],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '15',
@@ -335,6 +362,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '36', 'percentage' => 36],
                     ['name' => '22', 'percentage' => 35],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '16',
@@ -372,6 +401,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '1', 'percentage' => 36],
                     ['name' => '2', 'percentage' => 36],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '18',
@@ -389,6 +420,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '21', 'percentage' => 37],
                     ['name' => '14', 'percentage' => 37],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '19',
@@ -411,6 +444,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '11', 'percentage' => 38],
                     ['name' => '39', 'percentage' => 36],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '20',
@@ -433,6 +468,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '23', 'percentage' => 35],
                     ['name' => '0', 'percentage' => 34],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '21',
@@ -453,6 +490,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '24', 'percentage' => 36],
                     ['name' => '23', 'percentage' => 35],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '22',
@@ -518,6 +557,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '23', 'percentage' => 36],
                     ['name' => '11', 'percentage' => 35],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '25',
@@ -579,6 +620,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '7', 'percentage' => 39],
                     ['name' => '1', 'percentage' => 38],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '28',
@@ -618,6 +661,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '38', 'percentage' => 37],
                     ['name' => '0', 'percentage' => 36],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '101',
@@ -640,6 +685,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '14', 'percentage' => 37],
                     ['name' => '8', 'percentage' => 36],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '102',
@@ -681,6 +728,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '14', 'percentage' => 38],
                     ['name' => '23', 'percentage' => 37],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '104',
@@ -702,6 +751,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '21', 'percentage' => 37],
                     ['name' => '11', 'percentage' => 37],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '105',
@@ -724,6 +775,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '14', 'percentage' => 37],
                     ['name' => '17', 'percentage' => 36],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '106',
@@ -787,6 +840,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '50', 'percentage' => 37],
                     ['name' => '0', 'percentage' => 36],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '109',
@@ -804,6 +859,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '23', 'percentage' => 41],
                     ['name' => '10', 'percentage' => 40],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
             [
                 'name' => '110',
@@ -846,6 +903,8 @@ class PerfumeSeeder extends Seeder
                     ['name' => '45', 'percentage' => 38],
                     ['name' => '23', 'percentage' => 38],
                 ],
+                'availability' => false,
+                'restock_date' => Carbon::create(2026, 2, 2, 0, 0, 0),
             ],
         ];
 

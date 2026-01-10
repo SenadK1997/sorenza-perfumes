@@ -19,6 +19,9 @@ class ShopLivewire extends Component
     #[Url(as: 'price', history: true, keep: false)]
     public $price = [];
 
+    #[Url(as: 'dostupno', history: true, keep: false)]
+    public bool $onlyAvailable = false;
+
     public ?Perfume $selectedPerfume = null;
     public bool $showModal = false;
 
@@ -71,12 +74,21 @@ class ShopLivewire extends Component
     {
         $query = Perfume::query();
 
-        // Use 'when' for cleaner filtering
         $query->when($this->gender, fn($q) => $q->whereIn('gender', $this->gender))
-              ->when($this->price, fn($q) => $q->whereIn('price', $this->price));
+              ->when($this->price, fn($q) => $q->whereIn('price', $this->price))
+              // Apply your smart scope if the toggle is active
+              ->when($this->onlyAvailable, fn($q) => $q->available());
+
+        // We check if any perfumes are currently "Coming Soon" or "Out of Stock"
+        // to decide whether to show the filter checkbox in the Blade.
+        $hasUnavailable = Perfume::where('availability', false)
+            ->where(function($q) {
+                $q->whereNull('restock_date')->orWhere('restock_date', '>', now());
+            })->exists();
 
         return view('livewire.shop-livewire', [
             'perfumes' => $query->paginate(12),
+            'showAvailabilityFilter' => $hasUnavailable,
         ]);
     }
 }

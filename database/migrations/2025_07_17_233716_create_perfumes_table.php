@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('tag')->nullable();
             $table->json('accords')->nullable();
             $table->boolean('availability')->default(true);
+            $table->date('restock_date')->nullable();
             $table->timestamps();
         });
         

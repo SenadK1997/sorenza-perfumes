@@ -19,6 +19,16 @@
     
         <!-- Filters -->
         <div class="p-4 space-y-4">
+            @if($showAvailabilityFilter)
+                <fieldset class="pt-4">
+                    <div class="mt-2">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" wire:model.live="onlyAvailable" id="only-available-mobile" class="h-5 w-5 rounded border-gray-300 text-indigo-600">
+                            <label for="only-available-mobile" class="text-sm text-gray-500">Prikaži dostupne</label>
+                        </div>
+                    </div>
+                </fieldset>
+            @endif
             <!-- Gender -->
             <fieldset>
             <legend class="text-sm font-medium text-gray-900">Spol</legend>
@@ -55,7 +65,7 @@
     </div>
     
     <!-- Toggle button -->
-    <button class="lg:hidden inline-flex items-center p-2 border rounded" onclick="toggleMobileFilters(true)">
+    <button class="lg:hidden inline-flex items-center p-2 mt-8 border rounded" onclick="toggleMobileFilters(true)">
         Filteri
     </button>
   
@@ -63,6 +73,16 @@
     <div class="mx-auto max-w-7xl px-4 py-4 lg:grid lg:grid-cols-4 lg:gap-x-8">
         <!-- Desktop filters -->
         <aside class="hidden lg:block space-y-6">
+            @if($showAvailabilityFilter)
+                <fieldset class="pt-6 border-t border-gray-100">
+                    <div class="mt-4 space-y-3">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" wire:model.live="onlyAvailable" id="only-available" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                            <label for="only-available" class="text-sm text-gray-700 font-semibold">Prikaži dostupne</label>
+                        </div>
+                    </div>
+                </fieldset>
+            @endif
             <!-- Gender -->
             <fieldset>
                 <legend class="block text-sm font-medium text-gray-900">Spol</legend>
@@ -197,26 +217,24 @@
 
                             <p class="mt-4 text-2xl font-semibold text-indigo-600">{{ number_format($selectedPerfume->price, 2) }} KM</p>
 
-                            <button
-                                wire:click="addToCart({{ $selectedPerfume->id }})"
-                                class="
-                                    cursor-pointer px-5 py-2.5
-                                    bg-gradient-to-r from-[#BBA14F] to-[#DBC584]
-                                    text-white font-medium rounded-full shadow-md
-                                    transition-all duration-300 text-sm
-
-                                    hover:bg-none
-                                    hover:border-1
-                                    hover:border-black
-                                    hover:bg-white
-                                    hover:text-[#BBA14F]
-                                    {{-- hover:shadow-lg --}}
-                                    {{-- hover:scale-105 --}}
-                                "
-                            >
-                                Dodaj u korpu
-                                <span class="sr-only">, {{ $perfume->name }}</span>
-                            </button>
+                            {{-- BUTTON LOGIC --}}
+                            @if($selectedPerfume->is_available)
+                                {{-- ACTIVE BUTTON --}}
+                                <button
+                                    wire:click="addToCart({{ $selectedPerfume->id }})"
+                                    class="w-full cursor-pointer px-5 py-2.5 bg-gradient-to-r from-[#BBA14F] to-[#DBC584] text-white font-bold rounded-full shadow-md transition-all duration-300 text-sm border border-transparent hover:from-white hover:to-white hover:border-[#BBA14F] hover:text-[#BBA14F]"
+                                >
+                                    Dodaj u korpu
+                                </button>
+                            @else
+                                {{-- DISABLED BUTTON --}}
+                                <button
+                                    disabled
+                                    class="w-full px-5 py-2.5 bg-gray-100 text-gray-400 font-bold rounded-full text-sm border border-gray-200 cursor-not-allowed"
+                                >
+                                    Uskoro dostupno
+                                </button>
+                            @endif
 
                             <p class="mt-2 text-sm text-gray-500">Besplatna dostava za narudžbe iznad 120 KM</p>
                         </div>

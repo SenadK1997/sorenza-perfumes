@@ -22,6 +22,14 @@
                 @else
                     <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-200">
                         <input type="hidden" wire:model="email">
+                        <div class="hidden" aria-hidden="true">
+                            <label for="extra_info_field">Dodatne napomene za dostavu</label>
+                            <input type="text" 
+                                wire:model="extra_info_field" 
+                                id="extra_info_field" 
+                                autocomplete="off" 
+                                tabindex="-1">
+                        </div>
                         <div class="flex justify-between items-center mb-6">
                             <h2 class="text-2xl font-bold text-gray-900">Podaci za dostavu</h2>
                             <button wire:click="$set('step', 1)" class="cursor-pointer text-sm text-indigo-600 font-medium hover:underline">
@@ -38,7 +46,15 @@
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Telefon</label>
-                                <input type="text" wire:model="phone" class="mt-1 block w-full rounded-lg border-gray-300 border p-3">
+                                <input 
+                                    type="text" 
+                                    inputmode="numeric"
+                                    wire:model="phone" 
+                                    maxlength="13"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                    placeholder="061XXXXXX"
+                                    class="mt-1 block w-full rounded-lg border-gray-300 border p-3"
+                                >
                             </div>
 
                             <div>
@@ -66,6 +82,11 @@
                                 <input type="text" wire:model="zipcode" class="mt-1 block w-full rounded-lg border-gray-300 border p-3">
                             </div>
                         </div>
+                        @error('email') 
+                            <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm text-center">
+                                {{ $message }}
+                            </div> 
+                        @enderror
 
                         <button wire:click="placeOrder" 
                             class="cursor-pointer mt-10 w-full bg-indigo-600 text-white py-4 rounded-xl font-bold uppercase tracking-widest hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all">

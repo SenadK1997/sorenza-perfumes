@@ -109,26 +109,24 @@
                 <div class="my-8 h-px w-full bg-gray-200"></div>
 
                 <!-- CTA -->
-                <button
-                    wire:click="addToCart({{ $perfume->id }})"
-                    class="
-                        cursor-pointer px-5 py-2.5
-                        bg-gradient-to-r from-[#BBA14F] to-[#DBC584]
-                        text-white font-medium rounded-full shadow-md
-                        transition-all duration-300 text-sm
-
-                        hover:bg-none
-                        hover:border-1
-                        hover:border-black
-                        hover:bg-white
-                        hover:text-[#BBA14F]
-                        {{-- hover:shadow-lg --}}
-                        {{-- hover:scale-105 --}}
-                    "
-                >
-                    Dodaj u korpu
-                    <span class="sr-only">, {{ $perfume->name }}</span>
-                </button>
+                {{-- BUTTON LOGIC --}}
+                    @if($perfume->is_available)
+                        {{-- ACTIVE BUTTON --}}
+                        <button
+                            wire:click="addToCart({{ $perfume->id }})"
+                            class="w-full cursor-pointer px-5 py-2.5 bg-gradient-to-r from-[#BBA14F] to-[#DBC584] text-white font-bold rounded-full shadow-md transition-all duration-300 text-sm border border-transparent hover:from-white hover:to-white hover:border-[#BBA14F] hover:text-[#BBA14F]"
+                        >
+                            Dodaj u korpu
+                        </button>
+                    @else
+                        {{-- DISABLED BUTTON --}}
+                        <button
+                            disabled
+                            class="w-full px-5 py-2.5 bg-gray-100 text-gray-400 font-bold rounded-full text-sm border border-gray-200 cursor-not-allowed"
+                        >
+                            Uskoro dostupno
+                        </button>
+                @endif
 
                 <p class="mt-4 text-sm text-gray-500 text-left">
                     Besplatna dostava za narudžbe iznad 120 KM

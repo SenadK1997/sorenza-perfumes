@@ -66,7 +66,7 @@
                 @endif
 
                 <p class="mt-4 text-2xl font-semibold text-indigo-600">{{ number_format($selectedPerfume->price, 2) }} KM</p>
-
+                @if($perfume->is_available)
                 <button
                     wire:click="addToCart({{ $selectedPerfume->id }})"
                     class="
@@ -87,6 +87,15 @@
                     Dodaj u korpu
                     <span class="sr-only">, {{ $perfume->name }}</span>
                 </button>
+                @else
+                {{-- DISABLED BUTTON --}}
+                        <button
+                        disabled
+                        class="w-full px-5 py-2.5 bg-gray-100 text-gray-400 font-bold rounded-full text-sm border border-gray-200 cursor-not-allowed"
+                    >
+                        Uskoro dostupno
+                    </button>
+                @endif
 
                 <p class="mt-2 text-sm text-gray-500">Besplatna dostava za narudžbe iznad 120 KM</p>
             </div>

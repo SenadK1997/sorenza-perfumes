@@ -18,6 +18,17 @@
 
                     <!-- FILTERS -->
                     <div class="mt-4 space-y-4 px-4">
+                        @if($showAvailabilityFilter)
+                            <fieldset class="pt-4">
+                                <legend class="text-sm font-medium text-gray-900">Dostupnost</legend>
+                                <div class="mt-2">
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" wire:model.live="onlyAvailable" id="only-available-mobile" class="h-5 w-5 rounded border-gray-300 text-indigo-600">
+                                        <label for="only-available-mobile" class="text-sm text-gray-500">Samo dostupno odmah</label>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        @endif
                         <!-- GENDER -->
                         <fieldset>
                             <legend class="text-sm font-medium text-gray-900">Spol</legend>
@@ -58,6 +69,18 @@
     <!-- DESKTOP FILTERS & PRODUCTS -->
     <main class="mx-auto max-w-7xl px-4 py-4 lg:grid lg:grid-cols-4 lg:gap-x-8">
         <aside class="hidden lg:block">
+            {{-- Availability filter --}}
+            @if($showAvailabilityFilter)
+            <fieldset class="pt-6 border-t border-gray-100">
+                <legend class="block text-sm font-medium text-gray-900">Dostupnost</legend>
+                <div class="mt-4 space-y-3">
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" wire:model.live="onlyAvailable" id="only-available" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                        <label for="only-available" class="text-sm text-gray-700 font-semibold">Samo dostupno odmah</label>
+                    </div>
+                </div>
+            </fieldset>
+            @endif
             <div class="space-y-6">
                 <!-- GENDER -->
                 <fieldset>

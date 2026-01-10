@@ -11,9 +11,28 @@
                 <img 
                     src="{{ Storage::url($perfume->main_image) }}"
                     alt="{{ $perfume->name }}" 
-                    class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                    class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 {{ !$perfume->is_available ? 'grayscale opacity-70' : '' }}"
                 />
             </a>
+            {{-- RED TRACK --}}
+            @if(!$perfume->is_available)
+                <div class="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                    <div class="bg-red-600/90 animate-pulse-red text-white py-2 w-full text-center -rotate-12 shadow-lg border-y-2 border-white/30 flex flex-col items-center">
+                        <span class="text-[10px] uppercase tracking-widest font-bold">Uskoro</span>
+                        
+                        @if($perfume->restock_date)
+                            {{-- Digital Countdown Timer --}}
+                            <div class="text-[11px] font-mono font-bold tracking-tight" 
+                                x-data="fullCountdown('{{ $perfume->restock_date->format('Y-m-d H:i:s') }}')" 
+                                x-init="initTimer()">
+                                <span x-text="timeDisplay">Učitavanje...</span>
+                            </div>
+                        @else
+                            <span class="text-xs font-medium">Dostupno uskoro</span>
+                        @endif
+                    </div>
+                </div>
+            @endif
             {{-- Ako dodamo slike nota --}}
             {{-- @foreach($firstAccords as $index => $accord)
                 @php
@@ -67,12 +86,24 @@
     </div>
 
     <div class="mt-3">
-        <button
-            wire:click="addToCart({{ $perfume->id }})"
-            class="w-full cursor-pointer px-5 py-2.5 bg-gradient-to-r from-[#BBA14F] to-[#DBC584] text-white font-bold rounded-full shadow-md transition-all duration-300 text-sm border border-transparent hover:from-white hover:to-white hover:border-[#BBA14F] hover:text-[#BBA14F]"
-        >
-            Dodaj u korpu
-        </button>
+        {{-- BUTTON LOGIC --}}
+        @if($perfume->is_available)
+            {{-- ACTIVE BUTTON --}}
+            <button
+                wire:click="addToCart({{ $perfume->id }})"
+                class="w-full cursor-pointer px-5 py-2.5 bg-gradient-to-r from-[#BBA14F] to-[#DBC584] text-white font-bold rounded-full shadow-md transition-all duration-300 text-sm border border-transparent hover:from-white hover:to-white hover:border-[#BBA14F] hover:text-[#BBA14F]"
+            >
+                Dodaj u korpu
+            </button>
+        @else
+            {{-- DISABLED BUTTON --}}
+            <button
+                disabled
+                class="w-full px-5 py-2.5 bg-gray-100 text-gray-400 font-bold rounded-full text-sm border border-gray-200 cursor-not-allowed"
+            >
+                Uskoro dostupno
+            </button>
+        @endif
     </div>
 </div>
 
@@ -85,4 +116,56 @@
     .animate-float {
         animation: float 4s ease-in-out infinite;
     }
+    @keyframes pulse-red {
+    0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+    }
+    .animate-pulse-red {
+        animation: pulse-red 2s infinite;
+}
 </style>
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('fullCountdown', (expireTime) => ({
+            timeDisplay: '',
+            initTimer() {
+                const target = new Date(expireTime).getTime();
+                
+                const update = () => {
+                    const now = new Date().getTime();
+                    const diff = target - now;
+    
+                    if (diff <= 0) {
+                        this.timeDisplay = "DOSTUPNO!";
+                        return;
+                    }
+    
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const secs = Math.floor((diff % (1000 * 60)) / 1000);
+    
+                    let dayLabel = "";
+                    if (days > 0) {
+                        // Check grammar for "Dan" vs "Dana" and capitalize
+                        if (days % 10 === 1 && days % 100 !== 11) {
+                            dayLabel = `${days} Dan `; // Removed comma
+                        } else {
+                            dayLabel = `${days} Dana `; // Removed comma
+                        }
+                    }
+                    
+                    const clock = [hours, mins, secs]
+                        .map(v => v < 10 ? "0" + v : v)
+                        .join(":");
+    
+                    this.timeDisplay = dayLabel + clock;
+                };
+    
+                update();
+                setInterval(update, 1000);
+            }
+        }));
+    });
+    </script>

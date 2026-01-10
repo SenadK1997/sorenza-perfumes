@@ -12,6 +12,7 @@ class CouponSeeder extends Seeder
     {
         // 1. Percentage Coupon (e.g., 10% off)
         Coupon::create([
+            'user_id' => 1,
             'code' => 'SORENZA10',
             'type' => 'percent',
             'value' => 10.00,
@@ -23,6 +24,7 @@ class CouponSeeder extends Seeder
 
         // 2. Fixed Amount Coupon (e.g., 20 KM off)
         Coupon::create([
+            'user_id' => 1,
             'code' => 'WELCOME20',
             'type' => 'fixed',
             'value' => 20.00,
@@ -34,6 +36,7 @@ class CouponSeeder extends Seeder
 
         // 3. Seller Special (Expired for testing logic)
         Coupon::create([
+            'user_id' => 1,
             'code' => 'EXPIRED5',
             'type' => 'fixed',
             'value' => 5.00,
@@ -43,6 +46,7 @@ class CouponSeeder extends Seeder
 
         // 4. Inactive Coupon
         Coupon::create([
+            'user_id' => 1,
             'code' => 'OFFLINE',
             'type' => 'percent',
             'value' => 50.00,
