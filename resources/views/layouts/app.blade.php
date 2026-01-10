@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="bs" prefix="og: https://ogp.me/ns#">
 <head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NDZ9D5BK');</script>
+    <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Sorenza - Luksuzni Parfemi | Online Parfumerija BiH')</title>
@@ -248,6 +255,10 @@
     @livewireStyles
 </head>
 <body class="min-h-screen text-gray-800 font-sans" style="background: linear-gradient(to bottom, #ffffff 0%, #f3f4f6 15%, #d1d5db 35%, #6b7280 55%, #374151 75%, #111827 100%);">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDZ9D5BK"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
 
     <!-- Header -->
     <header class="bg-gradient-to-r from-white/95 via-white/90 to-white/95 backdrop-blur-xl shadow-lg sticky top-0 z-50 border-b border-gray-200/50">
