@@ -154,9 +154,9 @@
     {
         "@@context": "https://schema.org",
         "@@type": "WebSite",
-        "name": "Sorenza",
+        "name": "Sorénza",
         "alternateName": ["Sorenza Parfemi", "Sorenza Parfumerija", "Sorenza Online Parfumerija"],
-        "url": "{{ url('/') }}",
+        "url": "https://sorénza.com/",
         "inLanguage": ["bs", "hr", "sr"],
         "potentialAction": {
             "@@type": "SearchAction",
