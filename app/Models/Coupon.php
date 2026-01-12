@@ -4,19 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\User;
 
 class Coupon extends Model
 {
     protected $fillable = [
-        'code', 'type', 'value', 'min_total', 
-        'usage_limit', 'used_count', 'starts_at', 
-        'expires_at', 'is_active'
+        'user_id', 'code', 'type', 'value', 'min_total', 
+        'usage_limit', 'used_count', 'starts_at', 'expires_at', 'is_active'
     ];
 
     protected $casts = [
         'starts_at' => 'datetime',
         'expires_at' => 'datetime',
+        'is_active' => 'boolean',
     ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
     /**
      * Check if the coupon is valid for a specific total
