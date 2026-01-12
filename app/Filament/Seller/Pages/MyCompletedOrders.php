@@ -13,13 +13,9 @@ class MyCompletedOrders extends ListRecords
 
     protected function getTableQuery(): ?Builder
     {
-        $query = parent::getTableQuery();
-
-        if (Auth::user()->hasRole('seller')) {
-            $query->where('user_id', Auth::id())
-                  ->where('status', OrderStatus::COMPLETED->value);
-        }
-
-        return $query;
+        // Koristimo model direktno da izbjegnemo filtere iz Resource-a
+        return \App\Models\Order::query()
+            ->where('user_id', Auth::id())
+            ->where('status', OrderStatus::COMPLETED->value);
     }
 }

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('perfume_id')->constrained();
             $table->foreignId('customer_id')->nullable()->constrained()->nullOnDelete();
-            $table->unsignedInteger('quantity')->default(1);
+            $table->integer('quantity')->default(1);
             $table->decimal('base_price', 10, 2);
             $table->boolean('is_manual')->default(true);
             $table->boolean('cancelled')->default(false);

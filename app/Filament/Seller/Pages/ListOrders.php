@@ -14,7 +14,7 @@ class ListOrders extends ListRecords
     {
         $query = parent::getTableQuery();
 
-        if (Auth::user()->hasRole('seller')) {
+        if (Auth::user()->hasAnyRole('seller')) {
             $query->whereNull('user_id');  // only unassigned orders
         }
 

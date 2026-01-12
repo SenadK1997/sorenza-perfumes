@@ -3,7 +3,7 @@
 namespace App\Filament\Seller\Pages;
 
 use App\Enums\OrderStatus;
-use App\Filament\Resources\OrderResource;
+use App\Filament\Seller\Resources\OrderResource;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Tables\Actions\Action;
 use Filament\Notifications\Notification;
@@ -12,22 +12,16 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables;
 
 
-// TODO: customers table i dugovanja
 class MyCancelledOrders extends ListRecords
 {
     protected static string $resource = OrderResource::class;
 
-    protected function getTableQuery():? Builder
+    protected function getTableQuery(): ?Builder
     {
-        $query = parent::getTableQuery();
-
-        // Seller only sees orders assigned to them
-        if (Auth::user()->hasRole('seller')) {
-            $query->where('user_id', Auth::id())
-                ->where('status', OrderStatus::CANCELLED->value);
-        }
-
-        return $query;
+        // Koristimo model direktno da izbjegnemo filtere iz Resource-a
+        return \App\Models\Order::query()
+            ->where('user_id', Auth::id())
+            ->where('status', OrderStatus::CANCELLED->value);
     }
 
     public function table(Tables\Table $table): Tables\Table
@@ -64,20 +58,6 @@ class MyCancelledOrders extends ListRecords
                         ->success()
                         ->send();
                 }),
-            Tables\Actions\Action::make('complete')
-                ->label('Cancel')
-                ->requiresConfirmation()
-                ->color('warning')
-                ->visible(fn ($record) => Auth::user()->hasRole('seller'))
-                ->action(function ($record) {
-                    $record->status = OrderStatus::CANCELLED->value;
-                    $record->save();
-
-                    Notification::make()
-                        ->title('Order marked as cancelled')
-                        ->success()
-                        ->send();
-            }),
         ]);
 }
 }

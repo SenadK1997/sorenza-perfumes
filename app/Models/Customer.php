@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\SoldPerfume;
 
 class Customer extends Model
 {
@@ -39,6 +40,10 @@ class Customer extends Model
     {
         return $this->hasMany(Order::class);
     }
+    public function seller()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     /**
      * Relationship: A customer might belong to a registered User.
@@ -46,5 +51,16 @@ class Customer extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+    public function soldPerfumes()
+    {
+        return $this->hasMany(SoldPerfume::class, 'customer_id');
+    }
+
+    // Dodajemo i pomoćnu relaciju za validne (neotkazane) prodaje
+    public function validSales()
+    {
+        return $this->hasMany(SoldPerfume::class, 'customer_id')
+            ->where('cancelled', false);
     }
 }

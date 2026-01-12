@@ -2,119 +2,173 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\PerfumeGender;
 use App\Filament\Resources\PerfumeResource\Pages;
-use App\Filament\Resources\PerfumeResource\RelationManagers;
 use App\Models\Perfume;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Grid;
 
 class PerfumeResource extends Resource
 {
     protected static ?string $model = Perfume::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-sparkles';
+    protected static ?string $navigationLabel = 'Parfemi';
 
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\TextInput::make('name')
-                ->required(),
-
-            Forms\Components\TextInput::make('base_price')
-                ->required()
-                ->numeric(),
-
-            Forms\Components\TextInput::make('price')
-                ->required()
-                ->numeric(),
-
-            Forms\Components\TextInput::make('discount_percentage')
-                ->numeric()
-                ->minValue(0)
-                ->maxValue(100)
-                ->nullable(),
-
-            Forms\Components\Textarea::make('description')
-                ->nullable(),
-
-            Forms\Components\FileUpload::make('main_image')
-                ->label('Main Image')
-                ->image()
-                ->directory('perfumes')
-                ->disk('public')
-                ->visibility('public')
-                ->preserveFilenames()
-                ->nullable(),
-
-            Forms\Components\FileUpload::make('secondary_image')
-                ->label('Secondary Image')
-                ->image()
-                ->directory('perfumes')
-                ->disk('public')
-                ->visibility('public')
-                ->preserveFilenames()
-                ->nullable(),
-
-            Forms\Components\TextInput::make('tag')
-                ->nullable(),
-
-            Forms\Components\Repeater::make('accords')
-                ->label('Accords')
+            // SEKCIJA 1: OSNOVNI PODACI
+            Section::make('Osnovne Informacije')
                 ->schema([
-                    Forms\Components\Select::make('name')
-                        ->label('Accord')
-                        ->options(array_keys(config('accords')))
-                        ->required(),
+                    Grid::make(2)->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Naziv Parfema')
+                            ->required(),
 
-                    Forms\Components\TextInput::make('percentage')
-                        ->numeric()
-                        ->required()
-                        ->minValue(0)
-                        ->maxValue(100),
-                ])
-                ->columns(2)
-                ->nullable(),
+                        Forms\Components\TextInput::make('inspired_by')
+                            ->label('Inspirisan sa')
+                            ->placeholder('npr. Armani Si'),
+                    ]),
+
+                    Grid::make(3)->schema([
+                        Forms\Components\Select::make('gender')
+                            ->label('Pol')
+                            ->options(PerfumeGender::class)
+                            ->required()
+                            ->native(false),
+
+                        Forms\Components\TextInput::make('tag')
+                            ->label('Tag')
+                            ->placeholder('npr. Novo'),
+
+                        Forms\Components\Toggle::make('availability')
+                            ->label('Dostupno')
+                            ->default(true),
+                    ]),
+
+                    Forms\Components\RichEditor::make('description')
+                        ->label('Opis')
+                        ->columnSpanFull(),
+                ])->collapsible(),
+
+            // SEKCIJA 2: CIJENE (LOGIKA)
+            Section::make('Cijene i Popust')
+                ->description('Base Price je fiksna. Unosom popusta mijenja se Price (prodajna cijena).')
+                ->schema([
+                    Grid::make(3)->schema([
+                        // FIXNA NABAVNA CIJENA
+                        Forms\Components\TextInput::make('base_price')
+                            ->label('Nabavna cijena (Base)')
+                            ->numeric()
+                            ->prefix('KM')
+                            ->required()
+                            ->live() 
+                            ->afterStateUpdated(fn (Get $get, Set $set) => self::calculateSellingPrice($get, $set)),
+
+                        // POPUST KOJI MIJENJA PRODAJNU CIJENU
+                        Forms\Components\TextInput::make('discount_percentage')
+                            ->label('Popust %')
+                            ->numeric()
+                            ->suffix('%')
+                            ->default(0)
+                            ->live()
+                            ->afterStateUpdated(fn (Get $get, Set $set) => self::calculateSellingPrice($get, $set)),
+
+                        // PRODAJNA CIJENA (Ono što kupac vidi)
+                        Forms\Components\TextInput::make('price')
+                            ->label('Prodajna cijena (Price)')
+                            ->numeric()
+                            ->prefix('KM')
+                            ->required()
+                            ->helperText('Ova cijena se automatski računa, ali je možete i ručno korigovati.'),
+                    ]),
+
+                    Forms\Components\DatePicker::make('restock_date')
+                        ->label('Datum dopune')
+                        ->native(false),
+                ])->collapsible(),
+
+            // SEKCIJA 3: SLIKE I NOTE
+            Section::make('Slike i Note')
+                ->schema([
+                    Grid::make(2)->schema([
+                        Forms\Components\FileUpload::make('main_image')
+                            ->label('Glavna Slika')
+                            ->image()
+                            ->directory('perfumes'),
+
+                        Forms\Components\FileUpload::make('secondary_image')
+                            ->label('Druga Slika')
+                            ->image()
+                            ->directory('perfumes'),
+                    ]),
+
+                    Forms\Components\Repeater::make('accords')
+                        ->label('Mirisni Akordi')
+                        ->schema([
+                            Forms\Components\Select::make('name')
+                                ->label('Nota')
+                                ->options(config('accords'))
+                                ->required(),
+
+                            Forms\Components\TextInput::make('percentage')
+                                ->label('Procenat %')
+                                ->numeric()
+                                ->required(),
+                        ])
+                        ->columns(2),
+                ])->collapsible(),
         ]);
     }
 
+    /**
+     * LOGIKA: Mijenjamo isključivo 'price' na osnovu 'base_price' i popusta.
+     */
+    public static function calculateSellingPrice(Get $get, Set $set): void
+    {
+        // Uzimamo trenutnu prodajnu cijenu (npr. 60)
+        $currentPrice = (float) ($get('price') ?? 0);
+        $discount = (float) ($get('discount_percentage') ?? 0);
+
+        if ($discount > 0 && $currentPrice > 0) {
+            // 60 - (60 * 0.10) = 54
+            $newPrice = $currentPrice * (1 - ($discount / 100));
+            $set('price', round($newPrice, 2));
+        }
+    }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')->sortable(),
-                Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('price')->money('eur', true),
-                Tables\Columns\TextColumn::make('discount_percentage')->label('Discount %'),
-                Tables\Columns\TextColumn::make('tag')->limit(20),
-                Tables\Columns\ImageColumn::make('main_image')->label('Image')->circular(),
-                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
+                Tables\Columns\ImageColumn::make('main_image')->label('Slika')->circular(),
+                Tables\Columns\TextColumn::make('name')->label('Naziv')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('gender')
+                    ->label('Pol')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => $state instanceof PerfumeGender ? $state->label() : $state),
+                Tables\Columns\TextColumn::make('base_price')->label('Nabavna (Base)')->money('bam'),
+                Tables\Columns\TextColumn::make('price')
+                    ->label('Prodajna (Price)')
+                    ->money('bam')
+                    ->color('success')
+                    ->weight('bold'),
+                Tables\Columns\TextColumn::make('discount_percentage')->label('Popust')->suffix('%'),
+                Tables\Columns\IconColumn::make('availability')->label('Dostupno')->boolean(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('gender')->options(PerfumeGender::class),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(), // Optional: adds "view" button
                 Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
             ]);
-    }
-
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

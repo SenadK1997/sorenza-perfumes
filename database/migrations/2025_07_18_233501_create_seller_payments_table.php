@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->decimal('amount', 10, 2);
             $table->enum('status', ['Hold', 'Pending', 'Approved'])->default('Hold');
+            $table->text('complaint')->nullable();
             $table->timestamps();
         });
     }

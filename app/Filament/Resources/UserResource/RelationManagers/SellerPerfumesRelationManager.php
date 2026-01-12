@@ -2,49 +2,96 @@
 
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
+use App\Models\Perfume;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\AttachAction;
-use Filament\Tables\Actions\DetachAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
+use Filament\Tables\Actions\Action;
+use Illuminate\Database\Eloquent\Collection;
 
 class SellerPerfumesRelationManager extends RelationManager
 {
     protected static string $relationship = 'perfumes';
-    protected static ?string $title = 'Assigned Perfumes';
+    protected static ?string $title = 'Zaduženi Parfemi';
 
     public function table(Tables\Table $table): Tables\Table
     {
         return $table
-        ->columns([
-            TextColumn::make('name')->label('Perfume'),  
-            TextColumn::make('pivot.stock')->label('Stock'),
-        ])
+            ->recordTitleAttribute('name')
+            ->columns([
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Parfem')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('pivot.stock')
+                    ->label('Zaliha kod prodavača')
+                    ->badge()
+                    ->color('info')
+                    ->sortable(),
+            ])
             ->headerActions([
+                // OPCIJA 1: Višestruko dodavanje (Multiple)
                 AttachAction::make()
-                    ->form([
-                        Forms\Components\Select::make('recordId')
-                            ->label('Perfume')
-                            ->options(\App\Models\Perfume::all()->pluck('name', 'id'))
-                            ->searchable()
+                    ->label('Zaduži parfeme')
+                    ->multiple()
+                    ->form(fn (AttachAction $action): array => [
+                        Forms\Components\Select::make('recordId') // Ručno imenujemo ključ koji Filament očekuje
+                            ->label('Parfemi')
+                            ->multiple()
+                            ->options(Perfume::all()->pluck('name', 'id'))
                             ->required(),
-            
-                        TextInput::make('stock')
-                            ->label('Stock')
+                        Forms\Components\TextInput::make('stock')
+                            ->label('Količina')
                             ->numeric()
-                            ->required()
-                            ->default(1),
+                            ->default(1)
+                            ->required(),
                     ]),
+                    // OPCIJA 3: Povećaj zalihe svima za +1
+                    Tables\Actions\Action::make('incrementAllStock')
+                        ->label('Povećaj za (+1)')
+                        ->color('success')
+                        ->icon('heroicon-m-arrow-trending-up')
+                        ->requiresConfirmation()
+                        ->modalHeading('Povećanje zaliha')
+                        ->modalDescription('Ova akcija će povećati zalihu za +1 svim parfemima koje ovaj prodavač trenutno posjeduje.')
+                        ->action(function () {
+                            // Uzimamo sve parfeme trenutnog prodavača
+                            $currentPerfumes = $this->getOwnerRecord()->perfumes;
+
+                            foreach ($currentPerfumes as $perfume) {
+                                // Povećavamo trenutni pivot stock za 1
+                                $newStock = $perfume->pivot->stock + 1;
+                                
+                                $this->getOwnerRecord()->perfumes()->updateExistingPivot($perfume->id, [
+                                    'stock' => $newStock,
+                                ]);
+                            }
+                        }),
+
+                // OPCIJA 2: Dugme "Dodaj sve sa zaliho 1"
+                Action::make('addAllPerfumes')
+                    ->label('Dodaj sve (zaliha 1)')
+                    ->color('gray')
+                    ->icon('heroicon-m-plus-circle')
+                    ->requiresConfirmation()
+                    ->action(function () {
+                        $allPerfumeIds = Perfume::pluck('id')->toArray();
+                        // Kreiramo niz za pivot tabelu: [id => ['stock' => 1], ...]
+                        $attachData = array_fill_keys($allPerfumeIds, ['stock' => 1]);
+                        
+                        // syncWithoutDetaching osigurava da ne obrišemo već dodijeljene
+                        $this->getOwnerRecord()->perfumes()->syncWithoutDetaching($attachData);
+                    })
             ])
             ->actions([
-                EditAction::make(),
-                DetachAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->form([
+                        Forms\Components\TextInput::make('stock')
+                            ->label('Izmjeni zalihu')
+                            ->numeric()
+                            ->required(),
+                    ]),
+                Tables\Actions\DetachAction::make(),
             ]);
     }
-
 }

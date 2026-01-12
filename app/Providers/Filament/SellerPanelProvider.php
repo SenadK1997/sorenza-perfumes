@@ -17,6 +17,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Navigation\NavigationItem;
 
 class SellerPanelProvider extends PanelProvider
 {
@@ -37,6 +38,14 @@ class SellerPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
+            ])
+            ->navigationItems([
+                NavigationItem::make('Administracija Sistema')
+                    ->url('/admin')
+                    ->icon('heroicon-o-shield-check')
+                    ->group('Admin')
+                    ->sort(100)
+                    ->visible(fn (): bool => auth()->user()?->hasRole('admin') ?? false),
             ])
             ->middleware([
                 EncryptCookies::class,

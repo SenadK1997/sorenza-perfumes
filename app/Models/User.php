@@ -11,6 +11,7 @@ use Spatie\Permission\Traits\HasRoles;
 use App\Models\Perfume;
 use App\Models\SoldPerfume;
 use App\Models\SellerPayment;
+use App\Models\Customer;
 
 class User extends Authenticatable
 {
@@ -80,6 +81,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Perfume::class, 'perfume_seller')
             ->withPivot('stock')
             ->withTimestamps();
+    }
+    public function customers()
+    {
+        // Admini mogu videti sve kupce, a selleri samo svoje (opcionalno filtriranje)
+        return $this->hasMany(Customer::class);
     }
     public function validSoldPerfumes()
     {
