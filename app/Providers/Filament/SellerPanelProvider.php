@@ -27,8 +27,14 @@ class SellerPanelProvider extends PanelProvider
             ->id('seller')
             ->path('seller')
             ->login()
+            ->brandName(fn () => new \Illuminate\Support\HtmlString('
+            <div class="flex flex-col items-center gap-3">
+                <img src="' . asset('favicon.png') . '" alt="Logo" style="height: 3rem;">
+                <span class="text-xl font-bold tracking-tight">Sorénza - Prodavač</span>
+            </div>
+            '))
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Slate,
             ])
             ->discoverResources(in: app_path('Filament/Seller/Resources'), for: 'App\\Filament\\Seller\\Resources')
             ->discoverPages(in: app_path('Filament/Seller/Pages'), for: 'App\\Filament\\Seller\\Pages')

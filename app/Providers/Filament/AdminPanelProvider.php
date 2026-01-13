@@ -31,7 +31,12 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->brandName('Sorénza')
+            ->brandName(fn () => new \Illuminate\Support\HtmlString('
+            <div class="flex flex-col items-center gap-3">
+                <img src="' . asset('favicon.png') . '" alt="Logo" style="height: 3rem;">
+                <span class="text-xl font-bold tracking-tight">Sorénza - Admin</span>
+            </div>
+            '))
             ->favicon(asset('favicon.png'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
