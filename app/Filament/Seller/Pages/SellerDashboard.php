@@ -10,7 +10,6 @@ use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use App\Services\SellerService;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\TextInput;
@@ -21,20 +20,13 @@ class SellerDashboard extends Page implements Tables\Contracts\HasTable
     use Tables\Concerns\InteractsWithTable;
 
     protected static ?string $title = 'Prodaja Parfema';
-
     protected static string $view = 'filament.seller.pages.seller-dashboard';
-
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
-
     protected static ?string $navigationGroup = 'Parfemi';
 
-    /**
-     * Return an Eloquent query builder for the table data
-     */
     protected function getTableQuery(): Builder
     {
         $user = Auth::user();
-        // return $user->perfumes()->withPivot('stock')->getQuery();
 
         return Perfume::whereHas('sellers', function ($query) use ($user) {
             $query->where('user_id', $user->id);
@@ -44,17 +36,14 @@ class SellerDashboard extends Page implements Tables\Contracts\HasTable
         }]);
     }
 
-    /**
-     * Define the columns for the table
-     */
     protected function getTableColumns(): array
     {
         return [
             Tables\Columns\TextColumn::make('name')
                 ->label('Perfume Name')
-                ->description(fn (Perfume $record): string => $record->inspired_by ?? '') // Prikazuje originalni naziv ispod tvog
+                ->description(fn (Perfume $record): string => $record->inspired_by ?? '')
                 ->sortable()
-                ->searchable(['name', 'inspired_by']), // Omogućava pretragu po oba polja!
+                ->searchable(['name', 'inspired_by']),
                 
             Tables\Columns\TextColumn::make('price')
                 ->label('Cijena')
@@ -76,9 +65,6 @@ class SellerDashboard extends Page implements Tables\Contracts\HasTable
         ];
     }
 
-    /**
-     * Define actions available on each row
-     */
     protected function getTableActions(): array
     {
         return [
@@ -86,40 +72,32 @@ class SellerDashboard extends Page implements Tables\Contracts\HasTable
                 ->label('Prodaj')
                 ->icon('heroicon-m-banknotes')
                 ->color('success')
+                // 1. ONEMOGUĆI DUGME AKO JE STOCK 0
+                ->disabled(function (Perfume $record) {
+                    $user = Auth::user();
+                    $seller = $record->sellers->firstWhere('id', $user->id);
+                    return ($seller?->pivot?->stock ?? 0) <= 0;
+                })
                 ->form([
                     Select::make('customer_id')
-                        ->label('Kupac (za koga se radi storno)')
-                        ->placeholder('Počnite kucati ime ili email...')
+                        ->label('Kupac (opcionalno)')
+                        ->placeholder('Počnite kucati ime...')
                         ->searchable()
-                        // 1. Inicijalno punjenje opcija (npr. zadnjih 20 kupaca radi brzine)
                         ->options(function () {
                             $user = auth()->user();
                             $query = Customer::query();
-
                             if (!$user->hasRole('admin')) {
                                 $query->where('user_id', $user->id);
                             }
-
-                            return $query->latest()->limit(20)->get()->mapWithKeys(function ($customer) {
-                                return [$customer->id => "{$customer->full_name} ({$customer->email})"];
-                            });
+                            return $query->latest()->limit(20)->get()->mapWithKeys(fn($c) => [$c->id => "{$c->full_name}"]);
                         })
-                        // 2. Dinamička pretraga dok korisnik kuca
                         ->getSearchResultsUsing(function (string $search) {
                             $user = auth()->user();
-                            
-                            $query = Customer::where(function($q) use ($search) {
-                                $q->where('full_name', 'like', "%{$search}%")
-                                ->orWhere('email', 'like', "%{$search}%");
-                            });
-
+                            $query = Customer::where('full_name', 'like', "%{$search}%");
                             if (!$user->hasRole('admin')) {
                                 $query->where('user_id', $user->id);
                             }
-
-                            return $query->limit(50)->get()->mapWithKeys(function ($customer) {
-                                return [$customer->id => "{$customer->full_name} ({$customer->email})"];
-                            });
+                            return $query->limit(50)->get()->mapWithKeys(fn($c) => [$c->id => "{$c->full_name}"]);
                         }),
                                         
                     TextInput::make('quantity')
@@ -127,24 +105,19 @@ class SellerDashboard extends Page implements Tables\Contracts\HasTable
                         ->numeric()
                         ->default(1)
                         ->required()
-                        ->minValue(1),
+                        ->minValue(1)
+                        // 2. DODAJ MAX LIMIT NA OSNOVU STANJA
+                        ->maxValue(function (Perfume $record) {
+                            $user = Auth::user();
+                            $seller = $record->sellers->firstWhere('id', $user->id);
+                            return $seller?->pivot?->stock ?? 0;
+                        }),
                 ])
                 ->action(function (Perfume $record, array $data) {
                     $user = Auth::user();
-                    
-                    // Pozivamo servis sa customer_id (koji može biti null)
-                    SellerService::recordPerfumeSold(
-                        $user, 
-                        $record, 
-                        $data['quantity'], 
-                        true, // isManual = true
-                        $data['customer_id'] ?? null
-                    );
+                    SellerService::recordPerfumeSold($user, $record, $data['quantity'], true, $data['customer_id'] ?? null);
 
-                    Notification::make()
-                        ->title('Sale recorded successfully')
-                        ->success()
-                        ->send();
+                    Notification::make()->title('Sale recorded successfully')->success()->send();
                 }),
 
             Action::make('cancel')
@@ -153,19 +126,18 @@ class SellerDashboard extends Page implements Tables\Contracts\HasTable
                 ->color('warning')
                 ->form([
                     Select::make('customer_id')
-                        ->label('Kupac (ako je poznat)')
+                        ->label('Kupac')
                         ->options(fn() => Customer::pluck('full_name', 'id'))
-                        ->searchable()
-                        ->placeholder('Anonimni kupac'),
+                        ->searchable(),
                         
                     TextInput::make('quantity')
-                        ->label('Količina za storniranje')
+                        ->label('Količina')
                         ->numeric()
                         ->default(1)
                         ->required(),
 
                     Select::make('cancellation_reason')
-                        ->label('Razlog storna')
+                        ->label('Razlog')
                         ->required()
                         ->options([
                             'wrong_perfume' => 'Pogrešan parfem',
@@ -176,9 +148,7 @@ class SellerDashboard extends Page implements Tables\Contracts\HasTable
                 ->action(function (Perfume $record, array $data) {
                     $user = Auth::user();
                     $qty = (int) $data['quantity'];
-                    $stornoAmount = $record->base_price * $qty;
 
-                    // 1. Kreiraj storno zapis (negativna količina)
                     $user->soldPerfumes()->create([
                         'perfume_id'  => $record->id,
                         'customer_id' => $data['customer_id'] ?? null,
@@ -190,7 +160,6 @@ class SellerDashboard extends Page implements Tables\Contracts\HasTable
                         'sold_at'     => now(),
                     ]);
 
-                    // 2. Vrati stock
                     $pivot = $user->perfumes()->where('perfume_id', $record->id)->first()?->pivot;
                     if ($pivot) {
                         $user->perfumes()->updateExistingPivot($record->id, [
@@ -198,38 +167,18 @@ class SellerDashboard extends Page implements Tables\Contracts\HasTable
                         ]);
                     }
 
-                    Notification::make()
-                        ->title('Storno uspješan')
-                        ->body('Zaliha je vraćena na vaše stanje. Dug će biti korigovan nakon potvrde admina.')
-                        ->warning()
-                        ->send();
+                    Notification::make()->title('Storno uspješan')->warning()->send();
                 }),
         ];
     }
 
-    /**
-     * You can define the record key if needed
-     */
     protected function getTableRecordKeyName(): string
     {
         return 'id';
     }
 
-    /**
-     * Additional method example to calculate total base price of perfumes assigned
-     */
-    public function getTotalBasePrice(): float
-    {
-        $user = Auth::user();
-
-        return $user->perfumes()->sum('base_price');
-    }
-
     public function getTotalStock(): int
     {
-        return Auth::user()
-            ->perfumes()
-            ->get()
-            ->sum(fn ($perfume) => $perfume->pivot->stock);
+        return Auth::user()->perfumes()->get()->sum(fn ($perfume) => $perfume->pivot->stock);
     }
 }
