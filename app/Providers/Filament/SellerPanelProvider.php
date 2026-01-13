@@ -28,10 +28,42 @@ class SellerPanelProvider extends PanelProvider
             ->path('seller')
             ->login()
             ->brandName(fn () => new \Illuminate\Support\HtmlString('
-            <div class="flex flex-col items-center gap-3">
-                <img src="' . asset('favicon.png') . '" alt="Logo" style="height: 3rem;">
-                <span class="text-xl font-bold tracking-tight">Sorénza - Prodavač</span>
-            </div>
+                <div class="sorenza-brand-wrapper flex items-center gap-3">
+                    <img src="' . asset('favicon.png') . '" 
+                        alt="Logo" 
+                        class="sorenza-logo">
+                    <span class="sorenza-text font-bold tracking-tight">
+                        Sorénza - Prodavač
+                    </span>
+                </div>
+
+                <style>
+                    /* DASHBOARD POSTAVKE (Sidebar) */
+                    .sorenza-logo {
+                        height: 2rem; /* Mali logo u sidebaru */
+                        width: auto;
+                    }
+                    .sorenza-text {
+                        font-size: 1.1rem;
+                    }
+
+                    /* LOGIN STRANICA POSTAVKE (Forsiranje kolone) */
+                    /* .fi-simple-main je glavni kontejner Filament Login stranice */
+                    :where(.fi-simple-main) .sorenza-brand-wrapper {
+                        flex-direction: column !important;
+                        text-align: center;
+                        gap: 1rem;
+                        margin-bottom: 0.5rem;
+                    }
+
+                    :where(.fi-simple-main) .sorenza-logo {
+                        height: 3.5rem !important; /* Veliki logo na login stranici */
+                    }
+
+                    :where(.fi-simple-main) .sorenza-text {
+                        font-size: 1.5rem !important; /* Veliki tekst na login stranici */
+                    }
+                </style>
             '))
             ->colors([
                 'primary' => Color::Slate,
