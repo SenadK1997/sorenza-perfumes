@@ -18,6 +18,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Navigation\NavigationItem;
+use Illuminate\Support\HtmlString;
 
 class SellerPanelProvider extends PanelProvider
 {
@@ -27,7 +28,7 @@ class SellerPanelProvider extends PanelProvider
             ->id('seller')
             ->path('seller')
             ->login()
-            ->brandName(fn () => new \Illuminate\Support\HtmlString('
+            ->brandName(fn () => new HtmlString('
                 <div class="sorenza-brand-wrapper flex items-center gap-3">
                     <img src="' . asset('favicon.png') . '" 
                         alt="Logo" 
