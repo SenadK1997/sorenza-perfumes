@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,7 +15,7 @@ use App\Models\SoldPerfume;
 use App\Models\SellerPayment;
 use App\Models\Customer;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
@@ -30,6 +32,20 @@ class User extends Authenticatable
         'city',
         'canton',
     ];
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // Ako pokušavaš ući na Admin panel, moraš imati rolu 'admin'
+        if ($panel->getId() === 'admin') {
+            return $this->hasRole('admin');
+        }
+
+        // Ako pokušavaš ući na Seller panel, dozvoli pristup
+        if ($panel->getId() === 'seller') {
+            return $this->hasRole('seller') || $this->hasRole('admin');
+        }
+
+        return false;
+    }
 
     /**
      * The attributes that should be hidden for serialization.
