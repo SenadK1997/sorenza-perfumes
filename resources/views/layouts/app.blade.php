@@ -11,7 +11,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Sorenza - Luksuzni Parfemi | Online Parfumerija BiH')</title>
-
+    <link rel="icon" sizes="48x48" href="{{ asset('favicon-48x48.png') }}">
+    <link rel="icon" sizes="192x192" href="{{ asset('favicon-512x512.png') }}">
     {{-- Primary SEO Meta Tags --}}
     <meta name="description" content="@yield('meta_description', 'Sorenza parfumerija - Kupite originalne luksuzne parfeme online. Širok izbor muških i ženskih parfema, toaletnih voda i mirisa poznatih svjetskih brendova. Brza dostava u Bosni i Hercegovini. Povoljne cijene i akcije.')">
     <meta name="keywords" content="@yield('meta_keywords', 'parfemi, parfem, luksuzni parfemi, originalni parfemi, online parfumerija, kupovina parfema, parfemi online, mirisne note, toaletna voda, eau de parfum, eau de toilette, parfemi BiH, parfemi Sarajevo, parfemi Mostar, parfemi Banja Luka, parfemi Tuzla, parfemi Hrvatska, parfemi Zagreb, parfemi Split, parfemi Srbija, parfemi Beograd, parfemi Novi Sad, muški parfemi, ženski parfemi, unisex parfemi, brendirani parfemi, parfemi na akciji, povoljni parfemi, jeftini parfemi, ekskluzivni mirisi, arome, parfemska kolekcija, designer parfemi, niche parfemi, parfemi shop, prodaja parfema, naruči parfem, kupiti parfem online, best parfemi, popularni parfemi, novi parfemi 2024, parfemi cijena, parfem poklon, poklon set parfem, parfemi za nju, parfemi za njega, miris, mirisi, parfimeriјa, парфеми, парфем, мушки парфеми, женски парфеми')">
@@ -31,7 +32,7 @@
 
     {{-- Open Graph / Facebook --}}
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://sorénza.com/"> <meta property="og:title" content="Sorénza">
+    <meta property="og:url" content="https://sorenzaperfumes.com/"> <meta property="og:title" content="Sorénza">
     <meta property="og:title" content="@yield('og_title', 'Sorenza Parfemi - Kupite Luksuzne Parfeme Online | BiH, HR, SRB')">
     <meta property="og:description" content="@yield('og_description', 'Otkrijte kolekciju luksuznih parfema u Sorenza online parfumeriji. Originalni brendovi, jedinstveni mirisi, povoljne cijene i brza dostava širom BiH.')">
     <meta property="og:image" content="@yield('og_image', asset('favicon.png'))">
@@ -43,13 +44,22 @@
     <meta property="og:locale:alternate" content="hr_HR">
     <meta property="og:locale:alternate" content="sr_RS">
     {{-- <meta property="og:site_name" content="Sorenza Parfemi"> --}}
-    <meta property="og:site_name" content="sorénza.com">
+    <meta property="og:site_name" content="sorenzaperfumes.com/">
 
     {{-- Twitter --}}
+    <title>@yield('title', 'Sorenza - Luksuzni Parfemi')</title>
+    <meta name="description" content="@yield('meta_description', 'Premium parfemi i mirisi. Kupujte online - brza dostava u BiH')">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="@yield('og_title', 'Sorenza - Luksuzni Parfemi')">
+    <meta property="og:description" content="@yield('og_description', 'Otkrijte svijet luksuznih mirisa. Brza dostava na vašu adresu.')">
+    <meta property="og:image" content="@yield('og_image', asset('favicon.png'))">
+
     <meta name="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://sorénza.com/">
+    <meta name="twitter:url" content="{{ url()->current() }}">
     <meta name="twitter:title" content="@yield('twitter_title', 'Sorenza - Luksuzni Parfemi')">
-    <meta name="twitter:description" content="@yield('twitter_description', 'Premium parfemi i mirisi. Kupujte online - brza dostava u BiH')">
+    <meta name="twitter:description" content="@yield('twitter_description', 'Premium parfemi i mirisi. Kupujte online.')">
     <meta name="twitter:image" content="@yield('twitter_image', asset('favicon.png'))">
 
     {{-- Additional SEO Meta Tags --}}
@@ -78,7 +88,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
-    <link rel="canonical" href="https://sorénza.com/" />
+    <link rel="canonical" href="{{ url()->current() }}" />
 
     {{-- Structured Data / Schema.org for Local Business --}}
     <script type="application/ld+json">
@@ -156,7 +166,7 @@
         "@@type": "WebSite",
         "name": "Sorénza",
         "alternateName": ["Sorenza Parfemi", "Sorenza Parfumerija", "Sorenza Online Parfumerija"],
-        "url": "https://sorénza.com/",
+        "url": "https://sorenzaperfumes.com/",
         "inLanguage": ["bs", "hr", "sr"],
         "potentialAction": {
             "@@type": "SearchAction",
