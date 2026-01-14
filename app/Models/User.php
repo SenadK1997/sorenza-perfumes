@@ -108,4 +108,8 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(SoldPerfume::class)
             ->where('cancelled', false);
     }
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
+    }
 }
