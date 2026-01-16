@@ -93,7 +93,7 @@ class SellerPanelProvider extends PanelProvider
                 fn (): string => Blade::render('<style>
                     @media (max-width: 1024px) {
                         .fi-sidebar-nav {
-                            padding-bottom: 50px !important;
+                            padding-bottom: 100px !important;
                         }
                     }
                 </style>'),
