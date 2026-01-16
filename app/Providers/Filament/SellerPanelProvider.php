@@ -19,6 +19,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Navigation\NavigationItem;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Facades\Blade;
 
 class SellerPanelProvider extends PanelProvider
 {
@@ -87,6 +88,16 @@ class SellerPanelProvider extends PanelProvider
                     ->sort(100)
                     ->visible(fn (): bool => auth()->user()?->hasRole('admin') ?? false),
             ])
+            ->renderHook(
+                'panels::body.end',
+                fn (): string => Blade::render('<style>
+                    @media (max-width: 1024px) {
+                        .fi-sidebar-nav {
+                            padding-bottom: 50px !important;
+                        }
+                    }
+                </style>'),
+            )
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
