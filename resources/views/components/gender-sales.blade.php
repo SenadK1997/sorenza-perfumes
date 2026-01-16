@@ -15,7 +15,7 @@
                 <div aria-hidden="true" class="absolute inset-0 overflow-hidden rounded-2xl">
                     <div class="absolute inset-0 overflow-hidden transition-transform duration-700 ease-out group-hover:scale-110">
                         <img
-                          src="{{ asset('storage/images/womanperfume.jpg') }}"
+                          src="{{ asset('storage/images/womanperfume.webp') }}"
                           alt="Ženski parfem"
                           class="size-full object-cover" 
                         />
@@ -48,7 +48,7 @@
                 <div aria-hidden="true" class="absolute inset-0 overflow-hidden rounded-2xl">
                     <div class="absolute inset-0 overflow-hidden transition-transform duration-700 ease-out group-hover:scale-110">
                         <img
-                            src="{{ asset('storage/images/manperfume.jpg') }}"
+                            src="{{ asset('storage/images/manperfume.webp') }}"
                             alt="Muški parfem"
                             class="size-full object-cover" />
                     </div>
@@ -80,7 +80,7 @@
                 <div aria-hidden="true" class="absolute inset-0 overflow-hidden rounded-2xl">
                     <div class="absolute inset-0 overflow-hidden transition-transform duration-700 ease-out group-hover:scale-110">
                         <img
-                            src="{{ asset('storage/images/unisexperfume.jpg') }}"
+                            src="{{ asset('storage/images/unisexperfume.webp') }}"
                             alt="Unisex parfem"
                             class="size-full object-cover" />
                     </div>
