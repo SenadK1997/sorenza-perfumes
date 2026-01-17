@@ -2,16 +2,23 @@
 <html lang="bs" prefix="og: https://ogp.me/ns#">
 <head>
     <meta charset="UTF-8">
-    <link rel="preconnect" href="https://www.googletagmanager.com">
-    <link rel="preconnect" href="https://www.google-analytics.com">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#7c3aed">
+
+    {{-- 1. Brzo povezivanje (bez duplikata) --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    <link rel="preconnect" href="https://www.google-analytics.com">
+
+    {{-- 2. Optimizovano učitavanje fonta --}}
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" media="print" onload="this.media='all'">
+
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap">
+    </noscript>
 
     {{-- 2. FAVICONS (Google Priority - Mora biti pri vrhu) --}}
     {{-- Glavna ikona za tabove i Google Search (48x48 multiple) --}}
@@ -23,7 +30,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
     <link rel="icon" sizes="192x192" href="{{ asset('favicon-512x512.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
-    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+    {{-- <link rel="manifest" href="{{ asset('site.webmanifest') }}"> --}}
 
     {{-- 3. TITLE & DESCRIPTION --}}
     <title>@yield('title', 'Sorenza - Luksuzni Parfemi | Online Parfumerija BiH')</title>
@@ -152,7 +159,7 @@
     </script>
 
     @yield('structured_data')
-
+    @livewireScriptConfig
     {{-- 9. STYLES --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
