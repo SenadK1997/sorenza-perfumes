@@ -160,8 +160,8 @@
 
     @yield('structured_data')
     {{-- 9. STYLES --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>
         window.addEventListener('load', function() {
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
