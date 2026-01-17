@@ -1,68 +1,96 @@
 <!DOCTYPE html>
 <html lang="bs" prefix="og: https://ogp.me/ns#">
 <head>
-    <script>
-        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer','GTM-NDZ9D5BK');
-    </script>
-
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NDZ9D5BK');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#7c3aed">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://www.googletagmanager.com">
-    <link rel="preconnect" href="https://www.google-analytics.com">
-
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" media="print" onload="this.media='all'">
-    <noscript>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap">
-    </noscript>
-
+    {{-- 2. FAVICONS (Google Priority - Mora biti pri vrhu) --}}
+    {{-- Glavna ikona za tabove i Google Search (48x48 multiple) --}}
     <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon-48x48.png') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    
+    {{-- Ostale rezolucije za uređaje --}}
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+    <link rel="icon" sizes="192x192" href="{{ asset('favicon-512x512.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
 
+    {{-- 3. TITLE & DESCRIPTION --}}
     <title>@yield('title', 'Sorenza - Luksuzni Parfemi | Online Parfumerija BiH')</title>
-    <meta name="description" content="@yield('meta_description', 'Sorenza parfumerija - Kupite originalne luksuzne parfeme online.')">
-    <meta name="keywords" content="@yield('meta_keywords', 'parfemi, parfem, luksuzni parfemi, originalni parfemi, online parfumerija')">
+    <meta name="description" content="@yield('meta_description', 'Sorenza parfumerija - Kupite originalne luksuzne parfeme online. Širok izbor muških i ženskih parfema. Brza dostava u BiH.')">
+    <meta name="keywords" content="@yield('meta_keywords', 'parfemi, parfem, luksuzni parfemi, originalni parfemi, online parfumerija, parfemi BiH, parfemi Sarajevo, muški parfemi, ženski parfemi, unisex parfemi')">
+    <meta name="author" content="Sorenza">
 
+    {{-- 4. ROBOTS LOGIKA (Ključno za SEO i sakrivanje korpe) --}}
     @if(request()->is('cart*', 'checkout*', 'admin*'))
         <meta name="robots" content="noindex, nofollow">
     @else
         <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     @endif
 
+    {{-- 5. CANONICAL & GEO --}}
     <link rel="canonical" href="{{ url()->current() }}">
+    <link rel="alternate" hreflang="bs" href="{{ url()->current() }}">
+    <link rel="alternate" hreflang="hr" href="{{ url()->current() }}">
+    <link rel="alternate" hreflang="sr" href="{{ url()->current() }}">
+    <link rel="alternate" hreflang="x-default" href="{{ url()->current() }}">
 
+    <meta name="geo.region" content="BA">
+    <meta name="geo.placename" content="Bosnia and Herzegovina">
+    <meta name="geo.position" content="43.8563;18.4131">
+    <meta name="ICBM" content="43.8563, 18.4131">
+
+    {{-- 6. OPEN GRAPH (Facebook/WhatsApp) --}}
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="Sorenza Parfemi">
+    <meta property="og:title" content="@yield('og_title', 'Sorenza - Luksuzni Parfemi Online | BiH, HR, SRB')">
+    <meta property="og:description" content="@yield('og_description', 'Otkrijte kolekciju luksuznih parfema u Sorenza online parfumeriji. Originalni brendovi i brza dostava.')">
+    <meta property="og:image" content="@yield('og_image', asset('favicon.png'))">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="bs_BA">
+
+    {{-- 7. TWITTER --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ url()->current() }}">
+    <meta name="twitter:title" content="@yield('twitter_title', 'Sorenza - Luksuzni Parfemi')">
+    <meta name="twitter:description" content="@yield('twitter_description', 'Premium parfemi i mirisi. Kupujte online.')">
+    <meta name="twitter:image" content="@yield('twitter_image', asset('favicon.png'))">
+
+    {{-- 8. SCHEMA.ORG (JSON-LD Structured Data) --}}
+    {{-- Local Business --}}
     <script type="application/ld+json">
     {
         "@@context": "https://schema.org",
         "@@type": "Store",
         "name": "Sorenza Parfemi",
         "alternateName": ["Sorenza", "Sorenza Parfumerija"],
-        "description": "Online prodavnica luksuznih i originalnih parfema.",
+        "description": "Online prodavnica luksuznih i originalnih parfema. Dostava u BiH.",
         "url": "{{ url('/') }}",
         "logo": "{{ asset('images/logosorenza.webp') }}",
         "image": "{{ asset('images/sorenza-og.jpg') }}",
         "priceRange": "$$",
         "currenciesAccepted": "BAM, EUR",
+        "paymentAccepted": "Cash, Credit Card, Bank Transfer",
         "address": {
             "@@type": "PostalAddress",
             "addressCountry": "BA",
             "addressRegion": "Bosna i Hercegovina"
-        }
+        },
+        "areaServed": [{"@@type": "Country", "name": "Bosnia and Herzegovina"}]
     }
     </script>
 
+    {{-- WebSite --}}
     <script type="application/ld+json">
     {
         "@@context": "https://schema.org",
@@ -77,16 +105,19 @@
     }
     </script>
 
+    {{-- Organization --}}
     <script type="application/ld+json">
     {
         "@@context": "https://schema.org",
         "@@type": "Organization",
         "name": "Sorenza",
         "url": "{{ url('/') }}",
-        "logo": "{{ asset('images/logosorenza.webp') }}"
+        "logo": "{{ asset('images/logo.png') }}",
+        "sameAs": []
     }
     </script>
 
+    {{-- BreadcrumbList --}}
     <script type="application/ld+json">
     {
         "@@context": "https://schema.org",
@@ -98,6 +129,7 @@
     }
     </script>
 
+    {{-- FAQ --}}
     <script type="application/ld+json">
     {
         "@@context": "https://schema.org",
@@ -106,7 +138,12 @@
             {
                 "@@type": "Question",
                 "name": "Gdje mogu kupiti originalne parfeme online u BiH?",
-                "acceptedAnswer": { "@@type": "Answer", "text": "Originalne parfeme možete kupiti online u Sorenza parfumeriji." }
+                "acceptedAnswer": { "@@type": "Answer", "text": "Originalne parfeme možete kupiti online u Sorenza parfumeriji uz brzu dostavu." }
+            },
+            {
+                "@@type": "Question",
+                "name": "Koje brendove parfema nudite?",
+                "acceptedAnswer": { "@@type": "Answer", "text": "Nudimo brendove kao što su Chanel, Dior, Versace, Armani i mnoge druge." }
             }
         ]
     }
@@ -114,6 +151,7 @@
 
     @yield('structured_data')
 
+    {{-- 9. STYLES --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
