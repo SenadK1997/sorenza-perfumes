@@ -320,5 +320,6 @@
     </footer>
 {{-- <script type="module" src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1/dist/index.min.js"></script> --}}
 @livewireScripts
+<script src="/vendor/livewire/livewire.js" data-turbo-eval="false" data-turbolinks-eval="false"></script>
 </body>
 </html>
