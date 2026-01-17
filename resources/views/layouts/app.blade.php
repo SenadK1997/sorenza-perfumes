@@ -1,231 +1,135 @@
 <!DOCTYPE html>
 <html lang="bs" prefix="og: https://ogp.me/ns#">
 <head>
-    <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-NDZ9D5BK');</script>
-    <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Sorenza - Luksuzni Parfemi | Online Parfumerija BiH')</title>
-    <link rel="icon" sizes="48x48" href="{{ asset('favicon-48x48.png') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="theme-color" content="#7c3aed">
+
+    {{-- 2. FAVICONS (Google Priority - Mora biti pri vrhu) --}}
+    {{-- Glavna ikona za tabove i Google Search (48x48 multiple) --}}
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon-48x48.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    
+    {{-- Ostale rezolucije za uređaje --}}
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
     <link rel="icon" sizes="192x192" href="{{ asset('favicon-512x512.png') }}">
-    {{-- Primary SEO Meta Tags --}}
-    <meta name="description" content="@yield('meta_description', 'Sorenza parfumerija - Kupite originalne luksuzne parfeme online. Širok izbor muških i ženskih parfema, toaletnih voda i mirisa poznatih svjetskih brendova. Brza dostava u Bosni i Hercegovini. Povoljne cijene i akcije.')">
-    <meta name="keywords" content="@yield('meta_keywords', 'parfemi, parfem, luksuzni parfemi, originalni parfemi, online parfumerija, kupovina parfema, parfemi online, mirisne note, toaletna voda, eau de parfum, eau de toilette, parfemi BiH, parfemi Sarajevo, parfemi Mostar, parfemi Banja Luka, parfemi Tuzla, parfemi Hrvatska, parfemi Zagreb, parfemi Split, parfemi Srbija, parfemi Beograd, parfemi Novi Sad, muški parfemi, ženski parfemi, unisex parfemi, brendirani parfemi, parfemi na akciji, povoljni parfemi, jeftini parfemi, ekskluzivni mirisi, arome, parfemska kolekcija, designer parfemi, niche parfemi, parfemi shop, prodaja parfema, naruči parfem, kupiti parfem online, best parfemi, popularni parfemi, novi parfemi 2024, parfemi cijena, parfem poklon, poklon set parfem, parfemi za nju, parfemi za njega, miris, mirisi, parfimeriјa, парфеми, парфем, мушки парфеми, женски парфеми')">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+
+    {{-- 3. TITLE & DESCRIPTION --}}
+    <title>@yield('title', 'Sorenza - Luksuzni Parfemi | Online Parfumerija BiH')</title>
+    <meta name="description" content="@yield('meta_description', 'Sorenza parfumerija - Kupite originalne luksuzne parfeme online. Širok izbor muških i ženskih parfema. Brza dostava u BiH.')">
+    <meta name="keywords" content="@yield('meta_keywords', 'parfemi, parfem, luksuzni parfemi, originalni parfemi, online parfumerija, parfemi BiH, parfemi Sarajevo, muški parfemi, ženski parfemi, unisex parfemi')">
     <meta name="author" content="Sorenza">
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-    <meta name="language" content="Bosnian, Croatian, Serbian">
+
+    {{-- 4. ROBOTS LOGIKA (Ključno za SEO i sakrivanje korpe) --}}
+    @if(request()->is('cart*', 'checkout*', 'admin*'))
+        <meta name="robots" content="noindex, nofollow">
+    @else
+        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    @endif
+
+    {{-- 5. CANONICAL & GEO --}}
+    <link rel="canonical" href="{{ url()->current() }}">
+    <link rel="alternate" hreflang="bs" href="{{ url()->current() }}">
+    <link rel="alternate" hreflang="hr" href="{{ url()->current() }}">
+    <link rel="alternate" hreflang="sr" href="{{ url()->current() }}">
+    <link rel="alternate" hreflang="x-default" href="{{ url()->current() }}">
+
     <meta name="geo.region" content="BA">
     <meta name="geo.placename" content="Bosnia and Herzegovina">
     <meta name="geo.position" content="43.8563;18.4131">
     <meta name="ICBM" content="43.8563, 18.4131">
-    <meta name="coverage" content="Bosnia and Herzegovina, Croatia, Serbia">
-    <meta name="target" content="all">
-    <meta name="audience" content="all">
-    <meta name="page-topic" content="Parfemi, Parfumerija, Mirisi, Kozmetika">
-    <meta name="page-type" content="Online Shop">
-    <meta name="classification" content="Business, Shopping, Parfemi, Kozmetika">
 
-    {{-- Open Graph / Facebook --}}
+    {{-- 6. OPEN GRAPH (Facebook/WhatsApp) --}}
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://sorenzaperfumes.com/"> <meta property="og:title" content="Sorénza">
-    <meta property="og:title" content="@yield('og_title', 'Sorenza Parfemi - Kupite Luksuzne Parfeme Online | BiH, HR, SRB')">
-    <meta property="og:description" content="@yield('og_description', 'Otkrijte kolekciju luksuznih parfema u Sorenza online parfumeriji. Originalni brendovi, jedinstveni mirisi, povoljne cijene i brza dostava širom BiH.')">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="Sorenza Parfemi">
+    <meta property="og:title" content="@yield('og_title', 'Sorenza - Luksuzni Parfemi Online | BiH, HR, SRB')">
+    <meta property="og:description" content="@yield('og_description', 'Otkrijte kolekciju luksuznih parfema u Sorenza online parfumeriji. Originalni brendovi i brza dostava.')">
     <meta property="og:image" content="@yield('og_image', asset('favicon.png'))">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:type" content="image/jpeg">
-    <meta property="og:image:alt" content="Sorenza Parfemi - Luksuzni originalni parfemi online">
     <meta property="og:locale" content="bs_BA">
-    <meta property="og:locale:alternate" content="hr_HR">
-    <meta property="og:locale:alternate" content="sr_RS">
-    {{-- <meta property="og:site_name" content="Sorenza Parfemi"> --}}
-    <meta property="og:site_name" content="sorenzaperfumes.com/">
 
-    {{-- Twitter --}}
-    <title>@yield('title', 'Sorenza - Luksuzni Parfemi')</title>
-    <meta name="description" content="@yield('meta_description', 'Premium parfemi i mirisi. Kupujte online - brza dostava u BiH')">
-
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('og_title', 'Sorenza - Luksuzni Parfemi')">
-    <meta property="og:description" content="@yield('og_description', 'Otkrijte svijet luksuznih mirisa. Brza dostava na vašu adresu.')">
-    <meta property="og:image" content="@yield('og_image', asset('favicon.png'))">
-
+    {{-- 7. TWITTER --}}
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ url()->current() }}">
     <meta name="twitter:title" content="@yield('twitter_title', 'Sorenza - Luksuzni Parfemi')">
     <meta name="twitter:description" content="@yield('twitter_description', 'Premium parfemi i mirisi. Kupujte online.')">
     <meta name="twitter:image" content="@yield('twitter_image', asset('favicon.png'))">
 
-    {{-- Additional SEO Meta Tags --}}
-    <meta name="rating" content="general">
-    <meta name="distribution" content="global">
-    <meta name="revisit-after" content="3 days">
-    <meta http-equiv="content-language" content="bs, hr, sr">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Sorenza Parfemi">
-    <meta name="application-name" content="Sorenza Parfemi">
-    <meta name="theme-color" content="#7c3aed">
-    <meta name="msapplication-TileColor" content="#7c3aed">
-
-    {{-- Canonical URL --}}
-    <link rel="canonical" href="{{ url()->current() }}">
-
-    {{-- Alternate Language Links for SEO --}}
-    <link rel="alternate" hreflang="bs" href="{{ url()->current() }}">
-    <link rel="alternate" hreflang="hr" href="{{ url()->current() }}">
-    <link rel="alternate" hreflang="sr" href="{{ url()->current() }}">
-    <link rel="alternate" hreflang="x-default" href="{{ url()->current() }}">
-    <link rel="icon" href="{{ asset('favicon-32x32.png') }}">
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
-    <link rel="canonical" href="{{ url()->current() }}" />
-
-    {{-- Structured Data / Schema.org for Local Business --}}
+    {{-- 8. SCHEMA.ORG (JSON-LD Structured Data) --}}
+    {{-- Local Business --}}
     <script type="application/ld+json">
     {
         "@@context": "https://schema.org",
         "@@type": "Store",
         "name": "Sorenza Parfemi",
-        "alternateName": ["Sorenza", "Sorenza Parfumerija", "Sorenza Online Shop"],
-        "description": "Online prodavnica luksuznih i originalnih parfema. Širok izbor muških, ženskih i unisex mirisa. Dostava u BiH.",
+        "alternateName": ["Sorenza", "Sorenza Parfumerija"],
+        "description": "Online prodavnica luksuznih i originalnih parfema. Dostava u BiH.",
         "url": "{{ url('/') }}",
         "logo": "{{ asset('images/logo.png') }}",
         "image": "{{ asset('images/sorenza-og.jpg') }}",
         "priceRange": "$$",
-        "currenciesAccepted": "BAM, EUR, RSD, HRK",
-        "paymentAccepted": "Cash, Credit Card, Debit Card, Bank Transfer",
+        "currenciesAccepted": "BAM, EUR",
+        "paymentAccepted": "Cash, Credit Card, Bank Transfer",
         "address": {
             "@@type": "PostalAddress",
             "addressCountry": "BA",
             "addressRegion": "Bosna i Hercegovina"
         },
-        "areaServed": [
-            {
-                "@@type": "Country",
-                "name": "Bosnia and Herzegovina",
-                "alternateName": "Bosna i Hercegovina"
-            },
-        ],
-        "hasOfferCatalog": {
-            "@@type": "OfferCatalog",
-            "name": "Parfemi Katalog",
-            "itemListElement": [
-                {
-                    "@@type": "OfferCatalog",
-                    "name": "Muški Parfemi",
-                    "itemListElement": {
-                        "@@type": "Offer",
-                        "itemOffered": {
-                            "@@type": "Product",
-                            "name": "Muški parfemi"
-                        }
-                    }
-                },
-                {
-                    "@@type": "OfferCatalog",
-                    "name": "Ženski Parfemi",
-                    "itemListElement": {
-                        "@@type": "Offer",
-                        "itemOffered": {
-                            "@@type": "Product",
-                            "name": "Ženski parfemi"
-                        }
-                    }
-                },
-                {
-                    "@@type": "OfferCatalog",
-                    "name": "Unisex Parfemi",
-                    "itemListElement": {
-                        "@@type": "Offer",
-                        "itemOffered": {
-                            "@@type": "Product",
-                            "name": "Unisex parfemi"
-                        }
-                    }
-                }
-            ]
-        },
-        "sameAs": []
+        "areaServed": [{"@@type": "Country", "name": "Bosnia and Herzegovina"}]
     }
     </script>
 
-    {{-- Structured Data for Website --}}
+    {{-- WebSite --}}
     <script type="application/ld+json">
     {
         "@@context": "https://schema.org",
         "@@type": "WebSite",
         "name": "Sorénza",
-        "alternateName": ["Sorenza Parfemi", "Sorenza Parfumerija", "Sorenza Online Parfumerija"],
         "url": "https://sorenzaperfumes.com/",
-        "inLanguage": ["bs", "hr", "sr"],
         "potentialAction": {
             "@@type": "SearchAction",
-            "target": {
-                "@@type": "EntryPoint",
-                "urlTemplate": "{{ url('/shop') }}?search={search_term_string}"
-            },
+            "target": "{{ url('/shop') }}?search={search_term_string}",
             "query-input": "required name=search_term_string"
         }
     }
     </script>
 
-    {{-- Structured Data for Organization --}}
+    {{-- Organization --}}
     <script type="application/ld+json">
     {
         "@@context": "https://schema.org",
         "@@type": "Organization",
         "name": "Sorenza",
-        "legalName": "Sorenza Parfemi",
         "url": "{{ url('/') }}",
         "logo": "{{ asset('images/logo.png') }}",
-        "description": "Sorenza - Premium online parfumerija sa širokim izborom luksuznih parfema i mirisa. Originalni parfemi, brza dostava, povoljne cijene.",
-        "foundingDate": "2024",
-        "slogan": "Luksuzni parfemi za svakoga",
-        "knowsAbout": ["Parfemi", "Parfumerija", "Mirisi", "Toaletne vode", "Eau de Parfum", "Eau de Toilette", "Luksuzna kozmetika"],
-        "makesOffer": {
-            "@@type": "Offer",
-            "itemOffered": {
-                "@@type": "Product",
-                "name": "Originalni parfemi",
-                "category": "Parfemi i mirisi"
-            }
-        }
+        "sameAs": []
     }
     </script>
 
-    {{-- BreadcrumbList Schema --}}
+    {{-- BreadcrumbList --}}
     <script type="application/ld+json">
     {
         "@@context": "https://schema.org",
         "@@type": "BreadcrumbList",
         "itemListElement": [
-            {
-                "@@type": "ListItem",
-                "position": 1,
-                "name": "Početna",
-                "item": "{{ url('/') }}"
-            },
-            {
-                "@@type": "ListItem",
-                "position": 2,
-                "name": "Parfemi",
-                "item": "{{ url('/shop') }}"
-            }
+            { "@@type": "ListItem", "position": 1, "name": "Početna", "item": "{{ url('/') }}" },
+            { "@@type": "ListItem", "position": 2, "name": "Parfemi", "item": "{{ url('/shop') }}" }
         ]
     }
     </script>
 
-    {{-- FAQ Schema for common questions --}}
+    {{-- FAQ --}}
     <script type="application/ld+json">
     {
         "@@context": "https://schema.org",
@@ -234,26 +138,12 @@
             {
                 "@@type": "Question",
                 "name": "Gdje mogu kupiti originalne parfeme online u BiH?",
-                "acceptedAnswer": {
-                    "@@type": "Answer",
-                    "text": "Originalne parfeme možete kupiti online u Sorenza parfumeriji. Nudimo širok izbor muških i ženskih parfema sa brzom dostavom u Bosni i Hercegovini."
-                }
+                "acceptedAnswer": { "@@type": "Answer", "text": "Originalne parfeme možete kupiti online u Sorenza parfumeriji uz brzu dostavu." }
             },
             {
                 "@@type": "Question",
                 "name": "Koje brendove parfema nudite?",
-                "acceptedAnswer": {
-                    "@@type": "Answer",
-                    "text": "U Sorenza parfumeriji nudimo parfeme renomiranih svjetskih brendova kao što su Chanel, Dior, Versace, Armani i mnogi drugi."
-                }
-            },
-            {
-                "@@type": "Question",
-                "name": "Koji parfemi su najpopularniji?",
-                "acceptedAnswer": {
-                    "@@type": "Answer",
-                    "text": "U Sorenza parfumeriji možete pronaći najpopularnije muške i ženske parfeme svjetskih brendova. Pogledajte našu kolekciju luksuznih mirisa."
-                }
+                "acceptedAnswer": { "@@type": "Answer", "text": "Nudimo brendove kao što su Chanel, Dior, Versace, Armani i mnoge druge." }
             }
         ]
     }
@@ -261,7 +151,8 @@
 
     @yield('structured_data')
 
-    @vite('resources/css/app.css')
+    {{-- 9. STYLES --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
 <body class="min-h-screen text-gray-800 font-sans" style="background: linear-gradient(to bottom, #ffffff 0%, #f3f4f6 15%, #d1d5db 35%, #6b7280 55%, #374151 75%, #111827 100%);">
@@ -360,7 +251,7 @@
         </div>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-300 py-12 mt-auto">
+    <footer class="bg-gray-900 text-gray-200 py-12 mt-auto">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid md:grid-cols-3 gap-8 mb-8">
                 {{-- About Section --}}
@@ -397,13 +288,13 @@
 
             {{-- SEO Footer Text --}}
             <div class="border-t border-gray-800 pt-6 mb-6">
-                <p class="text-xs text-gray-600 leading-relaxed text-center">
+                <p class="text-xs text-gray-200 leading-relaxed text-center">
                     Sorenza parfumerija - Online prodavnica parfema | Muški parfemi | Ženski parfemi | Unisex parfami | Parfemi Sarajevo | Luksuzni parfemi online | Kupovina parfema | Dostava parfema BiH
                 </p>
             </div>
 
             <div class="border-t border-gray-800 pt-8 text-center">
-                <p class="text-sm text-gray-500">&copy; {{ date('Y') }} Sorenza Parfemi. Sva prava zadržana. | Online parfumerija - Luksuzni parfemi BiH</p>
+                <p class="text-sm text-gray-200">&copy; {{ date('Y') }} Sorenza Parfemi. Sva prava zadržana. | Online parfumerija - Luksuzni parfemi BiH</p>
             </div>
         </div>
     </footer>

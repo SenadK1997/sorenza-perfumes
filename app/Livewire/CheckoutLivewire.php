@@ -81,29 +81,26 @@ class CheckoutLivewire extends Component
 
     public function placeOrder()
     {
+        // 1. Honeypot check
         if (!empty($this->extra_info_field)) {
-            // Silently redirect them to home. 
-            // Don't show an error, or the bot will try to fix it.
             return redirect()->to('/');
         }
 
-        // 4. BOT CHECK B: The Time Check
-        // If they "typed" all their info in less than 3 seconds, it's a bot.
+        // 2. Bot Time Check
         $secondsOnPage = now()->timestamp - $this->loadTime;
         if ($secondsOnPage < 3) {
-            // Log it if you want to see it during testing
-            // logger("Bot detected: Only spent $secondsOnPage seconds on page.");
             return redirect()->to('/');
         }
-        // --- RATE LIMITING START ---
-        // We identify the user by their IP address
-        $key = 'place-order:' . request()->ip();
 
+        // 3. Rate Limiting
+        $key = 'place-order:' . request()->ip();
         if (RateLimiter::tooManyAttempts($key, $maxAttempts = 2)) {
             $seconds = RateLimiter::availableIn($key);
             $this->addError('email', 'Previše pokušaja. Molimo pokušajte ponovo za ' . ceil($seconds / 60) . ' minuta.');
             return;
         }
+
+        // 4. Validation
         $this->validate([
             'full_name' => 'required',
             'phone' => 'required',
@@ -111,23 +108,24 @@ class CheckoutLivewire extends Component
             'city' => 'required',
             'zipcode' => 'required',
             'canton' => 'required',
-            'email' => 'required|email', // Added validation for email
+            'email' => 'required|email',
         ]);
 
         RateLimiter::hit($key, 600);
-        
-        $order = DB::transaction(function () {
-            
-            // 1. Find the Seller ID from the coupon if it exists
-            $sellerId = null;
-            if ($this->coupon_code) {
-                $coupon = Coupon::where('code', $this->coupon_code)->first();
-                if ($coupon) {
-                    $sellerId = $coupon->user_id;
-                }
-            }
 
-            // 2. Update/Create Customer & Link to Seller
+        // 5. Pronalaženje prodavača preko kupona (prije transakcije)
+        $sellerId = null;
+        if ($this->coupon_code) {
+            $coupon = Coupon::where('code', $this->coupon_code)->first();
+            if ($coupon) {
+                $sellerId = $coupon->user_id;
+            }
+        }
+
+        // 6. Database Transaction
+        $order = DB::transaction(function () use ($sellerId) {
+            
+            // A. Update/Create Customer & Link to Seller
             Customer::updateOrCreate(
                 ['email' => $this->email],
                 [
@@ -137,11 +135,11 @@ class CheckoutLivewire extends Component
                     'city' => $this->city,
                     'zipcode' => $this->zipcode,
                     'canton' => $this->canton,
-                    'user_id' => $sellerId, // Customer now linked to the seller who gave them the coupon
+                    'user_id' => $sellerId, 
                 ]
             );
 
-            // 3. Create Order with Coupon Data & Link to Seller
+            // B. Create Order sa automatskim statusom
             $newOrder = Order::create([
                 'subtotal' => $this->subtotal,
                 'discount_amount' => $this->discount,
@@ -155,10 +153,12 @@ class CheckoutLivewire extends Component
                 'zipcode' => $this->zipcode,
                 'canton' => $this->canton,
                 'email' => $this->email,
-                'user_id' => $sellerId, // The seller who owns the coupon gets the order in their dashboard
+                'user_id' => $sellerId, 
+                // Ako postoji sellerId, narudžba je odmah 'taken'
+                'status' => $sellerId ? 'taken' : 'pending',
             ]);
 
-            // 4. Attach Items
+            // C. Attach Items
             $pivotData = [];
             foreach ($this->items as $item) {
                 $pivotData[$item['id']] = [
@@ -168,9 +168,9 @@ class CheckoutLivewire extends Component
             }
             $newOrder->perfumes()->attach($pivotData);
 
-            // 5. Increment Coupon usage
+            // D. Increment Coupon usage
             if ($this->coupon_code) {
-                $coupon = \App\Models\Coupon::where('code', $this->coupon_code)->first();
+                $coupon = Coupon::where('code', $this->coupon_code)->first();
                 if ($coupon) {
                     $coupon->increment('used_count');
                 }
@@ -179,9 +179,8 @@ class CheckoutLivewire extends Component
             return $newOrder;
         });
 
-        // Clear everything
+        // 7. Cleanup
         session()->forget(['cart', 'coupon']);
-
         RateLimiter::clear($key);
         
         return redirect()->route('order.success', ['id' => $order->pretty_id]);
