@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html lang="bs" prefix="og: https://ogp.me/ns#">
 <head>
-    <script>
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-                })(window,document,'script','dataLayer','GTM-NDZ9D5BK');
-            }, 3500); // Čeka 3.5 sekunde - drastično popravlja PageSpeed score
-        });
-    </script>
     <meta charset="UTF-8">
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    <link rel="preconnect" href="https://www.google-analytics.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#7c3aed">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 
     {{-- 2. FAVICONS (Google Priority - Mora biti pri vrhu) --}}
     {{-- Glavna ikona za tabove i Google Search (48x48 multiple) --}}
@@ -160,6 +156,15 @@
     {{-- 9. STYLES --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    <script>
+        window.addEventListener('load', function() {
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-NDZ9D5BK');
+        });
+    </script>
 </head>
 <body class="min-h-screen text-gray-800 font-sans" style="background: linear-gradient(to bottom, #ffffff 0%, #f3f4f6 15%, #d1d5db 35%, #6b7280 55%, #374151 75%, #111827 100%);">
     <!-- Google Tag Manager (noscript) -->
@@ -175,7 +180,10 @@
                     <img 
                         src="{{ asset('storage/images/logosorenza.webp') }}" 
                         alt="logo"
-                        class="h-[45px] w-[35px] p-0"
+                        width="28" 
+                        height="45"
+                        class="h-[45px] w-[28px] p-0"
+                        fetchpriority="high"
                     >
                     <p class="text-xl mt-2 font-serif">Sorénza</p>
                 </a>
