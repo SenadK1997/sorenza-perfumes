@@ -12,6 +12,8 @@ use App\Enums\Canton;
 use App\Models\Perfume;
 use App\Models\Coupon;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutLivewire extends Component
 {
@@ -182,8 +184,36 @@ class CheckoutLivewire extends Component
         // 7. Cleanup
         session()->forget(['cart', 'coupon']);
         RateLimiter::clear($key);
-        
+        $this->sendSlackNotification($order);
         return redirect()->route('order.success', ['id' => $order->pretty_id]);
+    }
+    protected function sendSlackNotification($order)
+    {
+        // Uzimamo URL iz config-a (koji vuče iz .env-a)
+        $webhookUrl = config('services.slack.webhook_url');
+
+        // Ako URL uopšte nije postavljen, samo izađi bez greške
+        if (!$webhookUrl) {
+            return;
+        }
+
+        try {
+            // Šaljemo zahtjev sa kratkim timeout-om od 3 sekunde
+            // Ne želimo da kupac čeka predugo ako Slack ne odgovara
+            Http::timeout(3)->post($webhookUrl, [
+                'text' => "🛍️ *Nova narudžba na Sorenza Parfumes!* \n" .
+                        "--------------------------------------------\n" .
+                        "🆔 *Broj:* #{$order->id} \n" .
+                        "👤 *Kupac:* {$order->full_name} \n" .
+                        "💰 *Iznos:* {$order->amount} KM \n" .
+                        "📍 *Grad:* {$order->city} \n" .
+                        "--------------------------------------------"
+            ]);
+
+        } catch (\Exception $e) {
+            // Ako slanje ne uspije, samo zapiši u log i nastavi dalje
+            Log::error("Slack notification failed: " . $e->getMessage());
+        }
     }
 
     public function render()

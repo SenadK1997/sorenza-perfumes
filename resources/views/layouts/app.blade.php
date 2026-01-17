@@ -159,7 +159,6 @@
     </script>
 
     @yield('structured_data')
-    @livewireScriptConfig
     {{-- 9. STYLES --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
