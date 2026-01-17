@@ -23,7 +23,7 @@
                         </div>
                     </div>
                     {{-- Content --}}
-                    <h4 class="text-xl font-semibold text-white mb-3 text-center group-hover:text-purple-200 transition-colors duration-300">Luksuzni Sastojci</h4>
+                    <h3 class="text-xl font-semibold text-white mb-3 text-center group-hover:text-purple-200 transition-colors duration-300">Luksuzni Sastojci</h3>
                     <p class="text-gray-400 text-center leading-relaxed group-hover:text-gray-300 transition-colors duration-300">Pažljivo odabrane premium mirisne note iz cijelog svijeta, nabavljene od najfinijih parfemskih kuća.</p>
                     {{-- Decorative line --}}
                     <div class="mt-6 w-12 h-px bg-gradient-to-r from-transparent via-purple-400/50 to-transparent mx-auto group-hover:w-20 transition-all duration-500"></div>
@@ -43,7 +43,7 @@
                         </div>
                     </div>
                     {{-- Content --}}
-                    <h4 class="text-xl font-semibold text-white mb-3 text-center group-hover:text-pink-200 transition-colors duration-300">Kvalitet</h4>
+                    <h3 class="text-xl font-semibold text-white mb-3 text-center group-hover:text-pink-200 transition-colors duration-300">Kvalitet</h3>
                     <p class="text-gray-400 text-center leading-relaxed group-hover:text-gray-300 transition-colors duration-300">Kontinuirano unapređujemo naše procese i koristimo najsavremeniju tehnologiju kako bismo pružili inovativna rješenja.</p>
                     {{-- Decorative line --}}
                     <div class="mt-6 w-12 h-px bg-gradient-to-r from-transparent via-pink-400/50 to-transparent mx-auto group-hover:w-20 transition-all duration-500"></div>
@@ -62,7 +62,7 @@
                         </div>
                     </div>
                     {{-- Content --}}
-                    <h4 class="text-xl font-semibold text-white mb-3 text-center group-hover:text-purple-200 transition-colors duration-300">Jedinstveni Mirisi</h4>
+                    <h3 class="text-xl font-semibold text-white mb-3 text-center group-hover:text-purple-200 transition-colors duration-300">Jedinstveni Mirisi</h3>
                     <p class="text-gray-400 text-center leading-relaxed group-hover:text-gray-300 transition-colors duration-300">Svaki miris priča priču – vašu priču. Prepoznatljive arome koje definišu ko ste vi.</p>
                     {{-- Decorative line --}}
                     <div class="mt-6 w-12 h-px bg-gradient-to-r from-transparent via-purple-400/50 to-transparent mx-auto group-hover:w-20 transition-all duration-500"></div>
