@@ -158,10 +158,6 @@
     }
     </script>
 
-    @yield('structured_data')
-    {{-- 9. STYLES --}}
-    @livewireStyles
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>
         window.addEventListener('load', function() {
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -171,6 +167,10 @@
             })(window,document,'script','dataLayer','GTM-NDZ9D5BK');
         });
     </script>
+    @yield('structured_data')
+    {{-- 9. STYLES --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 </head>
 <body class="min-h-screen text-gray-800 font-sans" style="background: linear-gradient(to bottom, #ffffff 0%, #f3f4f6 15%, #d1d5db 35%, #6b7280 55%, #374151 75%, #111827 100%);">
     <!-- Google Tag Manager (noscript) -->
