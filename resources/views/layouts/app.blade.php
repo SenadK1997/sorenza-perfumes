@@ -1,15 +1,24 @@
 <!DOCTYPE html>
 <html lang="bs" prefix="og: https://ogp.me/ns#">
 <head>
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-NDZ9D5BK');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#7c3aed">
+
+    {{-- 1. Brzo povezivanje (bez duplikata) --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    <link rel="preconnect" href="https://www.google-analytics.com">
+
+    {{-- 2. Optimizovano učitavanje fonta --}}
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" media="print" onload="this.media='all'">
+
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap">
+    </noscript>
 
     {{-- 2. FAVICONS (Google Priority - Mora biti pri vrhu) --}}
     {{-- Glavna ikona za tabove i Google Search (48x48 multiple) --}}
@@ -21,7 +30,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
     <link rel="icon" sizes="192x192" href="{{ asset('favicon-512x512.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
-    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+    {{-- <link rel="manifest" href="{{ asset('site.webmanifest') }}"> --}}
 
     {{-- 3. TITLE & DESCRIPTION --}}
     <title>@yield('title', 'Sorenza - Luksuzni Parfemi | Online Parfumerija BiH')</title>
@@ -112,7 +121,7 @@
         "@@type": "Organization",
         "name": "Sorenza",
         "url": "{{ url('/') }}",
-        "logo": "{{ asset('images/logo.png') }}",
+        "logo": "{{ asset('images/logosorenza.webp') }}",
         "sameAs": []
     }
     </script>
@@ -150,10 +159,18 @@
     </script>
 
     @yield('structured_data')
-
     {{-- 9. STYLES --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    <script>
+        window.addEventListener('load', function() {
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-NDZ9D5BK');
+        });
+    </script>
 </head>
 <body class="min-h-screen text-gray-800 font-sans" style="background: linear-gradient(to bottom, #ffffff 0%, #f3f4f6 15%, #d1d5db 35%, #6b7280 55%, #374151 75%, #111827 100%);">
     <!-- Google Tag Manager (noscript) -->
