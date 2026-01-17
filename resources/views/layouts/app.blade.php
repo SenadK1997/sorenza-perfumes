@@ -76,7 +76,7 @@
         "alternateName": ["Sorenza", "Sorenza Parfumerija"],
         "description": "Online prodavnica luksuznih i originalnih parfema. Dostava u BiH.",
         "url": "{{ url('/') }}",
-        "logo": "{{ asset('images/logo.png') }}",
+        "logo": "{{ asset('images/logosorenza.webp') }}",
         "image": "{{ asset('images/sorenza-og.jpg') }}",
         "priceRange": "$$",
         "currenciesAccepted": "BAM, EUR",
@@ -167,7 +167,7 @@
             <div class="flex justify-between items-center py-4">
                 <a href="/" class="text-2xl font-bold text-[#DAAA57] flex justify-center items-center gap-x-2">
                     <img 
-                        src="{{ asset('storage/images/logosorenza.png') }}" 
+                        src="{{ asset('storage/images/logosorenza.webp') }}" 
                         alt="logo"
                         class="h-[45px] w-[35px] p-0"
                     >
