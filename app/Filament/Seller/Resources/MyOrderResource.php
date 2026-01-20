@@ -12,6 +12,7 @@ use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use App\Services\SellerService;
+use App\Models\Customer;
 
 class MyOrderResource extends OrderResource
 {
@@ -95,17 +96,29 @@ class MyOrderResource extends OrderResource
 
                         // 2. IZVRŠAVANJE PRODAJE (DB Transaction osigurava da sve prođe ili ništa)
                         \Illuminate\Support\Facades\DB::transaction(function () use ($record, $user) {
+                            
+                            // 1. Pronađi kupca preko emaila
+                            $customer = Customer::where('email', $record->email)->first();
+
+                            // 2. Ako kupac postoji, ažuriraj mu user_id (pripadnost prodavaču)
+                            if ($customer) {
+                                $customer->update([
+                                    'user_id' => $user->id
+                                ]);
+                            }
+
+                            // 3. Evidentiraj prodaju svakog parfema
                             foreach ($record->perfumes as $perfume) {
                                 SellerService::recordPerfumeSold(
                                     user: $user,
                                     perfume: $perfume,
                                     quantity: $perfume->pivot->quantity,
                                     isManual: false,
-                                    customerId: $record->customer_id
+                                    customerId: $customer?->id 
                                 );
                             }
 
-                            // Ažuriranje statusa narudžbe tek nakon što je servis odradio svoje
+                            // 4. Završi narudžbu
                             $record->update(['status' => OrderStatus::COMPLETED->value]);
                         });
 
