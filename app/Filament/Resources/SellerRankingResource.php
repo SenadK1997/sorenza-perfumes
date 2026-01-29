@@ -34,17 +34,17 @@ class SellerRankingResource extends Resource
                 TextColumn::make('user.name')
                     ->label('Prodavač')
                     ->searchable()
-                    // ISPRAVKA: $rowLoop je objekat, koristimo iteration za broj reda
+                    ->weight('bold')
+                    // THE ICON: Trophy for all three
                     ->icon(fn ($rowLoop): ?string => match ($rowLoop?->iteration) {
-                        1 => 'heroicon-s-trophy',
-                        2 => 'heroicon-m-academic-cap',
-                        3 => 'heroicon-s-star',
+                        1, 2, 3 => 'heroicon-s-trophy',
                         default => null,
                     })
+                    // THE COLORS: Using the keys you registered in AdminPanelProvider
                     ->iconColor(fn ($rowLoop): ?string => match ($rowLoop?->iteration) {
-                        1 => 'warning',
-                        2 => 'gray',
-                        3 => 'danger',
+                        1 => 'gold',
+                        2 => 'silver',
+                        3 => 'bronze',
                         default => null,
                     })
                     ->weight('bold'),

@@ -37,19 +37,19 @@ class SellerRankingResource extends Resource
                     // Highlight boje teksta ako je ulogovan korisnik
                     ->color(fn ($record) => $record->user_id === Auth::id() ? 'primary' : null)
                     ->weight(fn ($record) => $record->user_id === Auth::id() ? 'bold' : 'medium')
-                    ->icon(fn ($rowLoop, $record): ?string => 
+                    ->icon(fn ($rowLoop): ?string => 
                         match ($rowLoop?->iteration) {
-                            1 => 'heroicon-s-trophy',
-                            2 => 'heroicon-m-academic-cap',
-                            3 => 'heroicon-s-star',
-                            default => $record->user_id === Auth::id() ? 'heroicon-m-user' : null,
+                            1, 2, 3 => 'heroicon-s-trophy',
+                            default => null,
                         }
                     )
-                    ->iconColor(fn ($rowLoop, $record): ?string => 
+                    
+                    // THE COLORS: Standard Filament colors that represent Gold, Silver, and Bronze
+                    ->iconColor(fn ($rowLoop): ?string => 
                         match ($rowLoop?->iteration) {
-                            1 => 'warning',
-                            2 => 'gray',
-                            3 => 'danger',
+                            1 => 'gold', // Gold / Amber
+                            2 => 'silver',    // Silver / Slate
+                            3 => 'bronze',  // Bronze / Orange-Red
                             default => 'primary',
                         }
                     ),

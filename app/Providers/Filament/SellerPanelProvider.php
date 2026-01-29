@@ -69,6 +69,9 @@ class SellerPanelProvider extends PanelProvider
             '))
             ->colors([
                 'primary' => Color::Slate,
+                'gold'    => '#FFD700',
+                'silver'  => '#C0C0C0',
+                'bronze'  => '#CD7F32',
             ])
             ->discoverResources(in: app_path('Filament/Seller/Resources'), for: 'App\\Filament\\Seller\\Resources')
             ->discoverPages(in: app_path('Filament/Seller/Pages'), for: 'App\\Filament\\Seller\\Pages')

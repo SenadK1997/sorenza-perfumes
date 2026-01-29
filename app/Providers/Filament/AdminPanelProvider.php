@@ -33,6 +33,9 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->colors([
                 'primary' => Color::Amber,
+                'gold'    => '#FFD700',
+                'silver'  => '#C0C0C0',
+                'bronze'  => '#CD7F32',
             ])
             ->brandName(fn () => new HtmlString('
                 <div class="sorenza-brand-wrapper flex items-center gap-3">
