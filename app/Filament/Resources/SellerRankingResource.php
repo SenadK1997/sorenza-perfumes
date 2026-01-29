@@ -37,8 +37,8 @@ class SellerRankingResource extends Resource
                     // ISPRAVKA: $rowLoop je objekat, koristimo iteration za broj reda
                     ->icon(fn ($rowLoop): ?string => match ($rowLoop?->iteration) {
                         1 => 'heroicon-s-trophy',
-                        2 => 'heroicon-s-medal',
-                        3 => 'heroicon-s-award',
+                        2 => 'heroicon-m-academic-cap',
+                        3 => 'heroicon-s-star',
                         default => null,
                     })
                     ->iconColor(fn ($rowLoop): ?string => match ($rowLoop?->iteration) {

@@ -40,8 +40,8 @@ class SellerRankingResource extends Resource
                     ->icon(fn ($rowLoop, $record): ?string => 
                         match ($rowLoop?->iteration) {
                             1 => 'heroicon-s-trophy',
-                            2 => 'heroicon-s-medal',
-                            3 => 'heroicon-s-award',
+                            2 => 'heroicon-m-academic-cap',
+                            3 => 'heroicon-s-star',
                             default => $record->user_id === Auth::id() ? 'heroicon-m-user' : null,
                         }
                     )
