@@ -111,19 +111,24 @@ class PerfumeResource extends Resource
                     ]),
 
                     Forms\Components\Repeater::make('accords')
-                        ->label('Mirisni Akordi')
-                        ->schema([
-                            Forms\Components\Select::make('name')
-                                ->label('Nota')
-                                ->options(config('accords'))
-                                ->required(),
+    ->label('Mirisni Akordi')
+    ->schema([
+        Forms\Components\Select::make('name')
+            ->label('Nota')
+            // Transform the config array so index is the key, name is the value
+            ->options(array_combine(
+                range(0, count(config('accords')) - 1), 
+                array_keys(config('accords'))
+            ))
+            ->required()
+            ->searchable(), // Recommended since the list is long
 
-                            Forms\Components\TextInput::make('percentage')
-                                ->label('Procenat %')
-                                ->numeric()
-                                ->required(),
-                        ])
-                        ->columns(2),
+        Forms\Components\TextInput::make('percentage')
+            ->label('Procenat %')
+            ->numeric()
+            ->required(),
+    ])
+    ->columns(2),
                 ])->collapsible(),
         ]);
     }

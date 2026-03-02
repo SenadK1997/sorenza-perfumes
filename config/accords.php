@@ -52,4 +52,6 @@ return [
     'Kokos' => '#F7F1E7', //48
     'Mineralni' => '#71BBBF', //49
     'Ozonski' => '#DEFDFD', //50
+    'Pjeskoviti' => '#D2B48C', //51
+    'Životinjski' => '#A67B5B', //52
 ];

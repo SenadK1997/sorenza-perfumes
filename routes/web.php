@@ -6,12 +6,15 @@ use App\Livewire\Settings\Profile;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\SitemapController;
 use App\Livewire\ShopLivewire;
 use App\Livewire\ProductShow;
 use App\Livewire\CheckoutLivewire;
 use App\Livewire\OrderSuccess;
 use App\Livewire\OrderDetailLivewire;
 use App\Livewire\TrackOrder;
+
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 

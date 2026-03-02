@@ -52,7 +52,7 @@
             <fieldset>
             <legend class="text-sm font-medium text-gray-900">Cijena</legend>
             <div class="space-y-2 mt-2">
-                @foreach([60, 80, 100, 120, 150] as $p)
+                @foreach([30, 40, 50, 60, 80, 100, 120, 150] as $p)
                 <div class="flex items-center gap-2">
                     <input type="checkbox" value="{{ $p }}" wire:model.live="price" id="price-{{ $p }}-mobile" class="h-5 w-5 rounded border-gray-300 checked:border-indigo-600 checked:bg-indigo-600">
                     <label for="price-{{ $p }}-mobile" class="text-sm text-gray-500">{{ $p }}</label>
@@ -100,7 +100,7 @@
             <fieldset>
                 <legend class="block text-sm font-medium text-gray-900">Cijena</legend>
                 <div class="mt-4 space-y-3">
-                    @foreach([60, 80, 100, 120, 150] as $p)
+                    @foreach([30, 40, 50, 60, 80, 100, 120, 150] as $p)
                         <div class="flex items-center gap-2">
                             <input type="checkbox" value="{{ $p }}" wire:model.live="price" id="price-{{ $p }}" class="h-5 w-5 rounded border-gray-300 checked:border-indigo-600 checked:bg-indigo-600">
                             <label for="price-{{ $p }}" class="text-sm text-gray-500">{{ $p }}</label>
