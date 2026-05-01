@@ -52,7 +52,7 @@
             <fieldset>
             <legend class="text-sm font-medium text-gray-900">Cijena</legend>
             <div class="space-y-2 mt-2">
-                @foreach([30, 40, 50, 60, 80, 100, 120, 150] as $p)
+                @foreach([60, 80, 100, 120, 150] as $p)
                 <div class="flex items-center gap-2">
                     <input type="checkbox" value="{{ $p }}" wire:model.live="price" id="price-{{ $p }}-mobile" class="h-5 w-5 rounded border-gray-300 checked:border-indigo-600 checked:bg-indigo-600">
                     <label for="price-{{ $p }}-mobile" class="text-sm text-gray-500">{{ $p }}</label>
@@ -100,7 +100,7 @@
             <fieldset>
                 <legend class="block text-sm font-medium text-gray-900">Cijena</legend>
                 <div class="mt-4 space-y-3">
-                    @foreach([30, 40, 50, 60, 80, 100, 120, 150] as $p)
+                    @foreach([60, 80, 100, 120, 150] as $p)
                         <div class="flex items-center gap-2">
                             <input type="checkbox" value="{{ $p }}" wire:model.live="price" id="price-{{ $p }}" class="h-5 w-5 rounded border-gray-300 checked:border-indigo-600 checked:bg-indigo-600">
                             <label for="price-{{ $p }}" class="text-sm text-gray-500">{{ $p }}</label>
@@ -164,10 +164,18 @@
                         </div>
 
                         <div class="mt-4 lg:mt-0">
-                            <h1 class="text-2xl sm:text-3xl font-serif font-bold text-gray-900">
-                                Sorénza {{ ucfirst($selectedPerfume->tag) }} {{ $selectedPerfume->name }}
-                            </h1>
-                            <p class="text-gray-600 mt-1">Inspirisano od: {{ $selectedPerfume->inspired_by }}</p>
+                            @php
+                                    $parts = explode(' - ', $selectedPerfume->inspired_by);
+                                    $genderColor = match($selectedPerfume->gender->value) {
+                                    'male'   => '#046499',
+                                    'female' => '#b22eae',
+                                    'unisex' => '#318218',
+                                    default  => '#000000',
+                                };
+                                @endphp
+                                <h3 class="text-xl font-bold" style="color: {{ $genderColor }};">
+                                    {{ count($parts) === 2 ? "$parts[1] - $parts[0]" : $selectedPerfume->inspired_by }} ({{ $selectedPerfume->name }})
+                                </h3>
 
                             @if($selectedPerfume->description)
                                 <p class="mt-4 text-gray-700">{{ $selectedPerfume->description }}</p>
@@ -215,7 +223,7 @@
                                 </div>
                             @endif
 
-                            <p class="mt-4 text-2xl font-semibold text-indigo-600">{{ number_format($selectedPerfume->price, 2) }} KM</p>
+                            <p class="mt-4 text-2xl font-semibold text-gray-700">Cijena: {{ number_format($selectedPerfume->price, 2) }} KM</p>
 
                             {{-- BUTTON LOGIC --}}
                             @if($selectedPerfume->is_available)

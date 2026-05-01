@@ -74,14 +74,27 @@
             </div>
         </div>
 
+
+        {{-- // zelena za unisex: #318218
+        // muska : #046499
+        // zenska : #b22eae --}}
         <div class="relative mt-4">
-            <h3 class="text-sm font-bold text-gray-900">
-                Sorénza {{ ucfirst($perfume->tag) }} {{ $perfume->name }} - {{ $perfume->gender->label() }}
+            @php
+                $parts = explode(' - ', $perfume->inspired_by);
+                $genderColor = match($perfume->gender->value) {
+                'male'   => '#046499',
+                'female' => '#b22eae',
+                'unisex' => '#318218',
+                default  => '#000000',
+            };
+            @endphp
+           <h3 class="text-lg font-bold min-h-[3rem] line-clamp-2" style="color: {{ $genderColor }};">
+                {{ count($parts) === 2 ? "$parts[1] - $parts[0]" : $perfume->inspired_by }} ({{ $perfume->name }})
             </h3>
-            <p class="mt-1 text-sm text-gray-500 italic line-clamp-2 min-h-[2.5rem]">
+            {{-- <p class="mt-1 text-sm text-gray-500 italic line-clamp-2 min-h-[2.5rem]">
                 Inspirisano od: {{ $perfume->inspired_by }}
-            </p>
-            <p class="mt-2 text-lg font-semibold text-indigo-600">{{ number_format($perfume->price, 2) }} KM</p>
+            </p> --}}
+            <p class="mt-2 text-lg font-semibold text-gray-700">{{ number_format($perfume->price, 2) }} KM</p>
         </div>
     </div>
 

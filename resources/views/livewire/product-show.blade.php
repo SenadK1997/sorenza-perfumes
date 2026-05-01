@@ -48,10 +48,18 @@
 
             <!-- PERFUME INFO -->
             <div class="mt-12 lg:mt-0">
-                <h1 class="text-4xl font-serif font-bold tracking-tight text-gray-900">
-                    Sorénza {{ ucfirst($perfume->tag) }} {{ $perfume->name }}
+                @php
+                    $parts = explode(' - ', $perfume->inspired_by);
+                    $genderColor = match($perfume->gender->value) {
+                    'male'   => '#046499',
+                    'female' => '#b22eae',
+                    'unisex' => '#318218',
+                    default  => '#000000',
+                };
+                @endphp
+                <h1 class="text-3xl font-bold" style="color: {{ $genderColor }};">
+                    {{ count($parts) === 2 ? "$parts[1] - $parts[0]" : $perfume->inspired_by }} ({{ $perfume->name }})
                 </h1>
-                <h2>Inspisano od: {{ $perfume->inspired_by }}</h2>
 
                 @if($perfume->description)
                     <p class="mt-6 text-lg leading-relaxed text-gray-600">
@@ -101,8 +109,8 @@
                     </div>
                 @endif
 
-                <p class="mt-4 text-3xl font-semibold text-indigo-600">
-                    {{ number_format($perfume->price, 2) }} KM
+                <p class="mt-4 text-3xl font-semibold text-gray-700">
+                    Cijena: {{ number_format($perfume->price, 2) }} KM
                 </p>
 
                 <!-- Divider -->
