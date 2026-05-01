@@ -67,14 +67,18 @@ class Perfume extends Model
             ->withTimestamps();
     }
 
-    public function scopeAvailable($query)
+    public function scopeVisibleInShop($query)
     {
-        return $query->where('availability', true)
-                    ->orWhere(function ($q) {
-                        $q->where('availability', false)
-                        ->whereNotNull('restock_date')
-                        ->where('restock_date', '<=', now());
-                    });
+        return $query->where(function ($q) {
+            // Show if explicitly in stock
+            $q->where('availability', true)
+            // OR show if out of stock but has a future restock date
+            ->orWhere(function ($sub) {
+                $sub->where('availability', false)
+                    ->whereNotNull('restock_date')
+                    ->where('restock_date', '>', now());
+            });
+        });
     }
 
 }

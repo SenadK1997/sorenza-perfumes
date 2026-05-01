@@ -74,21 +74,26 @@ class ShopLivewire extends Component
     {
         $query = Perfume::query();
 
-        $query->when($this->gender, fn($q) => $q->whereIn('gender', $this->gender))
-              ->when($this->price, fn($q) => $q->whereIn('price', $this->price))
-              // Apply your smart scope if the toggle is active
-              ->when($this->onlyAvailable, fn($q) => $q->available());
+        // 1. GLOBAL VISIBILITY: Use the scope we just created
+        $query->visibleInShop();
 
-        // We check if any perfumes are currently "Coming Soon" or "Out of Stock"
-        // to decide whether to show the filter checkbox in the Blade.
-        $hasUnavailable = Perfume::where('availability', false)
-            ->where(function($q) {
-                $q->whereNull('restock_date')->orWhere('restock_date', '>', now());
-            })->exists();
+        // 2. FILTERS
+        $query->when($this->gender, fn($q) => $q->whereIn('gender', $this->gender))
+            ->when($this->price, fn($q) => $q->whereIn('price', $this->price))
+            
+            // If "Prikaži dostupne" is checked, show ONLY items currently in stock
+            ->when($this->onlyAvailable, fn($q) => $q->where('availability', true));
+
+        // 3. FILTER CHECKBOX VISIBILITY
+        // Determine if we show the "Only Available" toggle
+        $hasComingSoon = Perfume::where('availability', false)
+            ->whereNotNull('restock_date')
+            ->where('restock_date', '>', now())
+            ->exists();
 
         return view('livewire.shop-livewire', [
             'perfumes' => $query->paginate(12),
-            'showAvailabilityFilter' => $hasUnavailable,
+            'showAvailabilityFilter' => $hasComingSoon,
         ]);
     }
 }
