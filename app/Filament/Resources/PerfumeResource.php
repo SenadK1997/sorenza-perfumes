@@ -51,6 +51,12 @@ class PerfumeResource extends Resource
                         Forms\Components\Toggle::make('availability')
                             ->label('Dostupno')
                             ->default(true),
+
+                        Forms\Components\Toggle::make('is_bestseller')
+                            ->label('Najprodavaniji (Bestseller)')
+                            ->helperText('Prikaži ovaj parfem u sekciji "Najprodavaniji" na naslovnoj strani.')
+                            ->default(false)
+                            ->visible(fn () => auth()->user()?->hasRole('admin')),
                     ]),
 
                     Forms\Components\RichEditor::make('description')

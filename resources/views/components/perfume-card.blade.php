@@ -1,16 +1,36 @@
-<div class="group relative flex flex-col">
+<div class="group relative flex flex-col rounded-2xl bg-white/70 backdrop-blur-sm border border-white/90 p-2 sm:p-3 shadow-[0_8px_30px_-12px_rgba(190,80,150,0.20)] hover:shadow-[0_20px_50px_-15px_rgba(160,60,180,0.45)] hover:-translate-y-1 hover:border-fuchsia-100 transition-all duration-300">
     @php
         $accordConfig = config('accords');
         $accordKeys = array_keys($accordConfig);
         $firstAccords = array_slice($perfume->accords ?? [], 0, 2);
+        $genderColor = match($perfume->gender->value) {
+            'male'   => '#046499',
+            'female' => '#b22eae',
+            'unisex' => '#318218',
+            default  => '#000000',
+        };
+        $genderLabel = match($perfume->gender->value) {
+            'male'   => 'Muški',
+            'female' => 'Ženski',
+            'unisex' => 'Unisex',
+            default  => '',
+        };
     @endphp
 
     <div class="relative">
-        <div class="relative h-72 w-full overflow-hidden rounded-lg bg-gray-100">
+        <div class="relative h-52 sm:h-64 md:h-72 w-full overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 shadow-sm group-hover:shadow-lg transition-shadow duration-500">
+            @if($genderLabel)
+                <span class="absolute left-2 top-2 sm:left-3 sm:top-3 z-30 inline-flex items-center justify-center rounded-full px-2.5 sm:px-3 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-white shadow-md ring-1 ring-white/40"
+                      style="background-color: {{ $genderColor }};">
+                    {{ $genderLabel }}
+                </span>
+            @endif
             <a href="{{ route('products.show', $perfume->id) }}">
-                <img 
+                <img
                     src="{{ Storage::url($perfume->main_image) }}"
-                    alt="{{ $perfume->name }}" 
+                    alt="{{ $perfume->name }}"
+                    loading="lazy"
+                    decoding="async"
                     class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 {{ !$perfume->is_available ? 'grayscale opacity-70' : '' }}"
                 />
             </a>
@@ -64,12 +84,14 @@
                 
                 <button
                     wire:click.stop="openQuickPreview({{ $perfume->id }})"
-                    class="relative z-50 cursor-pointer rounded-full bg-white/90 px-4 py-2 text-gray-900 hover:bg-[#BBA14F] hover:text-white transition-all flex items-center gap-x-2 text-sm font-medium shadow-sm">
-                    <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1.2em" width="1.2em" xmlns="http://www.w3.org/2000/svg">
+                    aria-label="Brzi pregled"
+                    class="relative z-50 cursor-pointer rounded-full bg-white/95 backdrop-blur px-2.5 py-1.5 sm:px-4 sm:py-2 text-gray-800 hover:bg-gradient-to-r hover:from-violet-500 hover:via-fuchsia-500 hover:to-rose-500 hover:text-white transition-all flex items-center gap-x-1 sm:gap-x-2 text-[11px] sm:text-sm font-medium shadow-lg ring-1 ring-white/80 hover:ring-white/40 hover:scale-105">
+                    <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                         <circle cx="12" cy="12" r="3"></circle>
                     </svg>
-                    <span>Brzi pregled</span>
+                    <span class="hidden sm:inline">Brzi pregled</span>
+                    <span class="sm:hidden">Pregled</span>
                 </button>
             </div>
         </div>
@@ -81,20 +103,11 @@
         <div class="relative mt-4">
             @php
                 $parts = explode(' - ', $perfume->inspired_by);
-                $genderColor = match($perfume->gender->value) {
-                'male'   => '#046499',
-                'female' => '#b22eae',
-                'unisex' => '#318218',
-                default  => '#000000',
-            };
             @endphp
-           <h3 class="text-lg font-bold min-h-[3rem] line-clamp-2" style="color: {{ $genderColor }};">
+           <h3 class="text-sm sm:text-lg font-bold min-h-[2.5rem] sm:min-h-[3rem] line-clamp-2 group-hover:opacity-90 transition-opacity leading-tight" style="color: {{ $genderColor }};">
                 {{ count($parts) === 2 ? "$parts[1] - $parts[0]" : $perfume->inspired_by }} ({{ $perfume->name }})
             </h3>
-            {{-- <p class="mt-1 text-sm text-gray-500 italic line-clamp-2 min-h-[2.5rem]">
-                Inspirisano od: {{ $perfume->inspired_by }}
-            </p> --}}
-            <p class="mt-2 text-lg font-semibold text-gray-700">{{ number_format($perfume->price, 2) }} KM</p>
+            <p class="mt-1.5 sm:mt-2 text-base sm:text-lg font-semibold bg-gradient-to-r from-violet-600 via-fuchsia-500 to-rose-500 bg-clip-text text-transparent">{{ number_format($perfume->price, 2) }} KM</p>
         </div>
     </div>
 
@@ -104,16 +117,26 @@
             {{-- ACTIVE BUTTON --}}
             <button
                 wire:click="addToCart({{ $perfume->id }})"
-                class="w-full cursor-pointer px-5 py-2.5 bg-gradient-to-r from-[#BBA14F] to-[#DBC584] text-white font-bold rounded-full shadow-md transition-all duration-300 text-sm border border-transparent hover:from-white hover:to-white hover:border-[#BBA14F] hover:text-[#BBA14F]"
+                class="cart-btn group/btn relative w-full overflow-hidden cursor-pointer px-3 sm:px-5 py-2.5 sm:py-3 bg-gradient-to-r from-violet-600 via-fuchsia-500 to-rose-500 text-white font-bold uppercase tracking-[0.15em] rounded-full shadow-[0_8px_20px_-6px_rgba(190,80,180,0.6)] hover:shadow-[0_14px_35px_-8px_rgba(220,60,140,0.75)] hover:-translate-y-0.5 hover:from-violet-500 hover:via-fuchsia-400 hover:to-rose-400 active:translate-y-0 transition-all duration-300 text-[10px] sm:text-xs border border-white/30"
             >
-                Dodaj u korpu
+                <span class="relative z-10 inline-flex items-center justify-center gap-1.5 sm:gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-300 group-hover/btn:rotate-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <span>Dodaj u korpu</span>
+                </span>
+                {{-- Shimmer sweep --}}
+                <span aria-hidden="true" class="pointer-events-none absolute inset-0 -translate-x-full bg-[linear-gradient(120deg,transparent_30%,rgba(255,255,255,0.5)_50%,transparent_70%)] transition-transform duration-700 ease-out group-hover/btn:translate-x-full"></span>
             </button>
         @else
             {{-- DISABLED BUTTON --}}
             <button
                 disabled
-                class="w-full px-5 py-2.5 bg-gray-100 text-gray-400 font-bold rounded-full text-sm border border-gray-200 cursor-not-allowed"
+                class="w-full px-3 sm:px-5 py-2.5 sm:py-3 bg-gray-100/80 text-gray-400 font-bold uppercase tracking-[0.15em] rounded-full text-[10px] sm:text-xs border border-gray-200 cursor-not-allowed inline-flex items-center justify-center gap-1.5 sm:gap-2"
             >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 2M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+                </svg>
                 Uskoro dostupno
             </button>
         @endif

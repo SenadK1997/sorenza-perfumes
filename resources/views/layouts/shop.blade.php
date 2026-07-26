@@ -17,10 +17,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-2">
                 <a href="/" class="text-2xl font-bold text-[#DAAA57] flex justify-center items-center gap-x-2">
-                    <img 
-                        src="{{ asset('storage/images/logosorenza.png') }}" 
-                        alt="logo"
-                        class="h-[45px] w-[35px] p-0"
+                    <img
+                        src="{{ asset('storage/images/sorenza-logo.jpg') }}"
+                        alt="Sorenza logo"
+                        class="h-[44px] w-[44px] rounded-full object-cover ring-1 ring-amber-200/60"
                     >
                     <p class="text-xl mt-2 font-serif">Sorénza</p>
                 </a>

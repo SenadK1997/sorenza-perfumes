@@ -15,9 +15,9 @@
                 <div aria-hidden="true" class="absolute inset-0 overflow-hidden rounded-2xl">
                     <div class="absolute inset-0 overflow-hidden transition-transform duration-700 ease-out group-hover:scale-110">
                         <img
-                          src="{{ asset('storage/images/womanperfume.webp') }}"
+                          src="{{ asset('storage/images/womanperfume-new.jpg') }}"
                           alt="Ženski parfem"
-                          class="size-full object-cover" 
+                          loading="lazy" decoding="async" class="size-full object-cover"
                         />
                     </div>
                     <!-- Gradient overlay -->
@@ -50,7 +50,7 @@
                         <img
                             src="{{ asset('storage/images/manperfume.webp') }}"
                             alt="Muški parfem"
-                            class="size-full object-cover" />
+                            loading="lazy" decoding="async" class="size-full object-cover" />
                     </div>
                     <!-- Gradient overlay -->
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-70 transition-opacity duration-500"></div>
@@ -82,7 +82,7 @@
                         <img
                             src="{{ asset('storage/images/unisexperfume.webp') }}"
                             alt="Unisex parfem"
-                            class="size-full object-cover" />
+                            loading="lazy" decoding="async" class="size-full object-cover" />
                     </div>
                     <!-- Gradient overlay -->
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-70 transition-opacity duration-500"></div>

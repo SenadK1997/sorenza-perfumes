@@ -1,125 +1,115 @@
-<div class="relative isolate px-6 pt-14 lg:px-8 overflow-hidden">
-    <!-- Animated gradient background blobs -->
-    <div aria-hidden="true" class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
-        <div style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"
-             class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#c9a87c] via-[#e8d5b7] to-[#8b6914] opacity-40 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem] animate-pulse"></div>
+<section class="hero relative overflow-hidden isolate"
+         style="min-height: 92vh;
+                background-image:
+                    linear-gradient(to right, rgba(15,10,20,0.75) 0%, rgba(15,10,20,0.55) 35%, rgba(15,10,20,0.25) 60%, transparent 85%),
+                    linear-gradient(to bottom, rgba(15,10,20,0.35) 0%, transparent 25%, transparent 65%, rgba(15,10,20,0.5) 100%),
+                    url('{{ asset('storage/images/hero-sorenza.jpg') }}');
+                background-size: cover;
+                background-position: right center;">
+
+    {{-- Grain / noise overlay for cinematic film feel --}}
+    <div aria-hidden="true"
+         class="pointer-events-none absolute inset-0 opacity-[0.15] mix-blend-overlay"
+         style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><filter id=%22n%22><feTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22 stitchTiles=%22stitch%22/></filter><rect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.5%22/></svg>');">
     </div>
 
-    <!-- Floating particles effect -->
-    <div class="absolute inset-0 -z-10 overflow-hidden">
-        <div class="absolute top-1/4 left-1/4 w-2 h-2 bg-amber-300/30 rounded-full animate-[float_6s_ease-in-out_infinite]"></div>
-        <div class="absolute top-1/3 right-1/4 w-1.5 h-1.5 bg-amber-200/40 rounded-full animate-[float_8s_ease-in-out_infinite_1s]"></div>
-        <div class="absolute bottom-1/3 left-1/3 w-1 h-1 bg-amber-400/30 rounded-full animate-[float_7s_ease-in-out_infinite_2s]"></div>
-        <div class="absolute top-1/2 right-1/3 w-2.5 h-2.5 bg-amber-100/20 rounded-full animate-[float_9s_ease-in-out_infinite_0.5s]"></div>
+    {{-- Ornamental corner brackets (couture invitation feel) --}}
+    <div aria-hidden="true" class="pointer-events-none absolute inset-6 sm:inset-10">
+        <span class="absolute top-0 left-0 h-8 w-8 border-t border-l border-amber-200/40"></span>
+        <span class="absolute top-0 right-0 h-8 w-8 border-t border-r border-amber-200/40"></span>
+        <span class="absolute bottom-0 left-0 h-8 w-8 border-b border-l border-amber-200/40"></span>
+        <span class="absolute bottom-0 right-0 h-8 w-8 border-b border-r border-amber-200/40"></span>
     </div>
 
-    <div class="mx-auto max-w-3xl py-28 sm:py-18 lg:py-12">
-        <div class="text-center">
-            <!-- Decorative line above title -->
-            <div class="flex items-center justify-center mb-8 opacity-0 animate-[fadeInDown_1s_ease-out_forwards]">
-                <span class="h-px w-12 bg-gradient-to-r from-transparent via-amber-600 to-transparent"></span>
-                <span class="mx-4 text-amber-700 text-xs tracking-[0.4em] uppercase font-light">Luxury Fragrances</span>
-                <span class="h-px w-12 bg-gradient-to-r from-transparent via-amber-600 to-transparent"></span>
+    {{-- Content --}}
+    <div class="relative z-10 mx-auto max-w-7xl px-6 sm:px-10 lg:px-16 h-full min-h-[92vh] flex items-center">
+        <div class="max-w-2xl text-white opacity-0 animate-[heroReveal_1.4s_ease-out_0.2s_forwards]">
+
+            {{-- EST. line --}}
+            <div class="flex items-center gap-3 mb-8">
+                <span class="h-px w-10 bg-amber-300/70"></span>
+                <span class="text-[10px] sm:text-xs tracking-[0.45em] uppercase text-amber-200/90 font-light">
+                    Est. Sorénza · Sarajevo
+                </span>
             </div>
 
-            <!-- Main title with elegant animation -->
-            <h1 class="text-balance text-6xl font-light tracking-[0.15em] text-gray-900 sm:text-8xl opacity-0 animate-[fadeInUp_1.2s_ease-out_0.3s_forwards]">
-                <span class="bg-gradient-to-r from-gray-900 via-amber-800 to-gray-900 bg-clip-text text-transparent">
+            {{-- Wordmark --}}
+            <h1 class="hero-wordmark font-serif italic font-extralight leading-none tracking-tight text-white
+                       text-[3.5rem] sm:text-8xl lg:text-9xl">
+                <span class="hero-shine bg-[linear-gradient(110deg,#f8f0e0_0%,#f4d091_25%,#ffffff_45%,#f4d091_55%,#f8f0e0_75%,#e8c789_100%)] bg-[length:220%_100%] bg-clip-text text-transparent">
                     Sorénza
                 </span>
             </h1>
 
-            <!-- Decorative divider -->
-            <div class="mt-8 flex justify-center opacity-0 animate-[fadeIn_1s_ease-out_0.8s_forwards]">
-                <div class="h-px w-24 bg-gradient-to-r from-transparent via-amber-500 to-transparent"></div>
+            {{-- Divider with diamond --}}
+            <div class="mt-8 flex items-center gap-3">
+                <span class="h-px w-16 bg-gradient-to-r from-amber-300/80 to-transparent"></span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-amber-300" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/>
+                </svg>
+                <span class="h-px w-16 bg-gradient-to-l from-amber-300/80 to-transparent"></span>
             </div>
 
-            <!-- Tagline with refined typography -->
-            <p class="mt-8 text-pretty text-xl font-light tracking-wide text-gray-600 sm:text-2xl opacity-0 animate-[fadeInUp_1s_ease-out_0.6s_forwards] italic">
-                Nevidljiv detalj koji čini razliku.
+            {{-- Tagline (couture italic) --}}
+            <p class="mt-8 font-serif italic text-lg sm:text-2xl text-white/95 leading-relaxed max-w-md tracking-wide">
+                Nevidljiv detalj <br class="hidden sm:inline"/>koji čini razliku.
             </p>
 
-            <!-- Description with elegant styling -->
-            <p class="mt-6 text-base text-gray-500 max-w-xl mx-auto leading-relaxed opacity-0 animate-[fadeInUp_1s_ease-out_0.9s_forwards]">
-                Parfem je prvi utisak bez riječi i posljednje što se pamti.<br class="hidden sm:inline">
-                <span class="text-amber-700/80">Kreiran za one koji znaju da pravi stil počinje mirisom.</span>
+            {{-- Sub tagline --}}
+            <p class="mt-5 text-sm sm:text-base text-white/70 max-w-md leading-relaxed">
+                Činimo luksuz pristupačnim. <br class="hidden sm:inline"/>
+                <span class="text-amber-200/90">Ručno komponovani mirisi inspirisani ikonama parfumerije.</span>
             </p>
 
-            <!-- CTA Button with luxury styling -->
-            <div class="mt-12 flex items-center justify-center gap-x-6 opacity-0 animate-[fadeInUp_1s_ease-out_1.2s_forwards]">
+            {{-- CTA row --}}
+            <div class="mt-12 flex flex-wrap items-center gap-6 sm:gap-10">
                 <a href="/shop"
-                   class="group relative inline-flex items-center gap-2 rounded-none border border-amber-800 bg-[#9E7D65] px-8 py-4 text-sm font-medium uppercase tracking-[0.2em] text-white shadow-lg transition-all duration-500 hover:bg-[#DED2C8] hover:text-amber-900 hover:shadow-2xl hover:shadow-amber-200/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 overflow-hidden">
-                    <span class="relative z-10">Istraži Kolekciju</span>
-                    <svg class="relative z-10 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                   class="hero-cta group relative inline-flex items-center gap-3 px-8 py-4 border border-amber-200/80 rounded-full text-xs sm:text-sm font-medium uppercase tracking-[0.28em] text-white overflow-hidden transition-all duration-300 hover:text-gray-900">
+                    <span class="relative z-10">Otkrijte kolekciju</span>
+                    <svg class="relative z-10 h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                     </svg>
-                    {{-- <div class="absolute inset-0 -z-0 !hover:bg-[#DED2C8] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div> --}}
+                    {{-- Fill sweep on hover --}}
+                    <span aria-hidden="true" class="absolute inset-0 -translate-x-full bg-gradient-to-r from-amber-100 via-amber-200 to-amber-100 transition-transform duration-500 ease-out group-hover:translate-x-0"></span>
                 </a>
-            </div>
 
-            <!-- Scroll indicator -->
-            <div class="mt-20 flex justify-center opacity-0 animate-[fadeIn_1s_ease-out_1.5s_forwards]">
-                <div class="flex flex-col items-center text-gray-400 animate-bounce">
-                    <span class="text-xs tracking-widest uppercase mb-2">Scroll</span>
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                    </svg>
-                </div>
+                {{-- Understated text link --}}
+                <a href="#brand-story"
+                   class="group inline-flex items-center gap-2 text-xs sm:text-sm text-white/80 hover:text-amber-200 uppercase tracking-[0.28em] transition-colors">
+                    Saznaj više
+                    <span class="h-px w-8 bg-white/50 transition-all duration-300 group-hover:w-14 group-hover:bg-amber-200"></span>
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- Bottom gradient blob -->
-    <div aria-hidden="true" class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
-        <div style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"
-             class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#d4af37] via-[#f5e6c8] to-[#b8860b] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"></div>
+    {{-- Scroll indicator --}}
+    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-white/60 opacity-0 animate-[heroReveal_1s_ease-out_1.5s_forwards]">
+        <span class="text-[10px] tracking-[0.4em] uppercase">Scroll</span>
+        <div class="h-8 w-px bg-gradient-to-b from-amber-200/70 to-transparent animate-[scrollLine_2s_ease-in-out_infinite]"></div>
     </div>
-</div>
+</section>
 
 <style>
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    @keyframes heroReveal {
+        from { opacity: 0; transform: translateY(24px); }
+        to   { opacity: 1; transform: translateY(0); }
     }
-
-    @keyframes fadeInDown {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    @keyframes heroShine {
+        0%   { background-position: 220% center; }
+        100% { background-position: -220% center; }
     }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
+    @keyframes scrollLine {
+        0%   { transform: scaleY(0);   transform-origin: top; }
+        45%  { transform: scaleY(1);   transform-origin: top; }
+        55%  { transform: scaleY(1);   transform-origin: bottom; }
+        100% { transform: scaleY(0);   transform-origin: bottom; }
     }
-
-    @keyframes float {
-        0%, 100% {
-            transform: translateY(0) translateX(0);
-        }
-        25% {
-            transform: translateY(-20px) translateX(10px);
-        }
-        50% {
-            transform: translateY(-10px) translateX(-5px);
-        }
-        75% {
-            transform: translateY(-30px) translateX(5px);
-        }
+    .hero-shine {
+        animation: heroShine 7s linear infinite;
+        filter: drop-shadow(0 4px 24px rgba(244, 208, 145, 0.25));
+    }
+    .hero-wordmark {
+        text-shadow: 0 6px 40px rgba(0,0,0,0.4);
     }
 </style>

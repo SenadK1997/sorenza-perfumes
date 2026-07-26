@@ -22,7 +22,8 @@ class Perfume extends Model
         'description',  // Good to have if you use it later
         'tag',
         'accords',
-        'availability', 
+        'availability',
+        'is_bestseller',
         'restock_date',
     ];
 
@@ -31,6 +32,7 @@ class Perfume extends Model
         'accords' => 'array',
         'gender' => PerfumeGender::class,
         'availability' => 'boolean',
+        'is_bestseller' => 'boolean',
         'restock_date' => 'date',
     ];
 
