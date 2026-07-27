@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1
 
-# ---- 1. Composer dependencies ----
-FROM composer:2 AS composer-deps
+# ---- 1. Composer dependencies (PHP 8.3 with intl + ext-zip + ext-gd, etc.) ----
+FROM serversideup/php:8.3-cli AS composer-deps
+USER root
 WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install \
@@ -47,5 +48,3 @@ ENV AUTORUN_ENABLED=true \
 
 USER www-data
 EXPOSE 8080
-
-# ENTRYPOINT/CMD provided by serversideup/php (starts nginx + php-fpm via s6-overlay)
