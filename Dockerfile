@@ -3,6 +3,7 @@
 # ---- 1. Composer dependencies (PHP 8.3 with intl + ext-zip + ext-gd, etc.) ----
 FROM serversideup/php:8.3-cli AS composer-deps
 USER root
+RUN install-php-extensions intl bcmath gd exif
 WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install \
@@ -26,6 +27,7 @@ RUN npm run build
 FROM serversideup/php:8.3-fpm-nginx
 
 USER root
+RUN install-php-extensions intl bcmath gd exif
 WORKDIR /var/www/html
 
 # Application code
