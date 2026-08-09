@@ -19,7 +19,14 @@ class GoogleAnalytics
     public function isConfigured(): bool
     {
         $path = base_path((string) config('services.google_analytics.credentials_path'));
-        return config('services.google_analytics.property_id') && file_exists($path);
+        return config('services.google_analytics.property_id')
+            && file_exists($path)
+            && $this->sdkInstalled();
+    }
+
+    public function sdkInstalled(): bool
+    {
+        return class_exists(BetaAnalyticsDataClient::class);
     }
 
     protected function client(): BetaAnalyticsDataClient

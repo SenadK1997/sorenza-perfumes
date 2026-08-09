@@ -58,12 +58,28 @@ class SiteVisits extends Page
             $serviceEmail = $json['client_email'] ?? 'unknown';
         }
 
+        $sdk = $ga->sdkInstalled();
+
         $lines = [
             '• Property ID: ' . ($propId ?: 'MISSING'),
             '• Servis konto: ' . $serviceEmail,
             '• Fajl postoji: ' . ($fileExists ? 'DA' : 'NE'),
+            '• SDK instaliran: ' . ($sdk ? 'DA' : 'NE (google/analytics-data paket nedostaje!)'),
             '• Konfigurisan: ' . ($configured ? 'DA' : 'NE'),
         ];
+
+        if (! $sdk) {
+            Notification::make()
+                ->title('SDK PAKET NEDOSTAJE U KONTEJNERU')
+                ->body(implode("\n", $lines)
+                    . "\n\n→ Coolify build nije instalirao google/analytics-data paket."
+                    . "\n→ Provjerite deployment logove: traži liniju 'google/analytics-data'."
+                    . "\n→ Ako je nema, ručno pokrenite 'composer install --no-dev' u kontejneru.")
+                ->danger()
+                ->persistent()
+                ->send();
+            return;
+        }
 
         if (! $configured || ! $fileExists) {
             Notification::make()
