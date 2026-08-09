@@ -2,12 +2,13 @@
 
 namespace App\Services;
 
-use Google\Analytics\Data\V1beta\BetaAnalyticsDataClient;
+use Google\Analytics\Data\V1beta\Client\BetaAnalyticsDataClient;
 use Google\Analytics\Data\V1beta\DateRange;
 use Google\Analytics\Data\V1beta\Dimension;
 use Google\Analytics\Data\V1beta\Metric;
 use Google\Analytics\Data\V1beta\OrderBy;
 use Google\Analytics\Data\V1beta\OrderBy\MetricOrderBy;
+use Google\Analytics\Data\V1beta\RunRealtimeReportRequest;
 use Google\Analytics\Data\V1beta\RunReportRequest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -274,10 +275,11 @@ class GoogleAnalytics
     {
         return Cache::remember($this->cacheKey('activeUsers'), 15, function () {
             try {
-                $res = $this->client()->runRealtimeReport([
+                $req = new RunRealtimeReportRequest([
                     'property' => $this->propertyPath(),
                     'metrics'  => [new Metric(['name' => 'activeUsers'])],
                 ]);
+                $res = $this->client()->runRealtimeReport($req);
                 $rows = iterator_to_array($res->getRows());
                 if (! isset($rows[0])) return 0;
                 $metrics = iterator_to_array($rows[0]->getMetricValues());

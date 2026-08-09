@@ -71,7 +71,7 @@ class SiteVisits extends Page
         if (! $required) $steps[] = 'require: nijedan kandidat ne postoji';
 
         // 3. Re-check class_exists
-        $exists = class_exists(\Google\Analytics\Data\V1beta\BetaAnalyticsDataClient::class);
+        $exists = class_exists(\Google\Analytics\Data\V1beta\Client\BetaAnalyticsDataClient::class);
         $steps[] = 'class_exists nakon require: ' . ($exists ? 'DA' : 'NE');
 
         // 4. Reload composer autoload file
@@ -80,7 +80,7 @@ class SiteVisits extends Page
             include $autoload;
             $steps[] = 'Ponovno učitan vendor/autoload.php';
         }
-        $existsAfter = class_exists(\Google\Analytics\Data\V1beta\BetaAnalyticsDataClient::class);
+        $existsAfter = class_exists(\Google\Analytics\Data\V1beta\Client\BetaAnalyticsDataClient::class);
         $steps[] = 'class_exists nakon reload autoload: ' . ($existsAfter ? 'DA' : 'NE');
 
         Notification::make()
@@ -177,10 +177,13 @@ class SiteVisits extends Page
             //    If this succeeds, permissions work. If it fails, permissions issue.
             $metaOk = 'NEPOZNATO';
             try {
-                $client = new \Google\Analytics\Data\V1beta\BetaAnalyticsDataClient([
+                $client = new \Google\Analytics\Data\V1beta\Client\BetaAnalyticsDataClient([
                     'credentials' => $credPath,
                 ]);
-                $meta = $client->getMetadata('properties/' . $propId . '/metadata');
+                $metaReq = new \Google\Analytics\Data\V1beta\GetMetadataRequest([
+                    'name' => 'properties/' . $propId . '/metadata',
+                ]);
+                $meta = $client->getMetadata($metaReq);
                 $count = count(iterator_to_array($meta->getMetrics()));
                 $metaOk = "DA ({$count} metrika)";
             } catch (\Throwable $me) {
