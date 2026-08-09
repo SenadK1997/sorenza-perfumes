@@ -1,9 +1,13 @@
+@php
+    $heroPath = \App\Models\SiteSetting::get('hero_image');
+    $heroUrl  = $heroPath ? \Illuminate\Support\Facades\Storage::url($heroPath) : asset('storage/images/hero-sorenza.jpg');
+@endphp
 <section class="hero relative overflow-hidden isolate"
          style="min-height: 92vh;
                 background-image:
                     linear-gradient(to right, rgba(15,10,20,0.75) 0%, rgba(15,10,20,0.55) 35%, rgba(15,10,20,0.25) 60%, transparent 85%),
                     linear-gradient(to bottom, rgba(15,10,20,0.35) 0%, transparent 25%, transparent 65%, rgba(15,10,20,0.5) 100%),
-                    url('{{ asset('storage/images/hero-sorenza.jpg') }}');
+                    url('{{ $heroUrl }}');
                 background-size: cover;
                 background-position: right center;">
 

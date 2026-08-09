@@ -5,7 +5,9 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use App\Models\Perfume;
-use App\Models\Coupon; // Import Coupon model
+use App\Models\Coupon;
+use App\Models\SiteSetting;
+use App\Services\ShippingCalculator;
 
 class CartPage extends Component
 {
@@ -94,7 +96,7 @@ class CartPage extends Component
         
         $discount = session()->get('coupon')['discount'] ?? 0;
         
-        $shipping = ($subtotal == 0 || $subtotal >= 120) ? 0 : 10;
+        $shipping = ShippingCalculator::fee($subtotal);
         $total = ($subtotal - $discount) + $shipping;
 
         return view('livewire.cart-page', [
@@ -102,7 +104,14 @@ class CartPage extends Component
             'subtotal' => $subtotal,
             'discount' => $discount,
             'shipping' => $shipping,
-            'total' => max(0, $total) // Ensure total isn't negative
+            'total' => max(0, $total),
+            'alwaysFree' => ShippingCalculator::alwaysFree(),
+            'freeShippingEnabled' => ShippingCalculator::freeShippingEnabled(),
+            'freeShippingThreshold' => ShippingCalculator::threshold(),
+            'amountToFree' => ShippingCalculator::amountToFreeShipping($subtotal),
+            'qualifiesForFree' => ShippingCalculator::qualifiesForFree($subtotal),
+            'shippingLabel' => ShippingCalculator::summaryLabel(),
+            'refundDays' => ShippingCalculator::refundDays(),
         ]);
     }
 }

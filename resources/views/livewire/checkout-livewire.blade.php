@@ -88,9 +88,25 @@
                             </div> 
                         @enderror
 
-                        <button wire:click="placeOrder" 
-                            class="cursor-pointer mt-10 w-full bg-indigo-600 text-white py-4 rounded-xl font-bold uppercase tracking-widest hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all">
-                            Završi narudžbu
+                        <button
+                            type="button"
+                            wire:click="placeOrder"
+                            wire:loading.attr="disabled"
+                            wire:target="placeOrder"
+                            wire:offline.attr="disabled"
+                            class="cursor-pointer mt-10 w-full bg-indigo-600 text-white py-4 rounded-xl font-bold uppercase tracking-widest hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all disabled:opacity-70 disabled:cursor-wait">
+                            {{-- Idle state --}}
+                            <span wire:loading.remove wire:target="placeOrder" class="inline-flex items-center justify-center gap-2">
+                                Završi narudžbu
+                            </span>
+                            {{-- Loading state --}}
+                            <span wire:loading wire:target="placeOrder" class="inline-flex items-center justify-center gap-2">
+                                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Šaljem narudžbu…
+                            </span>
                         </button>
                     </div>
                 @endif

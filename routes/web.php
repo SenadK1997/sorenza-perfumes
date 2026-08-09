@@ -13,6 +13,7 @@ use App\Livewire\CheckoutLivewire;
 use App\Livewire\OrderSuccess;
 use App\Livewire\OrderDetailLivewire;
 use App\Livewire\TrackOrder;
+use App\Livewire\WishlistPage;
 
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 
@@ -27,6 +28,18 @@ Route::get('/product/{perfume}', ProductShow::class)
     ->name('products.show');
 
 Route::get('/cart', \App\Livewire\CartPage::class);
+Route::get('/wishlist', WishlistPage::class)->name('wishlist');
+
+// Local email previews — only reachable in local env, blocked in production.
+if (app()->environment('local')) {
+    Route::get('/_preview/email/order-placed/{pretty_id?}', function (?string $pretty_id = null) {
+        $order = $pretty_id
+            ? \App\Models\Order::with('perfumes')->where('pretty_id', $pretty_id)->firstOrFail()
+            : \App\Models\Order::with('perfumes')->latest()->firstOrFail();
+
+        return (new \App\Mail\OrderPlaced($order))->render();
+    });
+}
 Route::get('/checkout', CheckoutLivewire::class)->name('checkout');
 
 Route::get('/order-success/{id}', OrderSuccess::class)->name('order.success');

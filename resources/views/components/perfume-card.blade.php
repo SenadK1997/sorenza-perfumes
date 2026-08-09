@@ -25,6 +25,11 @@
                     {{ $genderLabel }}
                 </span>
             @endif
+
+            {{-- Wishlist heart --}}
+            <div class="absolute right-2 top-2 sm:right-3 sm:top-3 z-30" wire:ignore>
+                <livewire:wishlist-button :perfume-id="$perfume->id" size="sm" :key="'wl-'.$perfume->id" />
+            </div>
             <a href="{{ route('products.show', $perfume->id) }}">
                 <img
                     src="{{ Storage::url($perfume->main_image) }}"

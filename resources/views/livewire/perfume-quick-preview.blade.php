@@ -97,7 +97,7 @@
                     </button>
                 @endif
 
-                <p class="mt-2 text-sm text-gray-500">Besplatna dostava za narudžbe iznad 120 KM</p>
+                <p class="mt-2 text-sm text-gray-500">{{ \App\Services\ShippingCalculator::summaryLabel() }}</p>
             </div>
         </div>
     </div>

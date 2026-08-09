@@ -1,3 +1,12 @@
+@php
+    $femalePath = \App\Models\SiteSetting::get('gender_female_image');
+    $malePath   = \App\Models\SiteSetting::get('gender_male_image');
+    $unisexPath = \App\Models\SiteSetting::get('gender_unisex_image');
+
+    $femaleUrl = $femalePath ? \Illuminate\Support\Facades\Storage::url($femalePath) : asset('storage/images/womanperfume-new.jpg');
+    $maleUrl   = $malePath   ? \Illuminate\Support\Facades\Storage::url($malePath)   : asset('storage/images/manperfume.webp');
+    $unisexUrl = $unisexPath ? \Illuminate\Support\Facades\Storage::url($unisexPath) : asset('storage/images/unisexperfume.webp');
+@endphp
 <div class="relative py-16 sm:py-24">
     <!-- Section header -->
     <div class="relative text-center mb-12 px-4">
@@ -15,7 +24,7 @@
                 <div aria-hidden="true" class="absolute inset-0 overflow-hidden rounded-2xl">
                     <div class="absolute inset-0 overflow-hidden transition-transform duration-700 ease-out group-hover:scale-110">
                         <img
-                          src="{{ asset('storage/images/womanperfume-new.jpg') }}"
+                          src="{{ $femaleUrl }}"
                           alt="Ženski parfem"
                           loading="lazy" decoding="async" class="size-full object-cover"
                         />
@@ -48,7 +57,7 @@
                 <div aria-hidden="true" class="absolute inset-0 overflow-hidden rounded-2xl">
                     <div class="absolute inset-0 overflow-hidden transition-transform duration-700 ease-out group-hover:scale-110">
                         <img
-                            src="{{ asset('storage/images/manperfume.webp') }}"
+                            src="{{ $maleUrl }}"
                             alt="Muški parfem"
                             loading="lazy" decoding="async" class="size-full object-cover" />
                     </div>
@@ -80,7 +89,7 @@
                 <div aria-hidden="true" class="absolute inset-0 overflow-hidden rounded-2xl">
                     <div class="absolute inset-0 overflow-hidden transition-transform duration-700 ease-out group-hover:scale-110">
                         <img
-                            src="{{ asset('storage/images/unisexperfume.webp') }}"
+                            src="{{ $unisexUrl }}"
                             alt="Unisex parfem"
                             loading="lazy" decoding="async" class="size-full object-cover" />
                     </div>

@@ -132,8 +132,106 @@
             </dl>
         </div>
 
+        {{-- REFUND SECTION --}}
+        <div class="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-amber-50 to-rose-50">
+                <div class="flex items-center gap-3">
+                    <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/80 ring-1 ring-amber-200 text-amber-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h13a5 5 0 010 10h-1M3 10l4-4M3 10l4 4"/>
+                        </svg>
+                    </span>
+                    <div>
+                        <h3 class="text-base font-semibold text-gray-900">Povrat sredstava</h3>
+                        <p class="text-xs text-gray-500">Besplatni povrat u roku od {{ $this->refundDays }} dana</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 space-y-4">
+                @if(session('refund_success'))
+                    <div class="rounded-xl bg-green-50 border border-green-200 p-4 text-sm text-green-800">
+                        {{ session('refund_success') }}
+                    </div>
+                @endif
+
+                @if($this->existingRefund)
+                    <div class="rounded-xl border border-gray-200 bg-gray-50 p-5">
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <div class="text-sm font-medium text-gray-900">Postoji zahtjev za povrat</div>
+                            <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold
+                                @switch($this->existingRefund->status->value)
+                                    @case('pending')  bg-yellow-100 text-yellow-800 @break
+                                    @case('approved') bg-blue-100 text-blue-800 @break
+                                    @case('rejected') bg-red-100 text-red-800 @break
+                                    @case('refunded') bg-green-100 text-green-800 @break
+                                @endswitch">
+                                {{ $this->existingRefund->status->label() }}
+                            </span>
+                        </div>
+                        <p class="mt-3 text-xs uppercase tracking-widest text-gray-500">Vaš razlog</p>
+                        <p class="text-sm text-gray-800 whitespace-pre-line">{{ $this->existingRefund->reason }}</p>
+
+                        @if($this->existingRefund->admin_response)
+                            <p class="mt-4 text-xs uppercase tracking-widest text-gray-500">Odgovor podrške</p>
+                            <p class="text-sm text-gray-800 whitespace-pre-line">{{ $this->existingRefund->admin_response }}</p>
+                        @endif
+
+                        <p class="mt-4 text-xs text-gray-400">
+                            Poslano: {{ $this->existingRefund->created_at->format('d.m.Y H:i') }}
+                        </p>
+                    </div>
+                @elseif($this->canRequestRefund())
+                    @if(! $showRefundForm)
+                        <div class="flex items-center justify-between flex-wrap gap-3">
+                            <p class="text-sm text-gray-600">
+                                Niste zadovoljni proizvodom? Možete zatražiti povrat u roku od
+                                <strong>{{ $this->refundDays }} dana</strong>.
+                            </p>
+                            <button wire:click="toggleRefundForm"
+                                    class="inline-flex items-center gap-2 rounded-full border border-amber-800/70 bg-white px-5 py-2 text-xs font-medium uppercase tracking-[0.25em] text-amber-900 hover:bg-gradient-to-r hover:from-[#BBA14F] hover:to-[#DBC584] hover:text-white hover:border-transparent transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h13a5 5 0 010 10h-1M3 10l4-4M3 10l4 4"/>
+                                </svg>
+                                Zatraži povrat
+                            </button>
+                        </div>
+                    @else
+                        <form wire:submit.prevent="submitRefund" class="space-y-3">
+                            <label class="block text-sm font-medium text-gray-700">Razlog za povrat</label>
+                            <textarea wire:model="refundReason" rows="4"
+                                      class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-amber-600 focus:ring-amber-600 sm:text-sm"
+                                      placeholder="Opišite ukratko razlog povrata (min. 10 karaktera)"></textarea>
+                            @error('refundReason') <p class="text-xs text-red-600">{{ $message }}</p> @enderror
+
+                            <div class="flex items-center gap-2">
+                                <button type="submit"
+                                        class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#8b6914] via-[#BBA14F] to-[#DBC584] px-6 py-2.5 text-xs font-semibold uppercase tracking-[0.25em] text-white shadow hover:opacity-95 transition">
+                                    Pošalji zahtjev
+                                </button>
+                                <button type="button" wire:click="toggleRefundForm"
+                                        class="text-xs uppercase tracking-widest text-gray-500 hover:text-gray-900">
+                                    Otkaži
+                                </button>
+                            </div>
+                        </form>
+                    @endif
+                @else
+                    <p class="text-sm text-gray-500">
+                        @if($this->order->status?->value === 'cancelled')
+                            Ova narudžba je otkazana pa nije moguće zatražiti povrat.
+                        @elseif(in_array($this->order->status?->value, ['pending', 'taken']))
+                            Povrat možete zatražiti tek kada narudžba bude označena kao <strong>Završeno</strong> (dostavljeno).
+                        @else
+                            Prozor za povrat od {{ $this->refundDays }} dana je istekao.
+                        @endif
+                    </p>
+                @endif
+            </div>
+        </div>
+
         <div class="mt-8 text-center">
-            <a href="/shop" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+            <a href="/shop" class="text-sm font-medium text-amber-800 hover:text-amber-900 tracking-widest uppercase">
                 &larr; Nazad na shop
             </a>
         </div>

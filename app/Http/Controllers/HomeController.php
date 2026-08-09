@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Perfume;
+use App\Services\ShippingCalculator;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -25,6 +26,8 @@ class HomeController extends Controller
                 ->get();
         }
 
-        return view('home', compact('bestsellers'));
+        $shippingLabel = ShippingCalculator::summaryLabel();
+
+        return view('home', compact('bestsellers', 'shippingLabel'));
     }
 }

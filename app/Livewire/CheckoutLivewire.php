@@ -9,8 +9,13 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use App\Enums\Canton;
+use App\Mail\OrderPlaced;
 use App\Models\Perfume;
 use App\Models\Coupon;
+use App\Models\AbandonedCheckout;
+use App\Services\ShippingCalculator;
+use App\Services\TelegramNotifier;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -56,8 +61,8 @@ class CheckoutLivewire extends Component
             $this->coupon_code = session('coupon')['code'];
         }
 
-        // 3. Calculate Shipping and Total
-        $this->shipping = ($this->subtotal >= 120) ? 0 : 10;
+        // 3. Calculate Shipping and Total (admin-configurable)
+        $this->shipping = ShippingCalculator::fee($this->subtotal);
         
         // Final total calculation
         $this->total = ($this->subtotal - $this->discount) + $this->shipping;
@@ -67,22 +72,59 @@ class CheckoutLivewire extends Component
     {
         $this->validate(['email' => 'required|email']);
 
-        // $customer = Customer::where('email', $this->email)->first();
+        // Capture cart snapshot for abandonment tracking.
+        // If the user comes back with the same email, we update the same row instead of duplicating.
+        try {
+            $snapshot = collect($this->items)->map(fn ($i) => [
+                'id'         => (int)   $i['id'],
+                'name'       => (string) $i['name'],
+                'price'      => (float) $i['price'],
+                'quantity'   => (int)   $i['quantity'],
+                'main_image' => (string) ($i['main_image'] ?? ''),
+            ])->values()->all();
 
-        // if ($customer) {
-        //     $this->full_name = $customer->full_name;
-        //     $this->phone = $customer->phone;
-        //     $this->address_line_1 = $customer->address_line_1;
-        //     $this->address_line_2 = $customer->address_line_2;
-        //     $this->city = $customer->city;
-        //     $this->zipcode = $customer->zipcode;
-        //     $this->canton = $customer->canton;
-        // }
+            $existing = AbandonedCheckout::where('email', $this->email)
+                ->whereNull('recovered_at')
+                ->latest('id')
+                ->first();
+
+            if ($existing) {
+                $existing->update([
+                    'items'      => $snapshot,
+                    'subtotal'   => $this->subtotal,
+                    'item_count' => collect($snapshot)->sum('quantity'),
+                    'ip'         => request()->ip(),
+                    'user_agent' => (string) request()->userAgent(),
+                ]);
+            } else {
+                AbandonedCheckout::create([
+                    'email'      => $this->email,
+                    'items'      => $snapshot,
+                    'subtotal'   => $this->subtotal,
+                    'item_count' => collect($snapshot)->sum('quantity'),
+                    'ip'         => request()->ip(),
+                    'user_agent' => (string) request()->userAgent(),
+                ]);
+            }
+        } catch (\Throwable $e) {
+            // Never block checkout because of tracking issues
+            Log::warning('Abandoned checkout capture failed: ' . $e->getMessage());
+        }
+
         $this->step = 2;
     }
 
     public function placeOrder()
     {
+        // 0. Idempotency lock — swallows double-clicks that race past wire:loading.
+        //    Keyed on IP + email + subtotal; 20s TTL is plenty for one checkout.
+        $lockKey = 'place-order-lock:' . md5(request()->ip() . '|' . strtolower((string) $this->email) . '|' . $this->subtotal);
+        $lock = \Illuminate\Support\Facades\Cache::lock($lockKey, 20);
+        if (! $lock->get()) {
+            // Another request is already creating this order; drop this one silently.
+            return;
+        }
+
         // 1. Honeypot check
         if (!empty($this->extra_info_field)) {
             return redirect()->to('/');
@@ -184,8 +226,45 @@ class CheckoutLivewire extends Component
         // 7. Cleanup
         session()->forget(['cart', 'coupon']);
         RateLimiter::clear($key);
+
+        // Mark any pending abandonment rows for this email as recovered
+        try {
+            AbandonedCheckout::where('email', $this->email)
+                ->whereNull('recovered_at')
+                ->update([
+                    'recovered_at' => now(),
+                    'order_id'     => $order->id,
+                ]);
+        } catch (\Throwable $e) {
+            Log::warning('Abandoned checkout recovery mark failed: ' . $e->getMessage());
+        }
+
         $this->sendSlackNotification($order);
+        $this->sendOrderConfirmationEmail($order);
+        $this->sendTelegramNotification($order);
+
         return redirect()->route('order.success', ['id' => $order->pretty_id]);
+    }
+
+    protected function sendTelegramNotification(Order $order): void
+    {
+        try {
+            TelegramNotifier::orderPlaced($order);
+        } catch (\Throwable $e) {
+            Log::warning('Telegram notification failed for ' . $order->pretty_id . ': ' . $e->getMessage());
+        }
+    }
+
+    protected function sendOrderConfirmationEmail(Order $order): void
+    {
+        if (empty($order->email)) return;
+
+        try {
+            Mail::to($order->email)->send(new OrderPlaced($order));
+        } catch (\Throwable $e) {
+            // Never block the order because of email issues; just log.
+            Log::warning('Order confirmation email failed for ' . $order->pretty_id . ': ' . $e->getMessage());
+        }
     }
     protected function sendSlackNotification($order)
     {

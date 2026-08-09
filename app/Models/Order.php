@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\OrderStatus;
 use App\Enums\Canton;
+use App\Support\PhoneNumber;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -33,6 +35,18 @@ class Order extends Model
         'status' => OrderStatus::class,
         'canton' => Canton::class,
     ];
+
+    protected function phone(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => PhoneNumber::normalize($value),
+        );
+    }
+
+    public function getPrettyPhoneAttribute(): ?string
+    {
+        return PhoneNumber::pretty($this->phone);
+    }
     protected static function booted()
     {
         static::creating(function ($order) {
@@ -63,5 +77,15 @@ class Order extends Model
         return $this->belongsToMany(Perfume::class)
             ->withPivot(['quantity', 'price'])
             ->withTimestamps();
+    }
+
+    public function refundRequests()
+    {
+        return $this->hasMany(RefundRequest::class);
+    }
+
+    public function latestRefundRequest()
+    {
+        return $this->hasOne(RefundRequest::class)->latestOfMany();
     }
 }

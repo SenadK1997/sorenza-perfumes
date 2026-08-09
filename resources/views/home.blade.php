@@ -26,7 +26,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H3v11h2m8 0H9m10 0h2v-6l-3-4h-5v4h6"/>
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
                 </svg>
-                <span class="text-xs uppercase tracking-[0.2em] font-medium">Besplatna dostava iznad 120 KM</span>
+                <span class="text-xs uppercase tracking-[0.2em] font-medium">{{ $shippingLabel ?? \App\Services\ShippingCalculator::summaryLabel() }}</span>
             </div>
             <div class="flex flex-col items-center gap-2 text-gray-700">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#BBA14F]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
@@ -142,6 +142,33 @@
 
                 {{-- Carousel --}}
                 <div x-data="{
+                        showCue: true,
+                        hasScrolled: false,
+                        init() {
+                            // Only show on mobile — desktop already has arrow buttons
+                            const isTouch = window.matchMedia('(max-width: 768px)').matches;
+                            if (!isTouch) { this.showCue = false; return; }
+                            const s = this.$refs.strip;
+
+                            // Auto-hide when the user scrolls or after 6s
+                            const hide = () => {
+                                if (this.hasScrolled) return;
+                                this.hasScrolled = true;
+                                this.showCue = false;
+                            };
+                            s.addEventListener('scroll', hide, { once: true, passive: true });
+                            setTimeout(hide, 6000);
+
+                            // One-time nudge: scroll ~40px right, then back, so users see it moves
+                            setTimeout(() => {
+                                if (this.hasScrolled) return;
+                                s.scrollBy({ left: 40, behavior: 'smooth' });
+                                setTimeout(() => {
+                                    if (this.hasScrolled) return;
+                                    s.scrollBy({ left: -40, behavior: 'smooth' });
+                                }, 550);
+                            }, 900);
+                        },
                         scrollTo(dir) {
                             const s = this.$refs.strip;
                             const card = s.querySelector('[data-card]');
@@ -168,6 +195,14 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
                         </svg>
                     </button>
+
+                    {{-- Mobile-only microcopy hint --}}
+                    <div class="md:hidden flex items-center justify-center gap-1.5 mb-2 text-[10px] uppercase tracking-[0.28em] text-amber-700/80"
+                         x-show="showCue" x-transition.opacity>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                        Prevucite za više
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    </div>
 
                     {{-- Scroll strip --}}
                     <div x-ref="strip"
@@ -221,6 +256,29 @@
                             </a>
                         @endforeach
                     </div>
+
+                    {{-- Mobile-only right-edge fade so cards are seen "peeking off screen" --}}
+                    <div aria-hidden="true"
+                         class="md:hidden pointer-events-none absolute inset-y-0 right-0 w-16"
+                         style="background: linear-gradient(to left, rgba(255,245,235,0.95), transparent);"
+                         x-show="showCue" x-transition.opacity></div>
+
+                    {{-- Mobile-only bouncing swipe pill overlay (auto-hides once user scrolls) --}}
+                    <div class="md:hidden pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 z-20"
+                         x-show="showCue" x-transition.opacity>
+                        <div class="sorenza-swipe-pill inline-flex items-center gap-1.5 rounded-full bg-white/95 backdrop-blur px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-amber-800 shadow-lg ring-1 ring-amber-200/70">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 12h15"/></svg>
+                        </div>
+                    </div>
+                    <style>
+                        @keyframes sorenzaSwipeBounce {
+                            0%, 100% { transform: translateX(0); }
+                            50%      { transform: translateX(-14px); }
+                        }
+                        .sorenza-swipe-pill {
+                            animation: sorenzaSwipeBounce 1.4s ease-in-out infinite;
+                        }
+                    </style>
                 </div>
 
                 <div class="mt-12 text-center">

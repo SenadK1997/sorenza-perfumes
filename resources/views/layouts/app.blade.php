@@ -4,7 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="theme-color" content="#7c3aed">
+    <meta name="theme-color" content="#BBA14F">
+
+    {{-- PWA --}}
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Sorénza">
 
     {{-- 1. Brzo povezivanje (bez duplikata) --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,7 +37,6 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
     <link rel="icon" sizes="192x192" href="{{ asset('favicon-512x512.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
-    {{-- <link rel="manifest" href="{{ asset('site.webmanifest') }}"> --}}
 
     {{-- 3. TITLE & DESCRIPTION --}}
     <title>@yield('title', 'Sorenza - Luksuzni Parfemi | Online Parfumerija BiH')</title>
@@ -231,6 +237,9 @@
                     <span class="hidden md:inline-block h-6 w-px"
                           :class="(isHome && !scrolled) ? 'bg-white/25' : 'bg-amber-200/70'"></span>
 
+                    {{-- Wishlist --}}
+                    <livewire:wishlist-counter />
+
                     {{-- Cart --}}
                     <livewire:cart-counter />
 
@@ -409,7 +418,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H3v11h2m8 0H9m10 0h2v-6l-3-4h-5v4h6"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
                             </svg>
-                            Besplatna dostava iznad 120 KM
+                            {{ \App\Services\ShippingCalculator::summaryLabel() }}
                         </li>
                         <li class="flex items-start gap-3">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-4 w-4 text-amber-400/80 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
@@ -427,7 +436,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-4 w-4 text-amber-400/80 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                             </svg>
-                            sorenzaperfumes@gmail.com
+                            <a href="mailto:info@sorenzaperfumes.com" class="hover:text-amber-300 transition-colors">info@sorenzaperfumes.com</a>
                         </li>
                         <li class="flex items-start gap-3">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-4 w-4 text-amber-400/80 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
@@ -467,5 +476,76 @@
     </footer>
 {{-- <script type="module" src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1/dist/index.min.js"></script> --}}
 @livewireScripts
+
+{{-- PWA: service worker + optional install prompts (Android auto, iOS gentle hint) --}}
+<div id="sorenza-install-hint"
+     style="display:none; position:fixed; left:12px; right:12px; bottom:16px; z-index:60;
+            background:#111827; color:#fff; border-radius:14px; padding:12px 14px;
+            box-shadow:0 10px 30px -10px rgba(0,0,0,.45); font-size:13px; align-items:center; gap:10px;">
+    <span style="flex:1;">
+        📱 Instaliraj <strong>Sorénza</strong> kao aplikaciju: <em style="opacity:.8">Podijeli → Dodaj na početnu</em>
+    </span>
+    <button type="button" onclick="document.getElementById('sorenza-install-hint').style.display='none'; try{localStorage.setItem('sorenza_ios_hint_dismissed','1')}catch(e){}"
+            style="background:transparent; border:0; color:#DBC584; font-weight:600; cursor:pointer;">
+        Sakrij
+    </button>
+</div>
+<button id="sorenza-install-btn" type="button"
+        style="display:none; position:fixed; right:16px; bottom:16px; z-index:60;
+               background: linear-gradient(90deg,#8b6914,#BBA14F,#DBC584); color:#fff;
+               border:0; border-radius:999px; padding:10px 16px; font-weight:600; font-size:13px;
+               box-shadow:0 10px 25px -8px rgba(139,105,20,.55); cursor:pointer;">
+    📱 Instaliraj aplikaciju
+</button>
+
+<script>
+(function () {
+    // 1. Register the service worker so browsers treat this as an installable PWA.
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('/sw.js').catch(function () { /* ignore */ });
+        });
+    }
+
+    // 2. Android / desktop Chrome — capture the install prompt and surface our own button.
+    var deferredPrompt = null;
+    var installBtn = document.getElementById('sorenza-install-btn');
+
+    window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (installBtn) installBtn.style.display = 'inline-flex';
+    });
+
+    if (installBtn) {
+        installBtn.addEventListener('click', function () {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.finally(function () {
+                deferredPrompt = null;
+                installBtn.style.display = 'none';
+            });
+        });
+    }
+
+    window.addEventListener('appinstalled', function () {
+        if (installBtn) installBtn.style.display = 'none';
+    });
+
+    // 3. iOS Safari — no beforeinstallprompt exists. Show a gentle hint (dismissible).
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    var isStandalone = ('standalone' in navigator && navigator.standalone) ||
+                       window.matchMedia('(display-mode: standalone)').matches;
+    var dismissed = false;
+    try { dismissed = localStorage.getItem('sorenza_ios_hint_dismissed') === '1'; } catch (e) {}
+
+    if (isIOS && !isStandalone && !dismissed) {
+        setTimeout(function () {
+            var hint = document.getElementById('sorenza-install-hint');
+            if (hint) hint.style.display = 'flex';
+        }, 4000);
+    }
+})();
+</script>
 </body>
 </html>

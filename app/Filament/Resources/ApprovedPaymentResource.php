@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ApprovedPaymentResource\Pages;
 use App\Models\SellerPayment;
 use App\Models\Expense; // Obavezno uvezi model za troškove
+use App\Models\ExtraIncome;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -39,22 +40,27 @@ class ApprovedPaymentResource extends Resource
                             ->label('Ukupno uplate')
                             ->money('bam', true),
 
-                        // 2. Ukupni troškovi (iz druge tabele)
+                        // 2. Ukupni dodatni prihodi (marža, gotovinski depoziti…)
+                        Tables\Columns\Summarizers\Summarizer::make()
+                            ->label('Ukupno dodatni prihodi')
+                            ->using(fn () => ExtraIncome::sum('amount'))
+                            ->money('bam', true),
+
+                        // 3. Ukupni troškovi (iz druge tabele)
                         Tables\Columns\Summarizers\Summarizer::make()
                             ->label('Ukupno troškovi')
                             ->using(fn () => Expense::sum('amount'))
                             ->money('bam', true),
 
-                        // 3. Neto stanje (Uplate - Troškovi)
+                        // 4. Neto stanje = Uplate + Dodatni prihodi − Troškovi
                         Tables\Columns\Summarizers\Summarizer::make()
                             ->label('NETO OSTATAK')
                             ->using(function ($query) {
-                                // Suma trenutno filtriranih uplata
                                 $totalApproved = $query->sum('amount');
-                                // Suma svih troškova
+                                $totalExtra    = ExtraIncome::sum('amount');
                                 $totalExpenses = Expense::sum('amount');
-                                
-                                return $totalApproved - $totalExpenses;
+
+                                return $totalApproved + $totalExtra - $totalExpenses;
                             })
                             ->money('bam', true),
                     ]),

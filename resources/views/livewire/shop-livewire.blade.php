@@ -384,7 +384,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H3v11h2m8 0H9m10 0h2v-6l-3-4h-5v4h6"/>
                                 </svg>
-                                Besplatna dostava za narudžbe iznad 120 KM
+                                {{ \App\Services\ShippingCalculator::summaryLabel() }}
                             </p>
                         </div>
                     </div>

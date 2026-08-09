@@ -154,12 +154,17 @@
                     </div>
                 @endif
 
-                <!-- Price -->
-                <div class="mt-8 flex items-baseline gap-3">
-                    <span class="text-xs uppercase tracking-[0.3em] text-gray-500">Cijena</span>
-                    <span class="text-4xl font-semibold bg-gradient-to-r from-violet-600 via-fuchsia-500 to-rose-500 bg-clip-text text-transparent">
-                        {{ number_format($perfume->price, 2) }} KM
-                    </span>
+                <!-- Price + wishlist -->
+                <div class="mt-8 flex items-center justify-between gap-3">
+                    <div class="flex items-baseline gap-3">
+                        <span class="text-xs uppercase tracking-[0.3em] text-gray-500">Cijena</span>
+                        <span class="text-4xl font-semibold bg-gradient-to-r from-violet-600 via-fuchsia-500 to-rose-500 bg-clip-text text-transparent">
+                            {{ number_format($perfume->price, 2) }} KM
+                        </span>
+                    </div>
+                    <div wire:ignore>
+                        <livewire:wishlist-button :perfume-id="$perfume->id" size="lg" :key="'wl-detail-'.$perfume->id" />
+                    </div>
                 </div>
 
                 <!-- Divider -->
@@ -195,7 +200,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H3v11h2m8 0H9m10 0h2v-6l-3-4h-5v4h6"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
                         </svg>
-                        Besplatna dostava iznad 120 KM
+                        {{ \App\Services\ShippingCalculator::summaryLabel() }}
                     </div>
                     <div class="flex items-center gap-2 text-xs text-gray-600">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-fuchsia-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
@@ -213,5 +218,27 @@
             </div>
 
         </div>
+
+        {{-- Related perfumes --}}
+        @if(isset($related) && $related->count() > 0)
+            <section class="mt-16 sm:mt-24">
+                <div class="text-center mb-10">
+                    <div class="flex items-center justify-center gap-2 mb-3">
+                        <span class="h-px w-10 bg-gradient-to-r from-transparent to-fuchsia-400"></span>
+                        <span class="text-fuchsia-400 text-[10px]">✦</span>
+                        <span class="h-px w-10 bg-gradient-to-l from-transparent to-fuchsia-400"></span>
+                    </div>
+                    <h2 class="font-serif italic font-light text-3xl sm:text-4xl text-gray-900">
+                        Možda će Vam se svidjeti
+                    </h2>
+                </div>
+
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                    @foreach($related as $perfume)
+                        <x-perfume-card :perfume="$perfume" />
+                    @endforeach
+                </div>
+            </section>
+        @endif
     </div>
 </div>

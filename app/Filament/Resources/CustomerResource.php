@@ -30,7 +30,9 @@ class CustomerResource extends Resource
                             ->label('Ime i prezime')
                             ->required(),
                         Forms\Components\TextInput::make('phone')
-                            ->label('Telefon'),
+                            ->label('Telefon')
+                            ->tel()
+                            ->helperText('Bilo koji format prolazi (060…, +38760…, 0038760…) — automatski se pretvara u +387… oblik.'),
                         Forms\Components\TextInput::make('email')
                             ->email()
                             ->label('Email adresa'),

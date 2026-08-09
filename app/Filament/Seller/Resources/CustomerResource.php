@@ -43,34 +43,33 @@ class CustomerResource extends Resource
     {
         return $form->schema([
             Forms\Components\Section::make('Osnovne Informacije')
+                ->description('Samo ime je obavezno — ostalo možete popuniti kasnije.')
                 ->schema([
                     Forms\Components\TextInput::make('full_name')
                         ->required()
                         ->label('Ime i Prezime'),
+                    Forms\Components\TextInput::make('phone')
+                        ->tel()
+                        ->label('Telefon')
+                        ->helperText('Prihvatamo bilo koji format (npr. 060 321 7297 ili +38760…). Sistem sam pretvara u standardni oblik.'),
                     Forms\Components\TextInput::make('email')
                         ->email()
                         ->unique(ignoreRecord: true)
                         ->label('Email'),
-                    Forms\Components\TextInput::make('phone')
-                        ->tel()
-                        ->required()
-                        ->label('Telefon'),
-                ])->columns(2),
+                ])->columns(3),
 
-            Forms\Components\Section::make('Lokacija')
+            Forms\Components\Section::make('Lokacija (opcionalno)')
+                ->description('Popunite ako trebate za dostavu.')
+                ->collapsed()
                 ->schema([
                     Forms\Components\Select::make('canton')
                         ->options(Canton::class)
-                        ->required()
                         ->label('Kanton'),
                     Forms\Components\TextInput::make('city')
-                        ->required()
                         ->label('Grad'),
                     Forms\Components\TextInput::make('address_line_1')
-                        ->required()
                         ->label('Adresa'),
                     Forms\Components\TextInput::make('zipcode')
-                        ->required()
                         ->label('Zip'),
                 ])->columns(4),
             

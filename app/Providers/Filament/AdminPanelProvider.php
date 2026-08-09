@@ -96,13 +96,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 'panels::body.end',
-                fn (): string => Blade::render('<style>
-                    @media (max-width: 1024px) {
-                        .fi-sidebar-nav {
-                            padding-bottom: 100px !important;
-                        }
-                    }
-                </style>'),
+                fn (): string => view('filament.mobile-styles')->render(),
             )
             ->middleware([
                 EncryptCookies::class,
