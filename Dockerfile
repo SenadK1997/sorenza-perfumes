@@ -37,8 +37,12 @@ COPY --from=composer-deps --chown=www-data:www-data /app/vendor ./vendor
 # Built frontend assets
 COPY --from=frontend --chown=www-data:www-data /app/public/build ./public/build
 
-# Optimize autoload and finalize install
-RUN composer dump-autoload --optimize --no-interaction \
+# Cache-busting arg: pass --build-arg CACHEBUST=$(date +%s) to force re-dump.
+# Also mixed in below so any composer.lock change automatically busts the layer.
+ARG CACHEBUST=1
+RUN echo "cachebust:${CACHEBUST}" \
+    && cat composer.lock | head -c 200 > /tmp/lockhash \
+    && composer dump-autoload --optimize --no-interaction \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache \
     && php artisan storage:link || true
