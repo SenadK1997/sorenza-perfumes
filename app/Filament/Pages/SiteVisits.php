@@ -51,11 +51,18 @@ class SiteVisits extends Page
         $fileExists = file_exists($credPath);
         $configured = $ga->isConfigured();
 
+        // Extract service account email from JSON so we can display + compare
+        $serviceEmail = 'unknown';
+        if ($fileExists) {
+            $json = @json_decode(@file_get_contents($credPath), true);
+            $serviceEmail = $json['client_email'] ?? 'unknown';
+        }
+
         $lines = [
             '• Property ID: ' . ($propId ?: 'MISSING'),
-            '• Credentials path: ' . $credPath,
+            '• Servis konto: ' . $serviceEmail,
             '• Fajl postoji: ' . ($fileExists ? 'DA' : 'NE'),
-            '• Servis konfigurisan: ' . ($configured ? 'DA' : 'NE'),
+            '• Konfigurisan: ' . ($configured ? 'DA' : 'NE'),
         ];
 
         if (! $configured || ! $fileExists) {
@@ -68,33 +75,57 @@ class SiteVisits extends Page
             return;
         }
 
-        // Try realtime + last 7 days totals
+        // Aggressively test with a wide date range and low-level call
         try {
             Cache::flush();
-            $realtime = $ga->activeUsers();
-            $totals = $ga->totals('7daysAgo', 'today');
 
-            $lines[] = '• Realtime posjetioci: ' . $realtime;
-            $lines[] = '• Sesije (zadnjih 7 dana): ' . $totals['sessions'];
-            $lines[] = '• Pregleda (zadnjih 7 dana): ' . $totals['pageviews'];
+            // 1) Raw wide-range totals ("Sve vrijeme")
+            $t = $ga->totals('2020-01-01', 'today');
+            $lines[] = '• Sesije (sve vrijeme): ' . $t['sessions'];
+            $lines[] = '• Posjetioci (sve vrijeme): ' . $t['users'];
+            $lines[] = '• Pregleda (sve vrijeme): ' . $t['pageviews'];
 
-            $verdict = ($realtime > 0 || $totals['sessions'] > 0)
-                ? ['title' => 'GA radi ✓', 'kind' => 'success']
-                : ['title' => 'API radi, ali vraća 0', 'kind' => 'warning'];
+            // 2) Yesterday specifically (should ALWAYS have data if any tracking happened)
+            $y = $ga->totals('yesterday', 'yesterday');
+            $lines[] = '• Jučer: ' . $y['sessions'] . ' sesija, ' . $y['users'] . ' posj.';
+
+            // 3) Realtime
+            $rt = $ga->activeUsers();
+            $lines[] = '• Realtime: ' . $rt . ' aktivnih';
+
+            // 4) Try a DIFFERENT API surface — list metadata for the property
+            //    If this succeeds, permissions work. If it fails, permissions issue.
+            $metaOk = 'NEPOZNATO';
+            try {
+                $client = new \Google\Analytics\Data\V1beta\BetaAnalyticsDataClient([
+                    'credentials' => $credPath,
+                ]);
+                $meta = $client->getMetadata('properties/' . $propId . '/metadata');
+                $count = count(iterator_to_array($meta->getMetrics()));
+                $metaOk = "DA ({$count} metrika)";
+            } catch (\Throwable $me) {
+                $metaOk = 'NE — ' . substr($me->getMessage(), 0, 200);
+            }
+            $lines[] = '• Metadata API: ' . $metaOk;
+
+            $hasAnyData = $t['sessions'] > 0 || $t['users'] > 0 || $t['pageviews'] > 0 || $rt > 0;
+
+            $verdict = $hasAnyData
+                ? ['title' => 'GA radi ✓', 'kind' => 'success', 'extra' => '']
+                : ['title' => 'API poziv prolazi, ali vraća 0 svugdje', 'kind' => 'warning',
+                   'extra' => "\n\n→ Servisni konto NE VIDI podatke ovog property-ja iako je auth ispravan.\n"
+                            . "→ Idite u GA Admin → PROPERTY (desna kolona) → Property Access Management\n"
+                            . "→ Provjerite da tačno ovaj email postoji: {$serviceEmail}\n"
+                            . "→ Ako postoji samo pod Account Access (lijeva kolona), obrišite ga i dodajte ISKLJUČIVO pod Property Access."];
 
             Notification::make()
                 ->title($verdict['title'])
-                ->body(implode("\n", $lines) . "\n\n" . (
-                    $verdict['kind'] === 'warning'
-                        ? '→ Provjerite da property ID odgovara onome gdje vidite posjete u analytics.google.com.'
-                        : ''
-                ))
+                ->body(implode("\n", $lines) . $verdict['extra'])
                 ->{$verdict['kind']}()
                 ->persistent()
                 ->send();
         } catch (\Throwable $e) {
             $lines[] = '• GREŠKA: ' . $e->getMessage();
-
             Notification::make()
                 ->title('API poziv nije uspio')
                 ->body(implode("\n", $lines))
