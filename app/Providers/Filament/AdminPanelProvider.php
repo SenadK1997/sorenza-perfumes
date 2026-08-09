@@ -75,7 +75,7 @@ class AdminPanelProvider extends PanelProvider
                     }
                 </style>
             '))
-            ->favicon(asset('favicon.png'))
+            ->favicon(fn () => secure_asset('favicon.png'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([

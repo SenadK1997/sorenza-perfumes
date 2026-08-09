@@ -43,6 +43,54 @@ class SiteVisits extends Page
     }
 
     /** Run a full connection check and show the result as a Filament notification. */
+    /** Nuclear option: manually re-include the autoload files + reset opcache, then re-check. */
+    public function forceReloadAutoload(): void
+    {
+        $steps = [];
+
+        // 1. Reset opcache
+        if (function_exists('opcache_reset')) {
+            $ok = @opcache_reset();
+            $steps[] = 'opcache_reset: ' . ($ok ? 'OK' : 'nije primijenjen');
+        } else {
+            $steps[] = 'opcache_reset: FUNKCIJA NE POSTOJI (opcache disabled)';
+        }
+
+        // 2. Try to require the SDK class file directly
+        $candidates = [
+            base_path('vendor/google/analytics-data/src/V1beta/Client/BetaAnalyticsDataClient.php'),
+            base_path('vendor/google/analytics-data/src/V1beta/BetaAnalyticsDataClient.php'),
+        ];
+        $required = false;
+        foreach ($candidates as $c) {
+            if (file_exists($c)) {
+                try { require_once $c; $required = true; $steps[] = 'require: ' . $c . ' OK'; break; }
+                catch (\Throwable $e) { $steps[] = 'require GREŠKA: ' . $e->getMessage(); }
+            }
+        }
+        if (! $required) $steps[] = 'require: nijedan kandidat ne postoji';
+
+        // 3. Re-check class_exists
+        $exists = class_exists(\Google\Analytics\Data\V1beta\BetaAnalyticsDataClient::class);
+        $steps[] = 'class_exists nakon require: ' . ($exists ? 'DA' : 'NE');
+
+        // 4. Reload composer autoload file
+        $autoload = base_path('vendor/autoload.php');
+        if (file_exists($autoload)) {
+            include $autoload;
+            $steps[] = 'Ponovno učitan vendor/autoload.php';
+        }
+        $existsAfter = class_exists(\Google\Analytics\Data\V1beta\BetaAnalyticsDataClient::class);
+        $steps[] = 'class_exists nakon reload autoload: ' . ($existsAfter ? 'DA' : 'NE');
+
+        Notification::make()
+            ->title($existsAfter ? 'Klasa se sada učitava ✓' : 'Klasa se i dalje ne učitava')
+            ->body(implode("\n", $steps))
+            ->{$existsAfter ? 'success' : 'danger'}()
+            ->persistent()
+            ->send();
+    }
+
     public function runDiagnostic(): void
     {
         $ga = new GoogleAnalytics();

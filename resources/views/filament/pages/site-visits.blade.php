@@ -3,13 +3,22 @@
         <div style="padding: 2rem; text-align: center; border: 1px dashed rgba(0,0,0,0.15); border-radius: 1rem; color: #6b7280;">
             <strong>Google Analytics nije konfigurisan.</strong>
             <p style="margin-top: 0.5rem; font-size: 0.85rem;">Provjerite property ID, credentials fajl i da li je SDK paket instaliran.</p>
-            <button type="button" wire:click="runDiagnostic"
-                    style="margin-top: 1rem; display:inline-flex; align-items:center; gap:6px;
-                           padding: 0.55rem 1rem; border-radius: 999px;
-                           background:#7f1d1d; color:#ffffff; font-weight:600; font-size:0.85rem;
-                           border:0; cursor:pointer;">
-                🔧 Pokreni dijagnostiku
-            </button>
+            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top: 1rem;">
+                <button type="button" wire:click="runDiagnostic"
+                        style="display:inline-flex; align-items:center; gap:6px;
+                               padding: 0.55rem 1rem; border-radius: 999px;
+                               background:#7f1d1d; color:#ffffff; font-weight:600; font-size:0.85rem;
+                               border:0; cursor:pointer;">
+                    🔧 Pokreni dijagnostiku
+                </button>
+                <button type="button" wire:click="forceReloadAutoload"
+                        style="display:inline-flex; align-items:center; gap:6px;
+                               padding: 0.55rem 1rem; border-radius: 999px;
+                               background:#1d4ed8; color:#ffffff; font-weight:600; font-size:0.85rem;
+                               border:0; cursor:pointer;">
+                    ⚡ Forsiraj autoload
+                </button>
+            </div>
         </div>
     @else
         @php
