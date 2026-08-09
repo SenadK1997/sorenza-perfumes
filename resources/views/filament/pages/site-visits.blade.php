@@ -98,12 +98,21 @@
                         <div class="sv-title">Posjete sajta</div>
                         <div class="sv-sub"><em>{{ $rangeInfo['label'] }}</em></div>
                     </div>
-                    <div class="sv-realtime">{{ $realtime }} aktivnih sada</div>
+                    <div class="sv-realtime" wire:poll.20s>{{ $realtime }} aktivnih sada</div>
                 </div>
                 <div class="sv-presets">
                     @foreach($presets as $k => $l)
                         <button type="button" wire:click="setRange('{{ $k }}')" class="sv-chip {{ $this->range === $k ? 'sv-chip--active' : '' }}">{{ $l }}</button>
                     @endforeach
+
+                    <span style="flex:1;"></span>
+
+                    <button type="button" wire:click="refreshCache" class="sv-chip" style="border-color: rgba(29,78,216,0.35);">
+                        ↻ Osvježi
+                    </button>
+                    <button type="button" wire:click="runDiagnostic" class="sv-chip" style="border-color: rgba(220,38,38,0.35); color:#991b1b !important;">
+                        🔧 Provjeri GA konekciju
+                    </button>
                 </div>
             </div>
 

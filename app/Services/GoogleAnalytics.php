@@ -255,10 +255,10 @@ class GoogleAnalytics
         });
     }
 
-    /** Real-time active users (last 30 min). */
+    /** Real-time active users (last 30 min). Short cache so the number stays fresh. */
     public function activeUsers(): int
     {
-        return Cache::remember($this->cacheKey('activeUsers'), 30, function () {
+        return Cache::remember($this->cacheKey('activeUsers'), 15, function () {
             try {
                 $res = $this->client()->runRealtimeReport([
                     'property' => $this->propertyPath(),
