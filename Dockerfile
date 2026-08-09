@@ -38,7 +38,7 @@ COPY --from=composer-deps --chown=www-data:www-data /app/vendor ./vendor
 COPY --from=frontend --chown=www-data:www-data /app/public/build ./public/build
 
 # Optimize autoload and finalize install
-RUN composer dump-autoload --optimize --no-interaction --classmap-authoritative \
+RUN composer dump-autoload --optimize --no-interaction \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache \
     && php artisan storage:link || true

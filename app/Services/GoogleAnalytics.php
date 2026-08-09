@@ -29,6 +29,13 @@ class GoogleAnalytics
         return class_exists(BetaAnalyticsDataClient::class);
     }
 
+    /** Does the vendor file for the SDK actually exist on disk? */
+    public function sdkFileExists(): bool
+    {
+        return file_exists(base_path('vendor/google/analytics-data/src/V1beta/Client/BetaAnalyticsDataClient.php'))
+            || file_exists(base_path('vendor/google/analytics-data/src/V1beta/BetaAnalyticsDataClient.php'));
+    }
+
     protected function client(): BetaAnalyticsDataClient
     {
         if ($this->client) return $this->client;

@@ -59,25 +59,41 @@ class SiteVisits extends Page
         }
 
         $sdk = $ga->sdkInstalled();
+        $sdkFile = $ga->sdkFileExists();
 
         $lines = [
             '• Property ID: ' . ($propId ?: 'MISSING'),
             '• Servis konto: ' . $serviceEmail,
-            '• Fajl postoji: ' . ($fileExists ? 'DA' : 'NE'),
-            '• SDK instaliran: ' . ($sdk ? 'DA' : 'NE (google/analytics-data paket nedostaje!)'),
+            '• Fajl kredencijala: ' . ($fileExists ? 'DA' : 'NE'),
+            '• SDK fajl na disku: ' . ($sdkFile ? 'DA' : 'NE'),
+            '• SDK klasa učitava se: ' . ($sdk ? 'DA' : 'NE'),
             '• Konfigurisan: ' . ($configured ? 'DA' : 'NE'),
         ];
 
         if (! $sdk) {
-            Notification::make()
-                ->title('SDK PAKET NEDOSTAJE U KONTEJNERU')
-                ->body(implode("\n", $lines)
-                    . "\n\n→ Coolify build nije instalirao google/analytics-data paket."
-                    . "\n→ Provjerite deployment logove: traži liniju 'google/analytics-data'."
-                    . "\n→ Ako je nema, ručno pokrenite 'composer install --no-dev' u kontejneru.")
-                ->danger()
-                ->persistent()
-                ->send();
+            // Distinguish "not installed" from "installed but autoloader stale"
+            if ($sdkFile) {
+                Notification::make()
+                    ->title('SDK je instaliran ali autoloader ne vidi klasu')
+                    ->body(implode("\n", $lines)
+                        . "\n\n→ Vendor fajl postoji ali Composer autoloader je zastario."
+                        . "\n→ Popravka: u Coolify kontejneru pokrenite:"
+                        . "\n     composer dump-autoload --optimize"
+                        . "\n     php artisan optimize:clear"
+                        . "\n→ Ili u Dockerfile: uklonite --classmap-authoritative flag i redeploy.")
+                    ->danger()
+                    ->persistent()
+                    ->send();
+            } else {
+                Notification::make()
+                    ->title('SDK PAKET NEDOSTAJE U KONTEJNERU')
+                    ->body(implode("\n", $lines)
+                        . "\n\n→ vendor/google/analytics-data/ fajl ne postoji na disku."
+                        . "\n→ Coolify build nije prebacio paket u runtime image.")
+                    ->danger()
+                    ->persistent()
+                    ->send();
+            }
             return;
         }
 
