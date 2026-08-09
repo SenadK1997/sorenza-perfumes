@@ -2,8 +2,11 @@
 
 namespace App\Filament\Pages;
 
+use App\Enums\Canton;
 use App\Models\Order;
+use App\Models\Perfume;
 use App\Models\SoldPerfume;
+use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Filament\Pages\Page;
@@ -26,6 +29,11 @@ class SalesAnalytics extends Page
 
     /** When true, all admin users are merged into a single "Sorénza (tim)" row. */
     public bool $groupTeam = true;
+
+    /** Optional filters — null = no filter. */
+    public ?int    $filterPerfumeId = null;
+    public ?int    $filterSellerId  = null;
+    public ?string $filterCanton    = null;
 
     public static function canAccess(): bool
     {
@@ -94,9 +102,39 @@ class SalesAnalytics extends Page
 
     protected function baseQuery(Carbon $from, Carbon $to)
     {
-        return SoldPerfume::query()
+        $q = SoldPerfume::query()
             ->where('sold_perfumes.cancelled', false)
             ->whereBetween('sold_perfumes.created_at', [$from, $to]);
+
+        if ($this->filterPerfumeId) {
+            $q->where('sold_perfumes.perfume_id', $this->filterPerfumeId);
+        }
+        if ($this->filterSellerId) {
+            $q->where('sold_perfumes.user_id', $this->filterSellerId);
+        }
+        if ($this->filterCanton) {
+            // Filter through customer.canton (only rows with a linked customer will match)
+            $q->whereExists(function ($sub) {
+                $sub->select(DB::raw(1))
+                    ->from('customers')
+                    ->whereColumn('customers.id', 'sold_perfumes.customer_id')
+                    ->where('customers.canton', $this->filterCanton);
+            });
+        }
+
+        return $q;
+    }
+
+    public function clearFilters(): void
+    {
+        $this->filterPerfumeId = null;
+        $this->filterSellerId  = null;
+        $this->filterCanton    = null;
+    }
+
+    public function hasAnyFilter(): bool
+    {
+        return $this->filterPerfumeId || $this->filterSellerId || $this->filterCanton;
     }
 
     // ─── Aggregates ──────────────────────────────────────────────────────
@@ -349,6 +387,10 @@ class SalesAnalytics extends Page
                 'all'    => 'Sve vrijeme',
                 'custom' => 'Prilagođen',
             ],
+            'perfumeOptions' => Perfume::orderBy('name')->pluck('name', 'id')->toArray(),
+            'sellerOptions'  => User::orderBy('name')->pluck('name', 'id')->toArray(),
+            'cantonOptions'  => collect(Canton::cases())->mapWithKeys(fn ($c) => [$c->value => $c->name])->toArray(),
+            'anyFilter'      => $this->hasAnyFilter(),
         ];
     }
 }

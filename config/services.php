@@ -28,6 +28,11 @@ return [
         'key' => env('RESEND_KEY'),
     ],
 
+    'google_analytics' => [
+        'property_id'      => env('GA_PROPERTY_ID'),
+        'credentials_path' => env('GA_CREDENTIALS_PATH', 'storage/app/google/ga.json'),
+    ],
+
     'slack' => [
         'webhook_url' => env('SLACK_WEBHOOK_URL'),
         'notifications' => [

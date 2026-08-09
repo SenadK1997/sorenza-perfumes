@@ -101,6 +101,42 @@
         .sa-custom label { font-size: 0.75rem; color: #6b7280; }
         .dark .sa-custom label { color: #9ca3af; }
 
+        /* Filter row */
+        .sa-filters {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 0.6rem;
+            padding-top: 0.5rem;
+            border-top: 1px dashed rgba(187,161,79,0.30);
+            margin-top: 0.4rem;
+        }
+        @media (min-width: 640px) { .sa-filters { grid-template-columns: repeat(3, 1fr) auto; align-items: end; } }
+        .sa-filter { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+        .sa-filter label {
+            font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.16em;
+            color: #8b6914; font-weight: 600;
+        }
+        .dark .sa-filter label { color: #DBC584; }
+        .sa-filter select {
+            padding: 0.5rem 0.65rem;
+            border-radius: 0.55rem;
+            border: 1px solid rgba(0,0,0,0.10);
+            background: #fff; color: #111827; font-size: 0.85rem;
+            width: 100%; min-width: 0;
+        }
+        .dark .sa-filter select {
+            background: #1c1d20; color: #f3f4f6; border-color: rgba(255,255,255,0.10);
+        }
+        .sa-filter-clear {
+            font-size: 0.72rem; font-weight: 600; padding: 0.5rem 0.85rem;
+            border-radius: 999px; border: 1px solid rgba(220, 38, 38, 0.3);
+            background: rgba(254, 226, 226, 0.4); color: #991b1b;
+            cursor: pointer; align-self: end;
+            transition: all .15s ease;
+        }
+        .sa-filter-clear:hover { background: rgba(254, 226, 226, 0.7); }
+        .dark .sa-filter-clear { background: rgba(220,38,38,0.15); color: #fca5a5; border-color: rgba(220, 38, 38, 0.35); }
+
         /* KPI grid */
         .sa-kpis { display: grid; grid-template-columns: repeat(1, 1fr); gap: 0.85rem; }
         @media (min-width: 640px) { .sa-kpis { grid-template-columns: repeat(2, 1fr); } }
@@ -214,6 +250,42 @@
                     <input type="date" wire:model.live.debounce.300ms="customTo" max="{{ now()->toDateString() }}">
                 </div>
             @endif
+
+            {{-- Filters row --}}
+            <div class="sa-filters">
+                <div class="sa-filter">
+                    <label>Parfem</label>
+                    <select wire:model.live="filterPerfumeId">
+                        <option value="">Svi parfemi</option>
+                        @foreach($perfumeOptions as $id => $name)
+                            <option value="{{ $id }}">{{ $name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="sa-filter">
+                    <label>Prodavač</label>
+                    <select wire:model.live="filterSellerId">
+                        <option value="">Svi prodavači</option>
+                        @foreach($sellerOptions as $id => $name)
+                            <option value="{{ $id }}">{{ $name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="sa-filter">
+                    <label>Kanton</label>
+                    <select wire:model.live="filterCanton">
+                        <option value="">Svi kantoni</option>
+                        @foreach($cantonOptions as $val => $label)
+                            <option value="{{ $val }}">{{ $val }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @if($anyFilter)
+                    <button type="button" wire:click="clearFilters" class="sa-filter-clear">
+                        ✕ Očisti filtere
+                    </button>
+                @endif
+            </div>
         </div>
 
         {{-- KPI tiles --}}
