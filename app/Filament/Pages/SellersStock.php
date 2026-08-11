@@ -80,7 +80,24 @@ class SellersStock extends Page
             ->addSelect('perfume_seller.stock as pivot_stock')
             ->where('perfume_seller.user_id', $userId)
             ->where('perfume_seller.stock', '>', 0)
+            ->where('perfumes.availability', true)
             ->orderBy('perfume_seller.stock', 'asc')
+            ->get();
+    }
+
+    /** Active perfumes the seller does NOT have (either no pivot row, or stock = 0). */
+    protected function missingFor(int $userId)
+    {
+        $ownedIds = \DB::table('perfume_seller')
+            ->where('user_id', $userId)
+            ->where('stock', '>', 0)
+            ->pluck('perfume_id');
+
+        return Perfume::query()
+            ->select('perfumes.id', 'perfumes.name', 'perfumes.inspired_by', 'perfumes.base_price')
+            ->where('perfumes.availability', true)
+            ->whereNotIn('perfumes.id', $ownedIds)
+            ->orderBy('perfumes.name')
             ->get();
     }
 
@@ -89,14 +106,17 @@ class SellersStock extends Page
         $sellers = $this->sellers();
 
         $expandedRows = collect();
+        $missingRows  = collect();
         if ($this->expandedSellerId && $sellers->firstWhere('id', $this->expandedSellerId)) {
             $expandedRows = $this->perfumesFor($this->expandedSellerId);
+            $missingRows  = $this->missingFor($this->expandedSellerId);
         }
 
         return [
             'sellers'       => $sellers,
             'expandedId'    => $this->expandedSellerId,
             'expandedRows'  => $expandedRows,
+            'missingRows'   => $missingRows,
             'totals'        => [
                 'sellers'         => $sellers->count(),
                 'unique_perfumes' => $sellers->sum('unique_in_stock'),

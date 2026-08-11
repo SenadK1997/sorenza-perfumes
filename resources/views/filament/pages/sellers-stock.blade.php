@@ -130,9 +130,12 @@
 
                     @if($expandedId === $s->id)
                         <div class="ss-body">
-                            <div class="ss-body-title">Detalji lagera — {{ $expandedRows->count() }} parfema</div>
+                            {{-- HAS --}}
+                            <div class="ss-body-title" style="color:#166534;">
+                                ✓ NA STANJU — {{ $expandedRows->count() }} parfema
+                            </div>
                             @if($expandedRows->count() === 0)
-                                <div class="ss-empty">Nema stavki sa stanjem > 0.</div>
+                                <div class="ss-empty" style="padding:1rem;">Nema stavki sa stanjem > 0.</div>
                             @else
                                 <div class="ss-perf-list">
                                     @foreach($expandedRows as $p)
@@ -147,6 +150,28 @@
                                                 @endif
                                             </div>
                                             <span class="ss-badge {{ $cls }}">{{ $p->pivot_stock }} kom</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            {{-- MISSING --}}
+                            <div class="ss-body-title" style="color:#991b1b; margin-top:1rem;">
+                                ✕ NEDOSTAJE — {{ $missingRows->count() }} parfema
+                            </div>
+                            @if($missingRows->count() === 0)
+                                <div class="ss-empty" style="padding:1rem;">Prodavač ima sve aktivne parfeme na lageru 🎉</div>
+                            @else
+                                <div class="ss-perf-list">
+                                    @foreach($missingRows as $p)
+                                        <div class="ss-perf" style="opacity:0.85;">
+                                            <div class="ss-perf-name">
+                                                {{ $p->name }}
+                                                @if($p->inspired_by)
+                                                    <span style="color:#6b7280; font-weight:400; font-style:italic;"> — {{ $p->inspired_by }}</span>
+                                                @endif
+                                            </div>
+                                            <span class="ss-badge ss-badge--crit">nema</span>
                                         </div>
                                     @endforeach
                                 </div>
