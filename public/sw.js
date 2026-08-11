@@ -4,15 +4,14 @@
  * We deliberately keep caching very conservative so admin/Livewire updates
  * are never served stale.
  */
-const CACHE = 'sorenza-shell-v1';
+const CACHE = 'sorenza-shell-v2';
 
 // Static shell we're happy to cache
 const SHELL = [
   '/favicon.png',
   '/favicon-32x32.png',
+  '/favicon-512x512.png',
   '/apple-touch-icon.png',
-  '/android-chrome-192x192.png',
-  '/android-chrome-512x512.png',
   '/manifest.json',
 ];
 
