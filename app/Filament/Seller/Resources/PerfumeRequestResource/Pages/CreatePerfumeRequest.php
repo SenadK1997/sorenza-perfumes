@@ -17,6 +17,13 @@ class CreatePerfumeRequest extends CreateRecord
 
     protected ?bool $hasDatabaseTransactions = false; // we manage the transaction ourselves
 
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            \App\Filament\Seller\Widgets\MissingPerfumes::class,
+        ];
+    }
+
     protected function getFormActions(): array
     {
         return [
