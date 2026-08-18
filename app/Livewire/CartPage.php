@@ -8,6 +8,8 @@ use App\Models\Perfume;
 use App\Models\Coupon;
 use App\Models\SiteSetting;
 use App\Services\ShippingCalculator;
+use App\Services\CartTierDiscount;
+use App\Services\CustomerLoyalty;
 
 class CartPage extends Component
 {
@@ -29,17 +31,21 @@ class CartPage extends Component
 
     public function applyCoupon()
     {
-        $subtotal = $this->cartItems->sum(fn($i) => $i->price * $i->quantity);
+        $items = $this->cartItems;
         $coupon = Coupon::where('code', $this->couponCode)->first();
 
-        if (!$coupon || !$coupon->isValidFor($subtotal)) {
-            $this->addError('couponCode', 'Kupon nije validan ili ne ispunjava uslove.');
+        if (!$coupon || !$coupon->isValidForCart($items)) {
+            $msg = 'Kupon nije validan ili ne ispunjava uslove.';
+            if ($coupon && $coupon->hasPerfumeRestriction() && $coupon->eligibleSubtotal($items) <= 0) {
+                $msg = 'Ovaj kupon važi samo za određene parfeme kojih trenutno nema u vašoj korpi.';
+            }
+            $this->addError('couponCode', $msg);
             return;
         }
 
         session()->put('coupon', [
             'code' => $coupon->code,
-            'discount' => $coupon->calculateDiscount($subtotal)
+            'discount' => $coupon->calculateCartDiscount($items),
         ]);
 
         $this->couponCode = ''; // Clear input
@@ -66,11 +72,11 @@ class CartPage extends Component
 
     protected function applyCouponOnUpdate()
     {
-        $subtotal = $this->cartItems->sum(fn($i) => $i->price * $i->quantity);
+        $items = $this->cartItems;
         $coupon = Coupon::where('code', session('coupon')['code'])->first();
-        
-        if ($coupon && $coupon->isValidFor($subtotal)) {
-            session()->put('coupon.discount', $coupon->calculateDiscount($subtotal));
+
+        if ($coupon && $coupon->isValidForCart($items)) {
+            session()->put('coupon.discount', $coupon->calculateCartDiscount($items));
         } else {
             session()->forget('coupon');
         }
@@ -93,9 +99,17 @@ class CartPage extends Component
     {
         $items = $this->cartItems;
         $subtotal = $items->sum(fn($i) => $i->price * $i->quantity);
-        
-        $discount = session()->get('coupon')['discount'] ?? 0;
-        
+
+        $couponDiscount = session()->get('coupon')['discount'] ?? 0;
+        $tierDiscount   = CartTierDiscount::discount((float) $subtotal);
+
+        // Loyalty discount for logged-in customers (% of subtotal by tier)
+        $customer         = auth('customer')->user();
+        $loyaltyTier      = $customer ? CustomerLoyalty::forCustomer($customer) : null;
+        $loyaltyDiscount  = $customer ? CustomerLoyalty::discountAmountFor($customer, (float) $subtotal) : 0.0;
+
+        $discount = $couponDiscount + $tierDiscount + $loyaltyDiscount;
+
         $shipping = ShippingCalculator::fee($subtotal);
         $total = ($subtotal - $discount) + $shipping;
 
@@ -103,6 +117,14 @@ class CartPage extends Component
             'items' => $items,
             'subtotal' => $subtotal,
             'discount' => $discount,
+            'couponDiscount' => $couponDiscount,
+            'tierDiscount' => $tierDiscount,
+            'loyaltyDiscount' => $loyaltyDiscount,
+            'loyaltyTier' => $loyaltyTier,
+            'tierEnabled' => CartTierDiscount::enabled(),
+            'tierEarned' => CartTierDiscount::earned((float) $subtotal),
+            'tierNext' => CartTierDiscount::next((float) $subtotal),
+            'tierAll' => CartTierDiscount::tiers(),
             'shipping' => $shipping,
             'total' => max(0, $total),
             'alwaysFree' => ShippingCalculator::alwaysFree(),

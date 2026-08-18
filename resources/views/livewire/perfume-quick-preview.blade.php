@@ -65,7 +65,15 @@
                     </div>
                 @endif
 
-                <p class="mt-4 text-2xl font-semibold text-indigo-600">{{ number_format($selectedPerfume->price, 2) }} KM</p>
+                <div class="mt-4 flex items-baseline gap-2 flex-wrap">
+                    @if($selectedPerfume->is_on_sale)
+                        <p class="text-2xl font-semibold text-rose-600">{{ number_format($selectedPerfume->price, 2) }} KM</p>
+                        <p class="text-base font-medium text-gray-400 line-through">{{ number_format($selectedPerfume->original_price, 2) }} KM</p>
+                        <span class="inline-flex items-center rounded-full bg-rose-100 text-rose-700 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5">−{{ (int) $selectedPerfume->discount_percentage }}%</span>
+                    @else
+                        <p class="text-2xl font-semibold text-indigo-600">{{ number_format($selectedPerfume->price, 2) }} KM</p>
+                    @endif
+                </div>
                 @if($perfume->is_available)
                 <button
                     wire:click="addToCart({{ $selectedPerfume->id }})"

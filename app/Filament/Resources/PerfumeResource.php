@@ -66,39 +66,54 @@ class PerfumeResource extends Resource
 
             // SEKCIJA 2: CIJENE (LOGIKA)
             Section::make('Cijene i Popust')
-                ->description('Base Price je fiksna. Unosom popusta mijenja se Price (prodajna cijena).')
+                ->description('Nabavna je interna cijena. Regularna je precrtana na sajtu. Akcijska je prodajna cijena — postavi jednaku kao regularna ako nema popusta.')
                 ->schema([
-                    Grid::make(3)->schema([
-                        // FIXNA NABAVNA CIJENA
+                    Grid::make(2)->schema([
                         Forms\Components\TextInput::make('base_price')
-                            ->label('Nabavna cijena (Base)')
+                            ->label('Nabavna cijena (interno)')
+                            ->numeric()
+                            ->prefix('KM')
+                            ->required(),
+
+                        Forms\Components\DatePicker::make('restock_date')
+                            ->label('Datum dopune')
+                            ->native(false),
+                    ]),
+
+                    Grid::make(3)->schema([
+                        Forms\Components\TextInput::make('original_price')
+                            ->label('Regularna cijena')
+                            ->helperText('Precrtana cijena na sajtu kad ima akcije.')
                             ->numeric()
                             ->prefix('KM')
                             ->required()
-                            ->live() 
-                            ->afterStateUpdated(fn (Get $get, Set $set) => self::calculateSellingPrice($get, $set)),
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (Get $get, Set $set) {
+                                self::syncDiscountPercentage($get, $set);
+                            }),
 
-                        // POPUST KOJI MIJENJA PRODAJNU CIJENU
+                        Forms\Components\TextInput::make('price')
+                            ->label('Akcijska cijena')
+                            ->helperText('Konačna cijena koju kupac plaća.')
+                            ->numeric()
+                            ->prefix('KM')
+                            ->required()
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (Get $get, Set $set) {
+                                self::syncDiscountPercentage($get, $set);
+                            }),
+
                         Forms\Components\TextInput::make('discount_percentage')
                             ->label('Popust %')
+                            ->helperText('Automatski se računa. Ostavi 0 ako nema popusta.')
                             ->numeric()
                             ->suffix('%')
                             ->default(0)
-                            ->live()
-                            ->afterStateUpdated(fn (Get $get, Set $set) => self::calculateSellingPrice($get, $set)),
-
-                        // PRODAJNA CIJENA (Ono što kupac vidi)
-                        Forms\Components\TextInput::make('price')
-                            ->label('Prodajna cijena (Price)')
-                            ->numeric()
-                            ->prefix('KM')
-                            ->required()
-                            ->helperText('Ova cijena se automatski računa, ali je možete i ručno korigovati.'),
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (Get $get, Set $set) {
+                                self::syncPriceFromDiscount($get, $set);
+                            }),
                     ]),
-
-                    Forms\Components\DatePicker::make('restock_date')
-                        ->label('Datum dopune')
-                        ->native(false),
                 ])->collapsible(),
 
             // SEKCIJA 3: SLIKE I NOTE
@@ -140,19 +155,45 @@ class PerfumeResource extends Resource
     }
 
     /**
-     * LOGIKA: Mijenjamo isključivo 'price' na osnovu 'base_price' i popusta.
+     * Kad admin promijeni Regularnu ili Akcijsku cijenu — izračunaj popust %.
      */
-    public static function calculateSellingPrice(Get $get, Set $set): void
+    public static function syncDiscountPercentage(Get $get, Set $set): void
     {
-        // Uzimamo trenutnu prodajnu cijenu (npr. 60)
-        $currentPrice = (float) ($get('price') ?? 0);
+        $original = (float) ($get('original_price') ?? 0);
+        $price    = (float) ($get('price') ?? 0);
+
+        if ($original <= 0 || $price <= 0 || $price >= $original) {
+            $set('discount_percentage', 0);
+            return;
+        }
+
+        $set('discount_percentage', (int) round((1 - $price / $original) * 100));
+    }
+
+    /**
+     * Kad admin promijeni Popust % — izračunaj Akcijsku cijenu iz Regularne.
+     */
+    public static function syncPriceFromDiscount(Get $get, Set $set): void
+    {
+        $original = (float) ($get('original_price') ?? 0);
         $discount = (float) ($get('discount_percentage') ?? 0);
 
-        if ($discount > 0 && $currentPrice > 0) {
-            // 60 - (60 * 0.10) = 54
-            $newPrice = $currentPrice * (1 - ($discount / 100));
-            $set('price', round($newPrice, 2));
+        if ($original <= 0) {
+            return;
         }
+
+        if ($discount <= 0) {
+            $set('price', round($original, 2));
+            $set('discount_percentage', 0);
+            return;
+        }
+
+        if ($discount >= 100) {
+            $discount = 100;
+            $set('discount_percentage', 100);
+        }
+
+        $set('price', round($original * (1 - $discount / 100), 2));
     }
 
     public static function table(Table $table): Table
@@ -165,17 +206,26 @@ class PerfumeResource extends Resource
                     ->label('Pol')
                     ->badge()
                     ->formatStateUsing(fn ($state) => $state instanceof PerfumeGender ? $state->label() : $state),
-                Tables\Columns\TextColumn::make('base_price')->label('Nabavna (Base)')->money('bam'),
+                Tables\Columns\TextColumn::make('base_price')->label('Nabavna')->money('bam'),
+                Tables\Columns\TextColumn::make('original_price')
+                    ->label('Regularna')
+                    ->money('bam'),
                 Tables\Columns\TextColumn::make('price')
-                    ->label('Prodajna (Price)')
+                    ->label('Akcijska')
                     ->money('bam')
                     ->color('success')
                     ->weight('bold'),
-                Tables\Columns\TextColumn::make('discount_percentage')->label('Popust')->suffix('%'),
+                Tables\Columns\TextColumn::make('discount_percentage')
+                    ->label('Popust')
+                    ->suffix('%')
+                    ->color(fn ($state) => $state > 0 ? 'danger' : 'gray'),
                 Tables\Columns\IconColumn::make('availability')->label('Dostupno')->boolean(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('gender')->options(PerfumeGender::class),
+                Tables\Filters\Filter::make('on_sale')
+                    ->label('Na akciji')
+                    ->query(fn ($query) => $query->onSale()),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -14,6 +14,14 @@ use App\Livewire\OrderSuccess;
 use App\Livewire\OrderDetailLivewire;
 use App\Livewire\TrackOrder;
 use App\Livewire\WishlistPage;
+use App\Http\Controllers\Customer\AuthController as CustomerAuthController;
+use App\Livewire\Customer\LoginPage as CustomerLoginPage;
+use App\Livewire\Customer\Dashboard as CustomerDashboard;
+use App\Livewire\Customer\OrdersPage as CustomerOrdersPage;
+use App\Livewire\Customer\AddressPage as CustomerAddressPage;
+use App\Livewire\Customer\PasswordPage as CustomerPasswordPage;
+use App\Livewire\Customer\ScentProfilePage as CustomerScentProfilePage;
+use App\Livewire\Customer\MessagesPage as CustomerMessagesPage;
 
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 
@@ -54,6 +62,32 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/profile', Profile::class)->name('settings.profile');
     Route::get('settings/password', Password::class)->name('settings.password');
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
+});
+
+// --- Customer account (/nalog) ---
+Route::prefix('nalog')->group(function () {
+    // Guest routes
+    Route::get('/prijava', CustomerLoginPage::class)->name('customer.login');
+    Route::post('/prijava/link', [CustomerAuthController::class, 'sendMagicLink'])
+        ->middleware('throttle:20,1')
+        ->name('customer.login.send');
+    Route::get('/prijava/link/{token}', [CustomerAuthController::class, 'consumeMagicLink'])
+        ->middleware('throttle:30,1')
+        ->name('customer.login.consume');
+    Route::post('/prijava/lozinka', [CustomerAuthController::class, 'passwordLogin'])
+        ->middleware('throttle:20,1')
+        ->name('customer.login.password');
+
+    // Auth routes
+    Route::middleware('customer.auth')->group(function () {
+        Route::get('/', CustomerDashboard::class)->name('customer.dashboard');
+        Route::get('/narudzbe', CustomerOrdersPage::class)->name('customer.orders');
+        Route::get('/profil-mirisa', CustomerScentProfilePage::class)->name('customer.scent');
+        Route::get('/poruke', CustomerMessagesPage::class)->name('customer.messages');
+        Route::get('/adresa', CustomerAddressPage::class)->name('customer.address');
+        Route::get('/lozinka', CustomerPasswordPage::class)->name('customer.password');
+        Route::post('/odjava', [CustomerAuthController::class, 'logout'])->name('customer.logout');
+    });
 });
 
 // require __DIR__.'/auth.php';

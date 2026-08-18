@@ -38,11 +38,11 @@
 
                         {{-- Image --}}
                         <a href="{{ route('products.show', $item->id) }}"
-                           class="relative shrink-0 rounded-xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 ring-1 ring-black/5">
+                           class="relative shrink-0 self-stretch w-24 sm:w-32 rounded-xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 ring-1 ring-black/5">
                             <img src="{{ Storage::url($item->main_image) }}"
                                  alt="{{ $item->name }}"
                                  loading="lazy"
-                                 class="h-24 w-24 sm:h-32 sm:w-32 object-cover transition-transform duration-500 group-hover:scale-105" />
+                                 class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                         </a>
 
                         {{-- Info --}}
@@ -111,7 +111,13 @@
                                         {{ number_format($item->price * $item->quantity, 2) }} KM
                                     </div>
                                     <div class="text-[11px] text-gray-500">
-                                        {{ number_format($item->price, 2) }} KM × {{ $item->quantity }}
+                                        @if($item->is_on_sale)
+                                            <span class="line-through text-gray-400 mr-1">{{ number_format($item->original_price, 2) }} KM</span>
+                                            <span class="text-rose-600 font-semibold">{{ number_format($item->price, 2) }} KM</span>
+                                            × {{ $item->quantity }}
+                                        @else
+                                            {{ number_format($item->price, 2) }} KM × {{ $item->quantity }}
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -211,6 +217,84 @@
                             </h2>
                         </div>
 
+                        {{-- Tier discount progress --}}
+                        @if($tierEnabled && $subtotal > 0 && count($tierAll) > 0)
+                            @php
+                                $lastTier = end($tierAll);
+                                $maxAmount = (float) $lastTier['min_subtotal'];
+                                $progressPct = min(100, ($subtotal / max(1, $maxAmount)) * 100);
+                            @endphp
+                            <div class="mb-6 rounded-2xl border border-rose-200/70 bg-gradient-to-br from-rose-50/80 to-white p-4">
+                                @if($tierNext)
+                                    <div class="flex items-center gap-2 text-sm text-rose-900">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V6m0 10v2m0-2c-1.11 0-2.08-.402-2.599-1"/>
+                                            <circle cx="12" cy="12" r="9" stroke-width="2"/>
+                                        </svg>
+                                        <span>
+                                            Dodajte još
+                                            <strong class="tabular-nums">{{ number_format($tierNext['min_subtotal'] - $subtotal, 2) }} KM</strong>
+                                            i dobijate
+                                            <strong class="tabular-nums">{{ number_format($tierNext['discount'], 2) }} KM</strong>
+                                            popusta
+                                        </span>
+                                    </div>
+                                @else
+                                    <div class="flex items-center gap-2 text-sm text-emerald-800 font-medium">
+                                        <svg class="h-5 w-5 shrink-0 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                        Ostvarili ste maksimalan popust —
+                                        <strong class="ml-1 tabular-nums">{{ number_format($tierEarned['discount'], 2) }} KM</strong>!
+                                    </div>
+                                @endif
+
+                                {{-- Segmented progress bar with tier markers --}}
+                                <div class="relative mt-4 h-2 w-full bg-rose-100 rounded-full">
+                                    <div class="h-full bg-gradient-to-r from-rose-400 via-rose-500 to-red-600 transition-all duration-500 rounded-full"
+                                         style="width: {{ $progressPct }}%"></div>
+                                    {{-- tick marks on the bar --}}
+                                    @foreach($tierAll as $tier)
+                                        @php
+                                            $reached = $subtotal >= $tier['min_subtotal'];
+                                            $pos = min(100, ($tier['min_subtotal'] / max(1, $maxAmount)) * 100);
+                                        @endphp
+                                        <span class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-3 w-3 rounded-full border-2 {{ $reached ? 'bg-white border-rose-600' : 'bg-rose-100 border-rose-300' }}"
+                                              style="left: {{ $pos }}%"></span>
+                                    @endforeach
+                                </div>
+
+                                {{-- Tier labels row: first/last align to edges, rest centered on marker --}}
+                                <div class="relative mt-3 h-9">
+                                    @foreach($tierAll as $i => $tier)
+                                        @php
+                                            $reached = $subtotal >= $tier['min_subtotal'];
+                                            $pos = min(100, ($tier['min_subtotal'] / max(1, $maxAmount)) * 100);
+                                            $isFirst = $i === 0;
+                                            $isLast  = $i === count($tierAll) - 1;
+                                            if ($isFirst) {
+                                                $translate = 'translate-x-0';
+                                                $align = 'text-left';
+                                            } elseif ($isLast) {
+                                                $translate = '-translate-x-full';
+                                                $align = 'text-right';
+                                            } else {
+                                                $translate = '-translate-x-1/2';
+                                                $align = 'text-center';
+                                            }
+                                        @endphp
+                                        <div class="absolute {{ $translate }} {{ $align }} whitespace-nowrap leading-tight"
+                                             style="left: {{ $pos }}%">
+                                            <div class="text-[10px] font-semibold tabular-nums {{ $reached ? 'text-rose-700' : 'text-gray-400' }}">
+                                                {{ number_format($tier['min_subtotal'], 0) }} KM
+                                            </div>
+                                            <div class="text-[9px] tabular-nums {{ $reached ? 'text-emerald-700 font-semibold' : 'text-gray-400' }}">
+                                                −{{ number_format($tier['discount'], 0) }} KM
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
                         {{-- Free shipping progress / celebration --}}
                         @if(! $alwaysFree && $freeShippingThreshold > 0 && $subtotal > 0 && $amountToFree > 0)
                             <div class="mb-6 rounded-2xl border border-amber-200/70 bg-gradient-to-br from-amber-50/80 to-white p-4">
@@ -273,10 +357,27 @@
                                 <dd class="font-medium text-gray-900 tabular-nums">{{ number_format($subtotal, 2) }} KM</dd>
                             </div>
 
-                            @if($discount > 0)
+                            @if($tierDiscount > 0)
+                                <div class="flex items-center justify-between text-sm text-rose-700">
+                                    <dt>Popust na iznos korpe</dt>
+                                    <dd class="font-medium tabular-nums">− {{ number_format($tierDiscount, 2) }} KM</dd>
+                                </div>
+                            @endif
+
+                            @if($loyaltyDiscount > 0 && $loyaltyTier)
+                                <div class="flex items-center justify-between text-sm text-violet-700">
+                                    <dt class="flex items-center gap-1.5">
+                                        Nivo {{ $loyaltyTier['name'] }}
+                                        <span class="inline-flex items-center rounded-full bg-violet-100 text-violet-700 text-[9px] font-bold px-1.5 py-0.5">−{{ (int) $loyaltyTier['discount'] }}%</span>
+                                    </dt>
+                                    <dd class="font-medium tabular-nums">− {{ number_format($loyaltyDiscount, 2) }} KM</dd>
+                                </div>
+                            @endif
+
+                            @if($couponDiscount > 0)
                                 <div class="flex items-center justify-between text-sm text-green-700">
-                                    <dt>Popust</dt>
-                                    <dd class="font-medium tabular-nums">− {{ number_format($discount, 2) }} KM</dd>
+                                    <dt>Popust ({{ session('coupon')['code'] ?? '' }})</dt>
+                                    <dd class="font-medium tabular-nums">− {{ number_format($couponDiscount, 2) }} KM</dd>
                                 </div>
                             @endif
 
@@ -339,5 +440,25 @@
                 </div>
             </aside>
         </div>
+
+        {{-- Mobile sticky checkout bar (hidden on desktop where the summary is sticky) --}}
+        @if(!$items->isEmpty())
+            <div class="lg:hidden fixed inset-x-0 bottom-0 z-40 border-t border-amber-100 bg-white/95 backdrop-blur px-4 py-3 shadow-[0_-10px_30px_-15px_rgba(139,105,20,0.35)]"
+                 style="padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);">
+                <a href="{{ route('checkout') }}"
+                   class="group flex items-center justify-between gap-3 w-full rounded-full px-5 py-3.5 text-xs font-semibold uppercase tracking-[0.24em] shadow-lg bg-gradient-to-r from-[#8b6914] via-[#BBA14F] to-[#DBC584] text-white hover:opacity-95 active:scale-[0.99] transition-all">
+                    <span>Nastavi na naplatu</span>
+                    <span class="inline-flex items-center gap-2">
+                        <span class="tabular-nums">{{ number_format($total, 2) }} KM</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </span>
+                </a>
+            </div>
+
+            {{-- Spacer so the sticky bar doesn't cover the last content on mobile --}}
+            <div class="lg:hidden h-24" aria-hidden="true"></div>
+        @endif
     </div>
 </div>

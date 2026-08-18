@@ -135,18 +135,39 @@
                             <span class="font-medium text-gray-900">{{ number_format($subtotal, 2) }} KM</span>
                         </div>
                     
-                        {{-- Discount Row (Only shows if discount > 0) --}}
-                        @if($discount > 0)
+                        {{-- Tier discount --}}
+                        @if($tierDiscount > 0)
+                            <div class="flex justify-between text-sm text-rose-600 font-medium">
+                                <span>Popust na iznos korpe</span>
+                                <span>- {{ number_format($tierDiscount, 2) }} KM</span>
+                            </div>
+                        @endif
+
+                        {{-- Loyalty discount --}}
+                        @if($loyaltyDiscount > 0)
+                            <div class="flex justify-between text-sm text-violet-600 font-medium">
+                                <span class="flex items-center gap-2">
+                                    Nivo {{ $loyaltyTierName }}
+                                    <span class="text-[10px] bg-violet-100 px-2 py-0.5 rounded-full uppercase tracking-wider border border-violet-200">
+                                        −{{ $loyaltyDiscountPct }}%
+                                    </span>
+                                </span>
+                                <span>- {{ number_format($loyaltyDiscount, 2) }} KM</span>
+                            </div>
+                        @endif
+
+                        {{-- Coupon discount --}}
+                        @if($couponDiscount > 0)
                             <div class="flex justify-between text-sm text-green-600 font-medium">
                                 <span class="flex items-center gap-2">
-                                    Popust 
-                                    @if($coupon_code) 
+                                    Popust
+                                    @if($coupon_code)
                                         <span class="text-[10px] bg-green-100 px-2 py-0.5 rounded-full uppercase tracking-wider border border-green-200">
                                             {{ $coupon_code }}
-                                        </span> 
+                                        </span>
                                     @endif
                                 </span>
-                                <span>- {{ number_format($discount, 2) }} KM</span>
+                                <span>- {{ number_format($couponDiscount, 2) }} KM</span>
                             </div>
                         @endif
                     

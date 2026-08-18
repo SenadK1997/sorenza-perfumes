@@ -15,7 +15,16 @@ class SellerService
      * @param  bool  $isManual
      * @return void
      */
-    public static function recordPerfumeSold($user, Perfume $perfume, int $quantity = 1, bool $isManual = true, int $customerId = null): void
+    /**
+     * Record a perfume sale.
+     *
+     * @param float|null $customerPrice What the customer actually paid per unit.
+     *                                  Manual direct sales: seller enters this (may differ from perfume.price
+     *                                  if seller gave an in-person discount).
+     *                                  Order-derived: pass the pivot price so the customer view stays exact.
+     *                                  If null, we snapshot the perfume's current selling price as a fallback.
+     */
+    public static function recordPerfumeSold($user, Perfume $perfume, int $quantity = 1, bool $isManual = true, int $customerId = null, ?float $customerPrice = null): void
     {
         $pivot = $user->perfumes()->where('perfume_id', $perfume->id)->first()?->pivot;
 
@@ -33,20 +42,21 @@ class SellerService
         }
 
         // 2. Kreiranje prodaje
-        // Uvijek kreiramo NOVI red ako imamo kupca ili ako je narudžba.
-        // Samo potpuno anonimne manualne prodaje možemo grupisati (opcionalno), 
-        // ali radi najbolje analitike, čak i za njih je bolje kreirati novi red.
-        
+        //    base_price     = vault / seller-payment side (unchanged, snapshot of cost)
+        //    customer_price = what the customer actually paid per unit (may include a discount)
+        $customerPrice = $customerPrice ?? (float) $perfume->price;
+
         $user->soldPerfumes()->create([
-            'perfume_id'  => $perfume->id,
-            'customer_id' => $customerId, // Može biti null za anonimne
-            'quantity'    => $quantity,
-            'base_price'  => $perfume->base_price, // Čuvamo cijenu u trenutku prodaje
-            'is_manual'   => $isManual,
-            'sold_at'     => now(), // Ovo je ključno za tvoje mjesečne izvještaje
+            'perfume_id'     => $perfume->id,
+            'customer_id'    => $customerId, // Može biti null za anonimne
+            'quantity'       => $quantity,
+            'base_price'     => $perfume->base_price,
+            'customer_price' => $customerPrice,
+            'is_manual'      => $isManual,
+            'sold_at'        => now(),
         ]);
 
-        // 3. Isplata prodavaču (Seller Payment)
+        // 3. Isplata prodavaču (Seller Payment) — uvijek se računa iz base_price × qty
         self::handleSellerPayment($user, ($perfume->base_price * $quantity));
     }
     protected static function handleSellerPayment($user, $amount)

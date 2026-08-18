@@ -26,8 +26,15 @@
                 </span>
             @endif
 
-            {{-- Wishlist heart --}}
-            <div class="absolute right-2 top-2 sm:right-3 sm:top-3 z-30" wire:ignore>
+            {{-- Sale badge (top right) --}}
+            @if($perfume->is_on_sale)
+                <span class="absolute right-2 top-2 sm:right-3 sm:top-3 z-30 inline-flex items-center rounded-full bg-gradient-to-r from-rose-500 to-red-600 px-2 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white shadow ring-1 ring-white/40">
+                    Akcija −{{ (int) $perfume->discount_percentage }}%
+                </span>
+            @endif
+
+            {{-- Wishlist heart (bottom left) --}}
+            <div class="absolute left-2 bottom-2 sm:left-3 sm:bottom-3 z-30" wire:ignore>
                 <livewire:wishlist-button :perfume-id="$perfume->id" size="sm" :key="'wl-'.$perfume->id" />
             </div>
             <a href="{{ route('products.show', $perfume->id) }}">
@@ -112,7 +119,14 @@
            <h3 class="text-sm sm:text-lg font-bold min-h-[2.5rem] sm:min-h-[3rem] line-clamp-2 group-hover:opacity-90 transition-opacity leading-tight" style="color: {{ $genderColor }};">
                 {{ count($parts) === 2 ? "$parts[1] - $parts[0]" : $perfume->inspired_by }} ({{ $perfume->name }})
             </h3>
-            <p class="mt-1.5 sm:mt-2 text-base sm:text-lg font-semibold bg-gradient-to-r from-violet-600 via-fuchsia-500 to-rose-500 bg-clip-text text-transparent">{{ number_format($perfume->price, 2) }} KM</p>
+            @if($perfume->is_on_sale)
+                <div class="mt-1.5 sm:mt-2 flex items-baseline gap-2 flex-wrap">
+                    <p class="text-base sm:text-lg font-semibold bg-gradient-to-r from-rose-600 via-red-500 to-orange-500 bg-clip-text text-transparent">{{ number_format($perfume->price, 2) }} KM</p>
+                    <p class="text-xs sm:text-sm font-medium text-gray-400 line-through">{{ number_format($perfume->original_price, 2) }} KM</p>
+                </div>
+            @else
+                <p class="mt-1.5 sm:mt-2 text-base sm:text-lg font-semibold bg-gradient-to-r from-violet-600 via-fuchsia-500 to-rose-500 bg-clip-text text-transparent">{{ number_format($perfume->price, 2) }} KM</p>
+            @endif
         </div>
     </div>
 

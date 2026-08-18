@@ -28,21 +28,94 @@ class OrderResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\TextInput::make('full_name')->required(),
-            Forms\Components\TextInput::make('phone')->required(),
-            Forms\Components\TextInput::make('city')->required(),
-            Forms\Components\Select::make('canton')
-                ->options(self::getEnumOptions(Canton::class))
-                ->required(),
-            Forms\Components\Select::make('status')
-                ->options(self::getEnumOptions(OrderStatus::class))
-                ->required(),
-            Forms\Components\TextInput::make('amount')->numeric()->disabled(),
-            Forms\Components\Select::make('user_id')
-                ->label('Dodijeljeno prodavaču')
-                ->relationship('user', 'name')
-                ->placeholder('Slobodna narudžba')
-                ->searchable(),
+            Forms\Components\Section::make('Kupac')
+                ->schema([
+                    Forms\Components\TextInput::make('full_name')
+                        ->label('Ime i prezime')
+                        ->required(),
+                    Forms\Components\TextInput::make('email')
+                        ->label('Email')
+                        ->email(),
+                    Forms\Components\TextInput::make('phone')
+                        ->label('Telefon')
+                        ->required(),
+                ])->columns(3),
+
+            Forms\Components\Section::make('Adresa dostave')
+                ->schema([
+                    Forms\Components\TextInput::make('address_line_1')
+                        ->label('Adresa (red 1)')
+                        ->required()
+                        ->columnSpan(2),
+                    Forms\Components\TextInput::make('address_line_2')
+                        ->label('Adresa (red 2)')
+                        ->columnSpan(2),
+                    Forms\Components\TextInput::make('city')
+                        ->label('Grad')
+                        ->required(),
+                    Forms\Components\TextInput::make('zipcode')
+                        ->label('Poštanski broj')
+                        ->required(),
+                    Forms\Components\Select::make('canton')
+                        ->label('Kanton')
+                        ->options(self::getEnumOptions(Canton::class))
+                        ->required()
+                        ->columnSpan(2),
+                ])->columns(4),
+
+            Forms\Components\Section::make('Status i prodavač')
+                ->schema([
+                    Forms\Components\Select::make('status')
+                        ->label('Status')
+                        ->options(self::getEnumOptions(OrderStatus::class))
+                        ->required(),
+                    Forms\Components\Select::make('user_id')
+                        ->label('Dodijeljeno prodavaču')
+                        ->relationship('user', 'name')
+                        ->placeholder('Slobodna narudžba')
+                        ->searchable(),
+                    Forms\Components\TextInput::make('coupon_code')
+                        ->label('Kod kupona')
+                        ->placeholder('nema'),
+                    Forms\Components\TextInput::make('ip')
+                        ->label('IP adresa')
+                        ->disabled(),
+                ])->columns(2),
+
+            Forms\Components\Section::make('Iznos i popusti')
+                ->description('Ukupan iznos možete ručno korigovati. Ostali iznosi su informativni.')
+                ->schema([
+                    Forms\Components\TextInput::make('subtotal')
+                        ->label('Cijena artikala')
+                        ->numeric()
+                        ->prefix('KM'),
+                    Forms\Components\TextInput::make('discount_amount')
+                        ->label('Popust (kupon)')
+                        ->numeric()
+                        ->prefix('KM'),
+                    Forms\Components\TextInput::make('tier_discount_amount')
+                        ->label('Popust na iznos korpe')
+                        ->numeric()
+                        ->prefix('KM'),
+                    Forms\Components\TextInput::make('loyalty_discount_amount')
+                        ->label('Loyalty popust')
+                        ->numeric()
+                        ->prefix('KM'),
+                    Forms\Components\TextInput::make('loyalty_tier')
+                        ->label('Nivo kupca')
+                        ->disabled(),
+                    Forms\Components\TextInput::make('shipping_fee')
+                        ->label('Dostava')
+                        ->numeric()
+                        ->prefix('KM'),
+                    Forms\Components\TextInput::make('amount')
+                        ->label('UKUPAN IZNOS')
+                        ->numeric()
+                        ->prefix('KM')
+                        ->required()
+                        ->helperText('Ovaj iznos se šalje kupcu i računa u ukupno potrošeno.')
+                        ->columnSpanFull(),
+                ])->columns(3),
         ]);
     }
 

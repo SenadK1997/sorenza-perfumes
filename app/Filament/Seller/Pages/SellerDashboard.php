@@ -112,12 +112,29 @@ class SellerDashboard extends Page implements Tables\Contracts\HasTable
                             $seller = $record->sellers->firstWhere('id', $user->id);
                             return $seller?->pivot?->stock ?? 0;
                         }),
+
+                    TextInput::make('customer_price')
+                        ->label('Cijena za kupca po komadu (KM)')
+                        ->helperText('Koliko je kupac stvarno platio po komadu. Prefill je trenutna prodajna cijena; promijenite ako ste dali popust uživo.')
+                        ->numeric()
+                        ->step('any')
+                        ->minValue(0)
+                        ->required()
+                        ->default(fn (Perfume $record) => (float) $record->price)
+                        ->prefix('KM'),
                 ])
                 ->action(function (Perfume $record, array $data) {
                     $user = Auth::user();
-                    SellerService::recordPerfumeSold($user, $record, $data['quantity'], true, $data['customer_id'] ?? null);
+                    SellerService::recordPerfumeSold(
+                        user: $user,
+                        perfume: $record,
+                        quantity: (int) $data['quantity'],
+                        isManual: true,
+                        customerId: $data['customer_id'] ?? null,
+                        customerPrice: (float) $data['customer_price'],
+                    );
 
-                    Notification::make()->title('Sale recorded successfully')->success()->send();
+                    Notification::make()->title('Prodaja uspješno evidentirana')->success()->send();
                 }),
 
             Action::make('cancel')
@@ -129,12 +146,22 @@ class SellerDashboard extends Page implements Tables\Contracts\HasTable
                         ->label('Kupac')
                         ->options(fn() => Customer::pluck('full_name', 'id'))
                         ->searchable(),
-                        
+
                     TextInput::make('quantity')
                         ->label('Količina')
                         ->numeric()
                         ->default(1)
                         ->required(),
+
+                    TextInput::make('customer_price')
+                        ->label('Iznos vraćen kupcu po komadu (KM)')
+                        ->helperText('Prefill je trenutna prodajna cijena; korigujte ako je kupac dobio popust prilikom kupovine.')
+                        ->numeric()
+                        ->step('any')
+                        ->minValue(0)
+                        ->required()
+                        ->default(fn (Perfume $record) => (float) $record->price)
+                        ->prefix('KM'),
 
                     Select::make('cancellation_reason')
                         ->label('Razlog')
@@ -150,14 +177,15 @@ class SellerDashboard extends Page implements Tables\Contracts\HasTable
                     $qty = (int) $data['quantity'];
 
                     $user->soldPerfumes()->create([
-                        'perfume_id'  => $record->id,
-                        'customer_id' => $data['customer_id'] ?? null,
-                        'quantity'    => -$qty,
-                        'base_price'  => $record->base_price,
-                        'is_manual'   => true,
-                        'cancelled'   => true, 
+                        'perfume_id'          => $record->id,
+                        'customer_id'         => $data['customer_id'] ?? null,
+                        'quantity'            => -$qty,
+                        'base_price'          => $record->base_price,
+                        'customer_price'      => (float) $data['customer_price'],
+                        'is_manual'           => true,
+                        'cancelled'           => true,
                         'cancellation_reason' => $data['cancellation_reason'],
-                        'sold_at'     => now(),
+                        'sold_at'             => now(),
                     ]);
 
                     $pivot = $user->perfumes()->where('perfume_id', $record->id)->first()?->pivot;

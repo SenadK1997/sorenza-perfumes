@@ -231,6 +231,14 @@
                            :class="(isHome && !scrolled) ? 'text-white/80 hover:text-amber-200' : 'text-gray-700 hover:text-amber-800'">
                             Prati narudžbu
                         </a>
+                        <a href="{{ auth('customer')->check() ? route('customer.dashboard') : route('customer.login') }}"
+                           class="px-4 py-2 text-xs font-medium uppercase tracking-[0.25em] transition-colors inline-flex items-center gap-2"
+                           :class="(isHome && !scrolled) ? 'text-white/80 hover:text-amber-200' : 'text-gray-700 hover:text-amber-800'">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            {{ auth('customer')->check() ? 'Moj nalog' : 'Prijava' }}
+                        </a>
                     </nav>
 
                     {{-- Divider --}}
@@ -296,6 +304,14 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
                         </svg>
                         Prati narudžbu
+                    </a>
+                    <a href="{{ auth('customer')->check() ? route('customer.dashboard') : route('customer.login') }}"
+                       class="mx-2 flex items-center gap-3 px-4 py-3 text-sm font-medium uppercase tracking-[0.2em] rounded-xl hover:bg-amber-50 transition-colors"
+                       :class="(isHome && !scrolled) ? 'text-white hover:text-amber-800' : 'text-gray-700'">
+                        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.7">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        {{ auth('customer')->check() ? 'Moj nalog' : 'Prijava' }}
                     </a>
                 </nav>
             </div>
@@ -477,7 +493,19 @@
 {{-- <script type="module" src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1/dist/index.min.js"></script> --}}
 @livewireScripts
 
-{{-- PWA: service worker + optional install prompts (Android auto, iOS gentle hint) --}}
+{{-- Service worker (always registered so PWA install stays available site-wide) --}}
+<script>
+(function () {
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('/sw.js').catch(function () { /* ignore */ });
+        });
+    }
+})();
+</script>
+
+{{-- PWA install button + iOS hint: only on the homepage --}}
+@if(request()->routeIs('home'))
 <div id="sorenza-install-hint"
      style="display:none; position:fixed; left:12px; right:12px; bottom:16px; z-index:60;
             background:#111827; color:#fff; border-radius:14px; padding:12px 14px;
@@ -500,14 +528,7 @@
 
 <script>
 (function () {
-    // 1. Register the service worker so browsers treat this as an installable PWA.
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function () {
-            navigator.serviceWorker.register('/sw.js').catch(function () { /* ignore */ });
-        });
-    }
-
-    // 2. Android / desktop Chrome — capture the install prompt and surface our own button.
+    // Android / desktop Chrome — capture the install prompt and surface our own button.
     var deferredPrompt = null;
     var installBtn = document.getElementById('sorenza-install-btn');
 
@@ -547,5 +568,6 @@
     }
 })();
 </script>
+@endif
 </body>
 </html>

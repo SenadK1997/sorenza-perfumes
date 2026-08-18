@@ -96,6 +96,18 @@
                                 <td style="padding:6px 0; font-size:13px; color:#6b7280;">Iznos artikala</td>
                                 <td align="right" style="padding:6px 0; font-size:13px; color:#111827; font-weight:600;">{{ number_format($order->subtotal, 2, ',', '.') }} KM</td>
                             </tr>
+                            @if(($order->tier_discount_amount ?? 0) > 0)
+                                <tr>
+                                    <td style="padding:6px 0; font-size:13px; color:#e11d48;">Popust na iznos korpe</td>
+                                    <td align="right" style="padding:6px 0; font-size:13px; color:#e11d48; font-weight:600;">− {{ number_format($order->tier_discount_amount, 2, ',', '.') }} KM</td>
+                                </tr>
+                            @endif
+                            @if(($order->loyalty_discount_amount ?? 0) > 0)
+                                <tr>
+                                    <td style="padding:6px 0; font-size:13px; color:#7c3aed;">Loyalty popust ({{ $order->loyalty_tier ?? 'Bronze' }})</td>
+                                    <td align="right" style="padding:6px 0; font-size:13px; color:#7c3aed; font-weight:600;">− {{ number_format($order->loyalty_discount_amount, 2, ',', '.') }} KM</td>
+                                </tr>
+                            @endif
                             @if($order->discount_amount > 0)
                                 <tr>
                                     <td style="padding:6px 0; font-size:13px; color:#059669;">Popust @if($order->coupon_code) ({{ $order->coupon_code }}) @endif</td>

@@ -15,6 +15,7 @@ class Perfume extends Model
         'gender',       // Added this
         'inspired_by', // Added this
         'base_price',  // Added this
+        'original_price',
         'price',
         'discount_percentage',
         'main_image',
@@ -83,4 +84,47 @@ class Perfume extends Model
         });
     }
 
+    public function scopeOnSale($query)
+    {
+        return $query->whereNotNull('original_price')
+            ->whereColumn('original_price', '>', 'price');
+    }
+
+    public function getIsOnSaleAttribute(): bool
+    {
+        return $this->original_price !== null
+            && (float) $this->original_price > (float) $this->price;
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (self $perfume) {
+            $price    = (float) ($perfume->price ?? 0);
+            $original = $perfume->original_price !== null
+                ? (float) $perfume->original_price
+                : null;
+
+            // If original isn't set, mirror the price so display logic stays consistent
+            // and no crossed-out price is shown.
+            if ($original === null || $original <= 0) {
+                $perfume->original_price = $price > 0 ? $price : null;
+                $perfume->discount_percentage = 0;
+                return;
+            }
+
+            // Guard against inverted inputs.
+            if ($price > $original) {
+                $perfume->original_price = $price;
+                $perfume->discount_percentage = 0;
+                return;
+            }
+
+            if ($price <= 0 || $price == $original) {
+                $perfume->discount_percentage = 0;
+                return;
+            }
+
+            $perfume->discount_percentage = (int) round((1 - $price / $original) * 100);
+        });
+    }
 }

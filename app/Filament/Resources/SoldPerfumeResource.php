@@ -48,15 +48,22 @@ class SoldPerfumeResource extends Resource
                     ->searchable(),
 
                 TextColumn::make('total_price')
-                    ->label('Ukupna Vrijednost')
+                    ->label('Vault (base × qty)')
+                    ->tooltip('Iznos koji ide u vault / prodavačku isplatu.')
                     ->money('BAM')
                     ->state(fn ($record) => $record->quantity * $record->base_price)
                     ->summarize(
                         Tables\Columns\Summarizers\Summarizer::make()
-                            ->label('Ukupni promet')
-                            // UKLONILI SMO "Builder" ispred $query da izbjegnemo Type Mismatch
+                            ->label('Ukupni vault promet')
                             ->using(fn ($query) => $query->sum(DB::raw('quantity * base_price')))
                     ),
+
+                TextColumn::make('customer_paid')
+                    ->label('Kupac platio')
+                    ->tooltip('Iznos koji je kupac stvarno platio (customer_price × količina).')
+                    ->money('BAM')
+                    ->state(fn ($record) => abs((int) $record->quantity) * (float) ($record->customer_price ?? 0))
+                    ->toggleable(),
 
                 TextColumn::make('created_at')
                     ->label('Datum prodaje')

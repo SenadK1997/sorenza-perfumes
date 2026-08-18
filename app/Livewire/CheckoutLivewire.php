@@ -13,7 +13,12 @@ use App\Mail\OrderPlaced;
 use App\Models\Perfume;
 use App\Models\Coupon;
 use App\Models\AbandonedCheckout;
+use App\Models\BlockedIp;
+use App\Models\BlockedEmail;
+use App\Models\Customer as CustomerModel;
 use App\Services\ShippingCalculator;
+use App\Services\CartTierDiscount;
+use App\Services\CustomerLoyalty;
 use App\Services\TelegramNotifier;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
@@ -28,6 +33,9 @@ class CheckoutLivewire extends Component
     public $email, $full_name, $phone, $address_line_1, $address_line_2, $city, $zipcode, $canton;
     public $items = [];
     public $subtotal = 0, $shipping = 10, $total = 0, $discount = 0, $coupon_code = null;
+    public $couponDiscount = 0, $tierDiscount = 0, $loyaltyDiscount = 0;
+    public ?string $loyaltyTierName = null;
+    public int $loyaltyDiscountPct = 0;
     public $extra_info_field; 
     public $loadTime;
 
@@ -38,6 +46,19 @@ class CheckoutLivewire extends Component
 
         if (empty($cart)) {
             return redirect()->to('/shop');
+        }
+
+        // Prefill from logged-in customer if any
+        if ($customer = auth('customer')->user()) {
+            $this->email          = (string) $customer->email;
+            $this->full_name      = (string) $customer->full_name;
+            $this->phone          = (string) $customer->phone;
+            $this->address_line_1 = (string) $customer->address_line_1;
+            $this->address_line_2 = (string) $customer->address_line_2;
+            $this->city           = (string) $customer->city;
+            $this->zipcode        = (string) $customer->zipcode;
+            $this->canton         = (string) $customer->canton;
+            if ($this->email) $this->step = 2;
         }
 
         $perfumes = Perfume::whereIn('id', array_keys($cart))->get();
@@ -57,13 +78,26 @@ class CheckoutLivewire extends Component
 
         // 2. Load Coupon from Session (Applied in CartPage)
         if (session()->has('coupon')) {
-            $this->discount = session('coupon')['discount'];
+            $this->couponDiscount = session('coupon')['discount'];
             $this->coupon_code = session('coupon')['code'];
         }
 
+        // 2b. Automatic tier discount (admin-configurable)
+        $this->tierDiscount = CartTierDiscount::discount((float) $this->subtotal);
+
+        // 2c. Loyalty discount (customer's account tier × subtotal)
+        if ($customer = auth('customer')->user()) {
+            $tierInfo = CustomerLoyalty::forCustomer($customer);
+            $this->loyaltyDiscount   = CustomerLoyalty::discountAmountFor($customer, (float) $this->subtotal);
+            $this->loyaltyTierName   = $tierInfo['name'];
+            $this->loyaltyDiscountPct = (int) $tierInfo['discount'];
+        }
+
+        $this->discount = $this->couponDiscount + $this->tierDiscount + $this->loyaltyDiscount;
+
         // 3. Calculate Shipping and Total (admin-configurable)
         $this->shipping = ShippingCalculator::fee($this->subtotal);
-        
+
         // Final total calculation
         $this->total = ($this->subtotal - $this->discount) + $this->shipping;
     }
@@ -130,6 +164,24 @@ class CheckoutLivewire extends Component
             return redirect()->to('/');
         }
 
+        // 1b. Blocked IP / email / customer — reject
+        $ip = request()->ip();
+        if (BlockedIp::isBlocked($ip)) {
+            $this->addError('email', 'Trenutno nije moguće poslati narudžbu. Molimo kontaktirajte podršku.');
+            return;
+        }
+
+        if (BlockedEmail::isBlocked($this->email)) {
+            $this->addError('email', 'Ova email adresa nije trenutno u mogućnosti da napravi narudžbu. Molimo kontaktirajte podršku.');
+            return;
+        }
+
+        $existingCustomer = CustomerModel::whereRaw('LOWER(email) = ?', [strtolower((string) $this->email)])->first();
+        if ($existingCustomer && $existingCustomer->is_blocked) {
+            $this->addError('email', 'Ova email adresa nije trenutno u mogućnosti da napravi narudžbu. Molimo kontaktirajte podršku.');
+            return;
+        }
+
         // 2. Bot Time Check
         $secondsOnPage = now()->timestamp - $this->loadTime;
         if ($secondsOnPage < 3) {
@@ -156,6 +208,67 @@ class CheckoutLivewire extends Component
         ]);
 
         RateLimiter::hit($key, 600);
+
+        // 4b. Recompute totals from authoritative sources (cart + settings)
+        //     so tampered public props can't change money values.
+        $cart = session()->get('cart', []);
+        $perfumes = Perfume::whereIn('id', array_keys($cart))->get()->keyBy('id');
+        $freshItems = [];
+        $subtotal = 0.0;
+        foreach ($cart as $pid => $qty) {
+            $perfume = $perfumes->get($pid);
+            if (!$perfume) continue;
+            $qty = (int) $qty;
+            $freshItems[] = [
+                'id' => $perfume->id,
+                'name' => $perfume->name,
+                'price' => (float) $perfume->price,
+                'main_image' => $perfume->main_image,
+                'quantity' => $qty,
+            ];
+            $subtotal += (float) $perfume->price * $qty;
+        }
+        $this->items = $freshItems;
+        $this->subtotal = $subtotal;
+
+        // Coupon (validate against cart, respect perfume-binding)
+        $couponDiscount = 0.0;
+        if (session()->has('coupon') && !empty(session('coupon')['code'])) {
+            $coupon = Coupon::where('code', session('coupon')['code'])->first();
+            $itemsCollection = collect($freshItems)->map(fn ($i) => (object) $i);
+            if ($coupon && $coupon->isValidForCart($itemsCollection)) {
+                $couponDiscount = $coupon->calculateCartDiscount($itemsCollection);
+                $this->coupon_code = $coupon->code;
+            } else {
+                session()->forget('coupon');
+                $this->coupon_code = null;
+            }
+        }
+        $this->couponDiscount = $couponDiscount;
+
+        $this->tierDiscount = CartTierDiscount::discount((float) $this->subtotal);
+
+        // Loyalty (server-side, from authoritative source)
+        $loyaltyCustomer = auth('customer')->user();
+        if (!$loyaltyCustomer && $this->email) {
+            // Fallback: match by email even for guests, so account holders still get
+            // their tier when checking out without logging in first.
+            $loyaltyCustomer = \App\Models\Customer::whereRaw('LOWER(email) = ?', [strtolower((string) $this->email)])->first();
+        }
+        if ($loyaltyCustomer) {
+            $tierInfo = CustomerLoyalty::forCustomer($loyaltyCustomer);
+            $this->loyaltyDiscount    = CustomerLoyalty::discountAmountFor($loyaltyCustomer, (float) $this->subtotal);
+            $this->loyaltyTierName    = $tierInfo['name'];
+            $this->loyaltyDiscountPct = (int) $tierInfo['discount'];
+        } else {
+            $this->loyaltyDiscount    = 0;
+            $this->loyaltyTierName    = null;
+            $this->loyaltyDiscountPct = 0;
+        }
+
+        $this->discount     = $this->couponDiscount + $this->tierDiscount + $this->loyaltyDiscount;
+        $this->shipping     = ShippingCalculator::fee($this->subtotal);
+        $this->total        = max(0, ($this->subtotal - $this->discount) + $this->shipping);
 
         // 5. Pronalaženje prodavača preko kupona (prije transakcije)
         $sellerId = null;
@@ -186,9 +299,12 @@ class CheckoutLivewire extends Component
             // B. Create Order sa automatskim statusom
             $newOrder = Order::create([
                 'subtotal' => $this->subtotal,
-                'discount_amount' => $this->discount,
+                'discount_amount' => $this->couponDiscount,
+                'tier_discount_amount' => $this->tierDiscount,
+                'loyalty_discount_amount' => $this->loyaltyDiscount,
+                'loyalty_tier' => $this->loyaltyTierName,
                 'shipping_fee' => $this->shipping,
-                'amount' => ($this->subtotal - $this->discount) + $this->shipping,
+                'amount' => max(0, ($this->subtotal - $this->discount) + $this->shipping),
                 'coupon_code' => $this->coupon_code,
                 'full_name' => $this->full_name,
                 'phone' => $this->phone,
@@ -197,7 +313,8 @@ class CheckoutLivewire extends Component
                 'zipcode' => $this->zipcode,
                 'canton' => $this->canton,
                 'email' => $this->email,
-                'user_id' => $sellerId, 
+                'ip' => request()->ip(),
+                'user_id' => $sellerId,
                 // Ako postoji sellerId, narudžba je odmah 'taken'
                 'status' => $sellerId ? 'taken' : 'pending',
             ]);
@@ -239,7 +356,8 @@ class CheckoutLivewire extends Component
             Log::warning('Abandoned checkout recovery mark failed: ' . $e->getMessage());
         }
 
-        $this->sendSlackNotification($order);
+        // Slack notification disabled — using Telegram integration instead.
+        // $this->sendSlackNotification($order);
         $this->sendOrderConfirmationEmail($order);
         $this->sendTelegramNotification($order);
 

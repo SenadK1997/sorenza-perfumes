@@ -51,11 +51,19 @@ class SoldPerfumeResource extends Resource
                     ->summarize(Tables\Columns\Summarizers\Sum::make()->label('Ukupno')),
 
                 Tables\Columns\TextColumn::make('base_price')
-                    ->label('Cijena po komadu')
+                    ->label('Nabavna po kom.')
+                    ->tooltip('Iznos koji ide u vault po komadu (osnova za vašu isplatu).')
                     ->money('bam', true),
 
+                Tables\Columns\TextColumn::make('customer_price')
+                    ->label('Kupac platio po kom.')
+                    ->tooltip('Cijena koju je kupac stvarno platio po komadu.')
+                    ->money('bam', true)
+                    ->placeholder('—')
+                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('total_value')
-                    ->label('Ukupno')
+                    ->label('Vault ukupno')
                     ->money('bam', true)
                     ->state(fn ($record) => $record->quantity * $record->base_price)
                     ->summarize(

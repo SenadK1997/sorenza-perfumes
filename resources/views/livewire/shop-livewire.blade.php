@@ -80,6 +80,13 @@
                     </div>
                 </fieldset>
             @endif
+
+            <fieldset>
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" wire:model.live="onlyOnSale" id="only-sale-mobile" class="h-5 w-5 rounded border-gray-300 text-rose-600">
+                    <label for="only-sale-mobile" class="text-sm text-rose-700 font-semibold uppercase tracking-widest">Akcija</label>
+                </div>
+            </fieldset>
             <!-- Gender -->
             <fieldset>
             <legend class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-800">Spol</legend>
@@ -159,6 +166,16 @@
                     </label>
                 </fieldset>
             @endif
+
+            <fieldset class="relative">
+                <label for="only-sale" class="group flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gradient-to-r from-rose-50/80 to-transparent hover:from-rose-100/80 transition-colors cursor-pointer">
+                    <input type="checkbox" wire:model.live="onlyOnSale" id="only-sale" class="h-5 w-5 rounded-md border-gray-300 text-rose-600 focus:ring-rose-500">
+                    <span class="text-sm text-rose-700 font-semibold flex items-center gap-2 uppercase tracking-widest">
+                        <span class="inline-block h-2 w-2 rounded-full bg-rose-500 animate-pulse"></span>
+                        Akcija
+                    </span>
+                </label>
+            </fieldset>
 
             <!-- Gender -->
             <fieldset class="relative">
@@ -355,9 +372,15 @@
                                 </div>
                             @endif
 
-                            <div class="mt-6 flex items-baseline gap-2">
+                            <div class="mt-6 flex items-baseline gap-2 flex-wrap">
                                 <span class="text-xs uppercase tracking-[0.25em] text-gray-500">Cijena</span>
-                                <span class="text-3xl font-semibold bg-gradient-to-r from-[#8b6914] to-[#BBA14F] bg-clip-text text-transparent">{{ number_format($selectedPerfume->price, 2) }} KM</span>
+                                @if($selectedPerfume->is_on_sale)
+                                    <span class="text-3xl font-semibold bg-gradient-to-r from-rose-600 via-red-500 to-orange-500 bg-clip-text text-transparent">{{ number_format($selectedPerfume->price, 2) }} KM</span>
+                                    <span class="text-base font-medium text-gray-400 line-through">{{ number_format($selectedPerfume->original_price, 2) }} KM</span>
+                                    <span class="inline-flex items-center rounded-full bg-rose-100 text-rose-700 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5">−{{ (int) $selectedPerfume->discount_percentage }}%</span>
+                                @else
+                                    <span class="text-3xl font-semibold bg-gradient-to-r from-[#8b6914] to-[#BBA14F] bg-clip-text text-transparent">{{ number_format($selectedPerfume->price, 2) }} KM</span>
+                                @endif
                             </div>
 
                             {{-- BUTTON LOGIC --}}

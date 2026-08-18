@@ -107,14 +107,17 @@ class MyOrderResource extends OrderResource
                                 ]);
                             }
 
-                            // 3. Evidentiraj prodaju svakog parfema
+                            // 3. Evidentiraj prodaju svakog parfema.
+                            //    customer_price = cijena po komadu iz pivota (ono što je kupac stvarno platio,
+                            //    uključujući aktivan popust u trenutku narudžbe).
                             foreach ($record->perfumes as $perfume) {
                                 SellerService::recordPerfumeSold(
                                     user: $user,
                                     perfume: $perfume,
-                                    quantity: $perfume->pivot->quantity,
+                                    quantity: (int) $perfume->pivot->quantity,
                                     isManual: false,
-                                    customerId: $customer?->id 
+                                    customerId: $customer?->id,
+                                    customerPrice: (float) ($perfume->pivot->price ?? $perfume->price),
                                 );
                             }
 

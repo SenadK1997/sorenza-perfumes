@@ -5,65 +5,103 @@ namespace App\Filament\Resources\OrderPerfumesResource\RelationManagers;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PerfumesRelationManager extends RelationManager
 {
-    // The relationship method on Order model
     protected static string $relationship = 'perfumes';
-
-    // The label shown in the Filament UI for this relation manager
     protected static ?string $recordTitleAttribute = 'name';
+    protected static ?string $title = 'Artikli u narudžbi';
 
-    // Form for creating/editing pivot records (perfume + quantity + price)
     public function form(Form $form): Form
     {
         return $form->schema([
-            // Quantity input on pivot table
-            Forms\Components\TextInput::make('pivot.quantity')
-                ->label('Quantity')
-                ->numeric()
-                ->min(1)
-                ->required(),
+            Forms\Components\Select::make('recordId')
+                ->label('Parfem')
+                ->relationship('perfume', 'name')
+                ->searchable()
+                ->preload()
+                ->required()
+                ->visibleOn('create'),
 
-            // Price input on pivot table
-            Forms\Components\TextInput::make('pivot.price')
-                ->label('Price')
+            Forms\Components\TextInput::make('quantity')
+                ->label('Količina')
                 ->numeric()
+                ->minValue(1)
+                ->required()
+                ->default(1),
+
+            Forms\Components\TextInput::make('price')
+                ->label('Cijena po komadu (KM)')
+                ->helperText('Cijena po jedinici koja je stvarno naplaćena kupcu za ovaj artikal.')
+                ->numeric()
+                ->step('any')
+                ->minValue(0)
+                ->prefix('KM')
                 ->required(),
         ]);
     }
 
-    // Table to list related perfumes on the order with quantity and price
     public function table(Table $table): Table
     {
         return $table
+            ->recordTitleAttribute('name')
             ->columns([
-                // Display perfume name from related model
-                Tables\Columns\TextColumn::make('name')->label('Perfume'),
+                Tables\Columns\ImageColumn::make('main_image')
+                    ->label('')
+                    ->square()
+                    ->getStateUsing(fn ($record) => $record->main_image),
 
-                // Display quantity from pivot table
-                Tables\Columns\TextColumn::make('pivot.quantity')->label('Quantity'),
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Parfem')
+                    ->description(fn ($record) => $record->inspired_by ?? '')
+                    ->searchable(),
 
-                // Display price from pivot table formatted as money
-                Tables\Columns\TextColumn::make('pivot.price')->label('Price')->money('BAM'),
-            ])
-            ->filters([
-                //
+                Tables\Columns\TextColumn::make('pivot.quantity')
+                    ->label('Količina')
+                    ->alignCenter(),
+
+                Tables\Columns\TextColumn::make('pivot.price')
+                    ->label('Cijena/kom')
+                    ->money('bam'),
+
+                Tables\Columns\TextColumn::make('line_total')
+                    ->label('Ukupno linija')
+                    ->money('bam')
+                    ->state(fn ($record) => (float) $record->pivot->price * (int) $record->pivot->quantity)
+                    ->weight('bold')
+                    ->color('success'),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(), // Allow adding new perfume to order
+                Tables\Actions\AttachAction::make()
+                    ->preloadRecordSelect()
+                    ->label('Dodaj parfem')
+                    ->form(fn (Tables\Actions\AttachAction $action): array => [
+                        $action->getRecordSelect(),
+                        Forms\Components\TextInput::make('quantity')
+                            ->label('Količina')
+                            ->numeric()->minValue(1)->required()->default(1),
+                        Forms\Components\TextInput::make('price')
+                            ->label('Cijena po komadu (KM)')
+                            ->numeric()->step('any')->minValue(0)->prefix('KM')->required(),
+                    ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),  // Edit quantity/price
-                Tables\Actions\DeleteAction::make(), // Remove perfume from order
+                Tables\Actions\EditAction::make()
+                    ->label('Uredi')
+                    ->form([
+                        Forms\Components\TextInput::make('quantity')
+                            ->label('Količina')
+                            ->numeric()->minValue(1)->required(),
+                        Forms\Components\TextInput::make('price')
+                            ->label('Cijena po komadu (KM)')
+                            ->numeric()->step('any')->minValue(0)->prefix('KM')->required(),
+                    ]),
+                Tables\Actions\DetachAction::make()->label('Ukloni'),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\DetachBulkAction::make()->label('Ukloni označene'),
             ]);
     }
 }

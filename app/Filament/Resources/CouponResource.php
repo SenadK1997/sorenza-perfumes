@@ -105,6 +105,18 @@ class CouponResource extends Resource
                             ->default(true)
                             ->columnSpanFull(),
                     ])->columns(2),
+
+                Forms\Components\Section::make('Vezani parfemi (opciono)')
+                    ->description('Ako izaberete parfeme, kupon će važiti SAMO za te parfeme u korpi. Ostavite prazno da važi za cijelu narudžbu.')
+                    ->schema([
+                        Forms\Components\Select::make('perfumes')
+                            ->label('Parfemi na koje se odnosi popust')
+                            ->relationship('perfumes', 'name')
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->columnSpanFull(),
+                    ])->collapsible(),
             ]);
     }
 
@@ -133,6 +145,13 @@ class CouponResource extends Resource
                     ->description(fn ($record) => "Limit: " . ($record->usage_limit ?? '∞'))
                     ->badge()
                     ->color(fn ($state, $record) => $record->usage_limit && $state >= $record->usage_limit ? 'danger' : 'info'),
+
+                Tables\Columns\TextColumn::make('perfumes_count')
+                    ->label('Vezano')
+                    ->counts('perfumes')
+                    ->formatStateUsing(fn ($state) => $state > 0 ? $state . ' parfema' : 'Svi parfemi')
+                    ->badge()
+                    ->color(fn ($state) => $state > 0 ? 'warning' : 'gray'),
 
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Status')

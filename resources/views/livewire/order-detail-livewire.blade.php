@@ -60,9 +60,11 @@
                         </div>
                         <div class="ml-4 flex-1">
                             <h4 class="text-sm font-medium text-gray-900">{{ $item->name }}</h4>
-                            <p class="mt-1 text-xs text-gray-500">Količina: {{ $item->pivot->quantity }}</p>
+                            <p class="mt-1 text-xs text-gray-500">
+                                {{ $item->pivot->quantity }} × {{ number_format($item->pivot->price, 2) }} KM
+                            </p>
                         </div>
-                        <div class="text-sm font-medium text-gray-900">
+                        <div class="text-sm font-medium text-gray-900 tabular-nums">
                             {{ number_format($item->pivot->price * $item->pivot->quantity, 2) }} KM
                         </div>
                     </li>
@@ -78,14 +80,32 @@
                     <span>{{ number_format($order->subtotal, 2) }} KM</span>
                 </div>
         
-                {{-- Popust (Shows only if there is a discount) --}}
+                {{-- Popust na iznos korpe (automatski, ne kupon) --}}
+                @if(($order->tier_discount_amount ?? 0) > 0)
+                    <div class="flex justify-between text-sm text-rose-600 font-medium">
+                        <span>Popust na iznos korpe:</span>
+                        <span>- {{ number_format($order->tier_discount_amount, 2) }} KM</span>
+                    </div>
+                @endif
+
+                {{-- Loyalty popust --}}
+                @if(($order->loyalty_discount_amount ?? 0) > 0)
+                    <div class="flex justify-between text-sm text-violet-600 font-medium">
+                        <span>
+                            Nivo {{ $order->loyalty_tier ?? 'Bronze' }} — loyalty popust:
+                        </span>
+                        <span>- {{ number_format($order->loyalty_discount_amount, 2) }} KM</span>
+                    </div>
+                @endif
+
+                {{-- Popust putem kupona --}}
                 @if($order->discount_amount > 0)
                     <div class="flex justify-between text-sm text-green-600 font-medium">
                         <span>Popust @if($order->coupon_code) ({{ $order->coupon_code }}) @endif:</span>
                         <span>- {{ number_format($order->discount_amount, 2) }} KM</span>
                     </div>
                 @endif
-        
+
                 {{-- Dostava --}}
                 <div class="flex justify-between text-sm text-gray-600 pb-2">
                     <span>Dostava:</span>

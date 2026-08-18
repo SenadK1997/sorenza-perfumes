@@ -22,6 +22,9 @@ class ShopLivewire extends Component
     #[Url(as: 'dostupno', history: true, keep: false)]
     public bool $onlyAvailable = false;
 
+    #[Url(as: 'akcija', history: true, keep: false)]
+    public bool $onlyOnSale = false;
+
     public ?Perfume $selectedPerfume = null;
     public bool $showModal = false;
 
@@ -82,7 +85,10 @@ class ShopLivewire extends Component
             ->when($this->price, fn($q) => $q->whereIn('price', $this->price))
             
             // If "Prikaži dostupne" is checked, show ONLY items currently in stock
-            ->when($this->onlyAvailable, fn($q) => $q->where('availability', true));
+            ->when($this->onlyAvailable, fn($q) => $q->where('availability', true))
+
+            // Akcija: only perfumes with an active discount
+            ->when($this->onlyOnSale, fn($q) => $q->onSale());
 
         // 3. FILTER CHECKBOX VISIBILITY
         // Determine if we show the "Only Available" toggle

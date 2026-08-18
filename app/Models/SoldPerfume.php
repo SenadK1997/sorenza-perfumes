@@ -13,9 +13,17 @@ class SoldPerfume extends Model
         'customer_id',
         'quantity',
         'base_price',
+        'customer_price',
         'is_manual',
         'cancelled',
         'cancellation_reason',
+    ];
+
+    protected $casts = [
+        'is_manual' => 'boolean',
+        'cancelled' => 'boolean',
+        'base_price' => 'decimal:2',
+        'customer_price' => 'decimal:2',
     ];
 
     public function user(): BelongsTo

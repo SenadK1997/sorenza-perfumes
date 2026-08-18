@@ -13,6 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(App\Http\Middleware\RedirectIfNotAdmin::class);
         $middleware->trustProxies(at: '*');
+        $middleware->alias([
+            'customer.auth' => App\Http\Middleware\AuthenticateCustomer::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

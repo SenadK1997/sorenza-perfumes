@@ -61,6 +61,10 @@
                         <span class="absolute right-4 top-4 z-10 rounded-full bg-red-600/95 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow-md">
                             Uskoro
                         </span>
+                    @elseif($perfume->is_on_sale)
+                        <span class="absolute right-4 top-4 z-10 rounded-full bg-gradient-to-r from-rose-500 to-red-600 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow-md ring-1 ring-white/40">
+                            Akcija −{{ (int) $perfume->discount_percentage }}%
+                        </span>
                     @endif
                     <img
                         :src="mainImage"
@@ -156,11 +160,23 @@
 
                 <!-- Price + wishlist -->
                 <div class="mt-8 flex items-center justify-between gap-3">
-                    <div class="flex items-baseline gap-3">
+                    <div class="flex items-baseline gap-3 flex-wrap">
                         <span class="text-xs uppercase tracking-[0.3em] text-gray-500">Cijena</span>
-                        <span class="text-4xl font-semibold bg-gradient-to-r from-violet-600 via-fuchsia-500 to-rose-500 bg-clip-text text-transparent">
-                            {{ number_format($perfume->price, 2) }} KM
-                        </span>
+                        @if($perfume->is_on_sale)
+                            <span class="text-4xl font-semibold bg-gradient-to-r from-rose-600 via-red-500 to-orange-500 bg-clip-text text-transparent">
+                                {{ number_format($perfume->price, 2) }} KM
+                            </span>
+                            <span class="text-lg font-medium text-gray-400 line-through">
+                                {{ number_format($perfume->original_price, 2) }} KM
+                            </span>
+                            <span class="inline-flex items-center rounded-full bg-rose-100 text-rose-700 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5">
+                                Ušteda {{ number_format($perfume->original_price - $perfume->price, 2) }} KM
+                            </span>
+                        @else
+                            <span class="text-4xl font-semibold bg-gradient-to-r from-violet-600 via-fuchsia-500 to-rose-500 bg-clip-text text-transparent">
+                                {{ number_format($perfume->price, 2) }} KM
+                            </span>
+                        @endif
                     </div>
                     <div wire:ignore>
                         <livewire:wishlist-button :perfume-id="$perfume->id" size="lg" :key="'wl-detail-'.$perfume->id" />

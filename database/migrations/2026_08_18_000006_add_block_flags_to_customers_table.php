@@ -1,0 +1,26 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('customers', function (Blueprint $table) {
+            $table->boolean('is_blocked')->default(false)->after('last_login_at');
+            $table->string('blocked_reason')->nullable()->after('is_blocked');
+            $table->timestamp('blocked_at')->nullable()->after('blocked_reason');
+            $table->index('is_blocked');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('customers', function (Blueprint $table) {
+            $table->dropIndex(['is_blocked']);
+            $table->dropColumn(['is_blocked', 'blocked_reason', 'blocked_at']);
+        });
+    }
+};

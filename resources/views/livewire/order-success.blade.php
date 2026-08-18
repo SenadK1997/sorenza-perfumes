@@ -42,9 +42,23 @@
                             <span>{{ number_format($order->subtotal, 2) }} KM</span>
                         </div>
                     
+                        @if(($order->tier_discount_amount ?? 0) > 0)
+                            <div class="flex justify-between text-sm text-rose-600">
+                                <span>Popust na iznos korpe:</span>
+                                <span>- {{ number_format($order->tier_discount_amount, 2) }} KM</span>
+                            </div>
+                        @endif
+
+                        @if(($order->loyalty_discount_amount ?? 0) > 0)
+                            <div class="flex justify-between text-sm text-violet-600">
+                                <span>Nivo {{ $order->loyalty_tier ?? 'Bronze' }}:</span>
+                                <span>- {{ number_format($order->loyalty_discount_amount, 2) }} KM</span>
+                            </div>
+                        @endif
+
                         @if($order->discount_amount > 0)
                             <div class="flex justify-between text-sm text-green-600">
-                                <span>Popust ({{ $order->coupon_code }}):</span>
+                                <span>Popust @if($order->coupon_code) ({{ $order->coupon_code }}) @endif:</span>
                                 <span>- {{ number_format($order->discount_amount, 2) }} KM</span>
                             </div>
                         @endif
