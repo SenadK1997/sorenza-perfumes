@@ -44,6 +44,46 @@
             </div>
         </div>
 
+        @php
+            $loyaltyTier = null;
+            if ($order->loyalty_tier) {
+                foreach (\App\Services\CustomerLoyalty::TIERS as $t) {
+                    if ($t['name'] === $order->loyalty_tier) { $loyaltyTier = $t; break; }
+                }
+            }
+        @endphp
+
+        @if($loyaltyTier && ($order->loyalty_discount_amount ?? 0) > 0)
+            <div class="mb-8 rounded-2xl shadow-sm border overflow-hidden"
+                 style="border-color: {{ $loyaltyTier['accent'] }}55; background: linear-gradient(135deg, {{ $loyaltyTier['accent'] }}12, #ffffff 70%);">
+                <div class="h-1 w-full" style="background: linear-gradient(90deg, {{ $loyaltyTier['accent'] }}, {{ $loyaltyTier['accent'] }}66, {{ $loyaltyTier['accent'] }});"></div>
+                <div class="px-5 sm:px-6 py-4 flex items-center gap-4">
+                    <div class="h-12 w-12 rounded-xl flex items-center justify-center text-white shadow-lg shrink-0"
+                         style="background: linear-gradient(135deg, {{ $loyaltyTier['accent'] }}, {{ $loyaltyTier['accent'] }}cc);">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2l2.4 5 5.6.8-4 3.9.9 5.6L12 14.9 7.1 17.3l.9-5.6-4-3.9 5.6-.8L12 2z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-[10px] uppercase tracking-[0.3em] text-gray-500">Vaš nivo pri ovoj narudžbi</div>
+                        <div class="mt-0.5 flex items-baseline gap-2 flex-wrap">
+                            <span class="text-lg sm:text-xl font-serif italic font-semibold" style="color: {{ $loyaltyTier['accent'] }};">
+                                {{ $loyaltyTier['name'] }}
+                            </span>
+                            <span class="inline-flex items-center rounded-full text-white text-[10px] font-bold uppercase tracking-widest px-2 py-0.5"
+                                  style="background: {{ $loyaltyTier['accent'] }};">
+                                −{{ (int) $loyaltyTier['discount'] }}%
+                            </span>
+                        </div>
+                        <div class="text-xs text-gray-600 mt-1">
+                            Loyalty popust ušteda:
+                            <strong class="text-gray-900 tabular-nums">{{ number_format($order->loyalty_discount_amount, 2) }} KM</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-8">
             <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
                 <h3 class="text-base font-semibold text-gray-900">Artikli</h3>
