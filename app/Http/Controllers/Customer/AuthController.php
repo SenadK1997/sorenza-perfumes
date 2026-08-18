@@ -90,7 +90,13 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->route('customer.dashboard');
+        // If the customer already has a password set, hint the login page to
+        // default to the Password tab on next visit; otherwise nudge them to
+        // set one and keep magic-link as the memory.
+        $prefer = $customer->password ? 'password' : 'magic';
+        return redirect()->route('customer.dashboard')->withCookie(
+            cookie('sorenza_last_login', $prefer, 60 * 24 * 365)
+        );
     }
 
     /**
@@ -135,7 +141,9 @@ class AuthController extends Controller
         $customer->update(['last_login_at' => now()]);
         $request->session()->regenerate();
 
-        return redirect()->route('customer.dashboard');
+        return redirect()->route('customer.dashboard')->withCookie(
+            cookie('sorenza_last_login', 'password', 60 * 24 * 365)
+        );
     }
 
     public function logout(Request $request)

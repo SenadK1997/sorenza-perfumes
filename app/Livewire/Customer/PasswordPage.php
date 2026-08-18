@@ -36,6 +36,9 @@ class PasswordPage extends Component
         $customer->update(['password' => $this->password]);
         $this->reset(['current_password', 'password', 'password_confirmation']);
 
+        // Nudge the login page to default to Password tab from now on.
+        cookie()->queue(cookie('sorenza_last_login', 'password', 60 * 24 * 365));
+
         session()->flash('status', 'Lozinka je promijenjena.');
     }
 

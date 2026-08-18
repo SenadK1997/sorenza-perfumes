@@ -130,39 +130,32 @@
                     </div>
                 @endif
 
-                <div x-data="{ tab: 'magic' }" class="rounded-3xl bg-white/85 backdrop-blur border border-white/90 shadow-xl p-6 sm:p-8 lg:sticky lg:top-24">
+                @php
+                    // Remember last used login method (cookie set on successful password login).
+                    // Errors from a password submit also override the default to keep the user on that tab.
+                    $lastMethod = request()->cookie('sorenza_last_login', 'magic');
+                    if (session()->has('errors') && old('password')) {
+                        $lastMethod = 'password';
+                    }
+                @endphp
+
+                <div x-data="{
+                        tab: (localStorage.getItem('sorenza_login_tab') || '{{ $lastMethod }}'),
+                        setTab(t) { this.tab = t; try { localStorage.setItem('sorenza_login_tab', t); } catch(e) {} }
+                     }"
+                     class="rounded-3xl bg-white/85 backdrop-blur border border-white/90 shadow-xl p-6 sm:p-8 lg:sticky lg:top-24">
                     <div class="flex gap-2 mb-6 rounded-full bg-gray-100 p-1">
-                        <button type="button" @click="tab='magic'"
-                                :class="tab==='magic' ? 'bg-white shadow text-amber-800' : 'text-gray-500'"
-                                class="flex-1 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition">
-                            Link na email
-                        </button>
-                        <button type="button" @click="tab='password'"
+                        <button type="button" @click="setTab('password')"
                                 :class="tab==='password' ? 'bg-white shadow text-amber-800' : 'text-gray-500'"
                                 class="flex-1 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition">
                             Lozinka
                         </button>
-                    </div>
-
-                    {{-- MAGIC LINK --}}
-                    <form x-show="tab==='magic'" method="POST" action="{{ route('customer.login.send') }}" class="space-y-4">
-                        @csrf
-                        <div>
-                            <label for="email-magic" class="block text-xs font-medium uppercase tracking-[0.2em] text-gray-500 mb-1.5">Email adresa naloga</label>
-                            <input id="email-magic" name="email" type="email" required autocomplete="email"
-                                   value="{{ old('email') }}"
-                                   placeholder="vas@email.com"
-                                   class="w-full rounded-full border-amber-200/80 bg-white/80 px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-amber-500 focus:ring-amber-500">
-                            @error('email') <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p> @enderror
-                        </div>
-                        <button type="submit"
-                                class="w-full rounded-full bg-gradient-to-r from-[#8b6914] via-[#BBA14F] to-[#DBC584] px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-white shadow-lg hover:opacity-95 transition">
-                            Pošalji mi link
+                        <button type="button" @click="setTab('magic')"
+                                :class="tab==='magic' ? 'bg-white shadow text-amber-800' : 'text-gray-500'"
+                                class="flex-1 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition">
+                            Link na email
                         </button>
-                        <p class="text-[11px] text-gray-500 leading-relaxed text-center">
-                            Poslat ćemo vam sigurni link za jednokratnu prijavu. Nema lozinke — samo kliknite u emailu.
-                        </p>
-                    </form>
+                    </div>
 
                     {{-- PASSWORD --}}
                     <form x-show="tab==='password'" x-cloak method="POST" action="{{ route('customer.login.password') }}" class="space-y-4">
@@ -184,7 +177,34 @@
                             Prijavi me
                         </button>
                         <p class="text-[11px] text-gray-500 leading-relaxed text-center">
-                            Nemate lozinku? Prijavite se linkom na email, pa je možete postaviti u svom nalogu.
+                            Zaboravili lozinku ili je još niste postavili?
+                            <button type="button" @click="setTab('magic')" class="text-amber-800 font-semibold underline underline-offset-2 hover:text-amber-700">
+                                Prijavite se linkom na email
+                            </button>
+                        </p>
+                    </form>
+
+                    {{-- MAGIC LINK --}}
+                    <form x-show="tab==='magic'" method="POST" action="{{ route('customer.login.send') }}" class="space-y-4">
+                        @csrf
+                        <div>
+                            <label for="email-magic" class="block text-xs font-medium uppercase tracking-[0.2em] text-gray-500 mb-1.5">Email adresa naloga</label>
+                            <input id="email-magic" name="email" type="email" required autocomplete="email"
+                                   value="{{ old('email') }}"
+                                   placeholder="vas@email.com"
+                                   class="w-full rounded-full border-amber-200/80 bg-white/80 px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-amber-500 focus:ring-amber-500">
+                            @error('email') <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                        <button type="submit"
+                                class="w-full rounded-full bg-gradient-to-r from-[#8b6914] via-[#BBA14F] to-[#DBC584] px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-white shadow-lg hover:opacity-95 transition">
+                            Pošalji mi link
+                        </button>
+                        <p class="text-[11px] text-gray-500 leading-relaxed text-center">
+                            Poslat ćemo vam sigurni link za jednokratnu prijavu. Nakon prijave možete postaviti lozinku za bržu sljedeću prijavu.
+                            <br>
+                            <button type="button" @click="setTab('password')" class="mt-1 text-amber-800 font-semibold underline underline-offset-2 hover:text-amber-700">
+                                Već imate lozinku? Prijavite se lozinkom
+                            </button>
                         </p>
                     </form>
 
