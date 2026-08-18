@@ -16,11 +16,17 @@ return new class extends Migration
         // Backfill: before this fix, no discounts were in production, so historical
         // customer-paid = full retail = perfumes.original_price (which was itself
         // backfilled from perfumes.price for undiscounted items).
+        //
+        // Uses a correlated subquery instead of UPDATE...JOIN so it runs on both
+        // MySQL (production) and SQLite (test suite).
         DB::statement("
             UPDATE sold_perfumes
-            JOIN perfumes ON perfumes.id = sold_perfumes.perfume_id
-            SET sold_perfumes.customer_price = COALESCE(perfumes.original_price, perfumes.price)
-            WHERE sold_perfumes.customer_price IS NULL
+            SET customer_price = (
+                SELECT COALESCE(perfumes.original_price, perfumes.price)
+                FROM perfumes
+                WHERE perfumes.id = sold_perfumes.perfume_id
+            )
+            WHERE customer_price IS NULL
         ");
     }
 
